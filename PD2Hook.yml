@@ -1,0 +1,25 @@
+Config:
+  OutputMode: 0
+  OutputFile: PD2Hook.log
+  PrintOffsets: false
+  ExtraCols: 10
+  ExtraRows: 10
+
+KeyBindings:
+  - [VK_F1, GoonHud/lua/PlaceCustomWaypoint.lua]
+  - [VK_F2, GoonHud/lua/RemoveCustomWaypoint.lua]
+
+PersistScripts:
+
+PostRequireScripts:
+# GoonHUD
+  - [lib/managers/systemmenumanager, GoonHud/goonhud.lua]
+  - [lib/managers/menumanager, GoonHud/goonhud.lua]
+  - [lib/managers/chatmanager, GoonHud/goonhud.lua]
+  - [lib/managers/enemymanager, GoonHud/goonhud.lua]
+  - [lib/managers/localizationmanager, GoonHud/goonhud.lua]
+  # - [lib/managers/preplanningmanager, GoonHud/goonhud.lua]
+  # - [lib/tweak_data/preplanningtweakdata, GoonHud/goonhud.lua]
+
+# CloseScripts:
+#   - LUA\statesaver.lua
