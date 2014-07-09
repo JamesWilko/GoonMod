@@ -5,3 +5,4 @@ local Options = _G.GoonHUD.Options
 Options.EnemyManager = {}
 Options.EnemyManager.CustomCorpseLimit = true
 Options.EnemyManager.MaxCorpses = 256
+Options.EnemyManager.CurrentMaxCorpses = 256

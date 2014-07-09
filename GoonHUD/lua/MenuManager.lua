@@ -11,58 +11,62 @@ end
 -- Add GoonHUD to options
 Hooks:Add( "MenuManagerInitialize", "MenuManagerInitialize_AddGoonHUDMenuItem", function( menu_manager )
 
-	if menu_manager == nil then return end
-	if menu_manager._registered_menus == nil then return end
-	if menu_manager._registered_menus.menu_main == nil then return end
-	if menu_manager._registered_menus.menu_main.logic._data == nil then return end
-	if menu_manager._registered_menus.menu_main.logic._data._nodes == nil then return end
-	if menu_manager._registered_menus.menu_main.logic._data._nodes.main == nil then return end
+	local mainMenu = menu_manager._registered_menus.menu_main
+	if mainMenu == nil then return end
 
-	local mainMenuNodes = menu_manager._registered_menus.menu_main.logic._data._nodes.main
-	local insertPoint
+	local mainMenuNodes = mainMenu.logic._data._nodes
+	if mainMenuNodes["goonhud"] ~= nil then return end
 
-	-- Get insert point
-	for k, v in pairs( mainMenuNodes._items ) do
-		if v._parameters.name == "options" then
-			insertPoint = k
-			break
-		end
-	end
+	-- Create GoonHUD Options Menu
+	local goonhudMenu = deep_clone( mainMenuNodes.video )
 
-	-- Insert using clone of safehouse button
-	for k, v in pairs( mainMenuNodes._items ) do
-		if v._parameters.name == "safehouse" then
+	-- Store controls for later use
+	menu_manager.stored_controls = {}
+	menu_manager.stored_controls.back_button = deep_clone( goonhudMenu._items[ #goonhudMenu._items ] ) 
+	menu_manager.stored_controls.toggle = deep_clone( goonhudMenu._items[2] )
+	menu_manager.stored_controls.slider = deep_clone( goonhudMenu._items[6] )
 
-			local menu_item = deep_clone(v)
-			menu_item._parameters.name = "GoonHUDOptions"
-			menu_item._parameters.text_id = "MainMenuOptionsName"
-			menu_item._parameters.help_id = "MainMenuOptionsDesc"
-			menu_item._parameters.next_node = nil
-			menu_item._parameters.callback_name[1] = "open_goonhudmenu"
-			menu_item._parameters.callback[1] = MenuCallbackHandler.open_goonhudmenu
-			
-			table.insert( mainMenuNodes._items, insertPoint + 1, deep_clone(menu_item) )
-			break
+	-- Clear Items
+	goonhudMenu._items = {}
 
-		end
-	end
+	-- Add corpse amount slider
+	local corpseSlider = deep_clone( menu_manager.stored_controls.slider )
+	corpseSlider._parameters.text_id = "OptionsMenu_CorpseAmount"
+	corpseSlider._parameters.help_id = "OptionsMenu_CorpseAmountDesc"
+	corpseSlider.dirty_callback = MenuCallbackHandler.set_corpse_amount
+	corpseSlider._parameters.callback[1] = MenuCallbackHandler.set_corpse_amount
+	corpseSlider._parameters.callback_name[1] = "set_corpse_amount"
+	table.insert( goonhudMenu._items, corpseSlider )
+
+	-- Add back button
+	table.insert( goonhudMenu._items, deep_clone(menu_manager.stored_controls.back_button) )
+
+	-- Add menu to data
+	mainMenuNodes["goonhud"] = deep_clone(goonhudMenu)
+
+	-- Add GoonHUD to Options
+	local optionsButton = deep_clone( mainMenuNodes.options._items[1] )
+	optionsButton._parameters.name = "GoonHUDOptionsName"
+	optionsButton._parameters.text_id = "GoonHUDOptionsName"
+	optionsButton._parameters.help_id = "GoonHUDOptionsDesc"
+	optionsButton._parameters.next_node = "goonhud"
+	table.insert( mainMenuNodes.options._items, #mainMenuNodes.options._items + 1, optionsButton )
 
 end )
 
-function MenuCallbackHandler.open_goonhudmenu(this, params)
+
+function MenuCallbackHandler.set_corpse_amount(item)
+
+	if item.setup == nil then
+		item:set_min( 8 )
+		item:set_max( GoonHUD.Options.EnemyManager.MaxCorpses )
+		item._value = 100
+		item.setup = true
+	end
+
+	GoonHUD.Options.EnemyManager.CurrentMaxCorpses = math.floor( item:value() )
+	GoonHUD.Localization.OptionsMenu_CorpseAmountDesc = "Maximum number of corpses allowed (Current: " .. math.floor(GoonHUD.Options.EnemyManager.CurrentMaxCorpses) .. ")"
 	
-	local enemyManager = GoonHUD.Options.EnemyManager
-
-	local options = {
-		{ text = "Corpse Limit: " .. (enemyManager.CustomCorpseLimit and enemyManager.MaxCorpses or 8) },
-		{ text = "Use Custom Corpse Limit: " .. (enemyManager.CustomCorpseLimit and "True" or "False"), callback = function()
-			GoonHUD.Options.EnemyManager.CustomCorpseLimit = not GoonHUD.Options.EnemyManager.CustomCorpseLimit
-		end },
-		{ text = "Close", is_cancel_button = true },
-	}
-	local menu = SimpleMenu:new("GoonHUD", "v" .. GoonHUD.Version, options)
-	menu:show()
-
 end
 
 -- Allow restarting multiplayer missions if you are the host
