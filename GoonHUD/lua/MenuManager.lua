@@ -60,13 +60,14 @@ function MenuCallbackHandler.set_corpse_amount(item)
 	if item.setup == nil then
 		item:set_min( 8 )
 		item:set_max( GoonHUD.Options.EnemyManager.MaxCorpses )
-		item._value = 100
+		item._value = GoonHUD.Options.EnemyManager.CurrentMaxCorpses
 		item.setup = true
 	end
 
 	GoonHUD.Options.EnemyManager.CurrentMaxCorpses = math.floor( item:value() )
 	GoonHUD.Localization.OptionsMenu_CorpseAmountDesc = "Maximum number of corpses allowed (Current: " .. math.floor(GoonHUD.Options.EnemyManager.CurrentMaxCorpses) .. ")"
-	
+	GoonHUD.Options:Save()
+
 end
 
 -- Allow restarting multiplayer missions if you are the host
