@@ -1,6 +1,6 @@
 Config:
-  OutputMode: 0
-  OutputFile: PD2Hook.log
+  OutputMode: 1
+  OutputFile: GoonHUD.log
   PrintOffsets: false
   ExtraCols: 10
   ExtraRows: 10

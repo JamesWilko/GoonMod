@@ -70,23 +70,24 @@ function MenuCallbackHandler.set_corpse_amount(item)
 end
 
 -- Allow restarting multiplayer missions if you are the host
-Hooks:RegisterHook( "MenuManagerOnRestartGame" )
-function MenuCallbackHandler.singleplayer_restart(this)
+-- 10/7/14 - Disabled due to crashing on pressing escape for some players
+-- Hooks:RegisterHook( "MenuManagerOnRestartGame" )
+-- function MenuCallbackHandler.singleplayer_restart(this)
 
-	-- Check if everybody is synced before restarting
-	if Network:is_server() and not this:is_singleplayer() then
-		for k, v in pairs( managers.network:session():peers() ) do
-			if not v:synched() then
-				return false
-			end
-		end
-	end
+-- 	-- Check if everybody is synced before restarting
+-- 	if Network:is_server() and not this:is_singleplayer() then
+-- 		for k, v in pairs( managers.network:session():peers() ) do
+-- 			if not v:synched() then
+-- 				return false
+-- 			end
+-- 		end
+-- 	end
 
-	-- Check if we can restart and call hook
-	local restart = ( self:is_singleplayer() or ( self:is_multiplayer() and self:is_server() ) ) and self:has_full_game() and self:is_normal_job() and not managers.job:stage_success()
-	if restart then
-		Hooks:Call( "MenuManagerOnRestartGame" )
-	end
-	return restart
+-- 	-- Check if we can restart and call hook
+-- 	local restart = ( self:is_singleplayer() or ( self:is_multiplayer() and self:is_server() ) ) and self:has_full_game() and self:is_normal_job() and not managers.job:stage_success()
+-- 	if restart then
+-- 		Hooks:Call( "MenuManagerOnRestartGame" )
+-- 	end
+-- 	return restart
 
-end
+-- end
