@@ -29,13 +29,30 @@ Hooks:Add( "MenuManagerInitialize", "MenuManagerInitialize_AddGoonHUDMenuItem", 
 	-- Clear Items
 	goonhudMenu._items = {}
 
+	-- Add toggle custom corpse amount
+	local corpseToggle = deep_clone( menu_manager.stored_controls.toggle )
+	corpseToggle._parameters.text_id = "OptionsMenu_CorpseToggle"
+	corpseToggle._parameters.help_id = "OptionsMenu_CorpseToggleDesc"
+	corpseToggle.dirty_callback = MenuCallbackHandler.toggle_corpse
+	corpseToggle._parameters.callback[1] = MenuCallbackHandler.toggle_corpse
+	corpseToggle._parameters.callback_name[1] = "toggle_corpse"
+	table.insert( goonhudMenu._items, corpseToggle )
+
 	-- Add corpse amount slider
 	local corpseSlider = deep_clone( menu_manager.stored_controls.slider )
+	corpseSlider.orig = {}
 	corpseSlider._parameters.text_id = "OptionsMenu_CorpseAmount"
 	corpseSlider._parameters.help_id = "OptionsMenu_CorpseAmountDesc"
-	corpseSlider.dirty_callback = MenuCallbackHandler.set_corpse_amount
+	corpseSlider.dirty_callback = function(item) end
 	corpseSlider._parameters.callback[1] = MenuCallbackHandler.set_corpse_amount
 	corpseSlider._parameters.callback_name[1] = "set_corpse_amount"
+	corpseSlider.orig._layout = corpseSlider._layout
+	corpseSlider._layout = function(this, node, row_item)
+		this:set_min( 8 )
+		this:set_max( GoonHUD.Options.EnemyManager.MaxCorpses )
+		this._value = math.floor( GoonHUD.Options.EnemyManager.CurrentMaxCorpses )
+		this.orig._layout(this, node, row_item)
+	end
 	table.insert( goonhudMenu._items, corpseSlider )
 
 	-- Add back button
@@ -54,21 +71,25 @@ Hooks:Add( "MenuManagerInitialize", "MenuManagerInitialize_AddGoonHUDMenuItem", 
 
 end )
 
+function MenuCallbackHandler.toggle_corpse(item)
+	GoonHUD.Options.EnemyManager.CustomCorpseLimit = item:value() == "on" and true or false
+	GoonHUD.Options:Save()
+end
 
 function MenuCallbackHandler.set_corpse_amount(item)
-
-	if item.setup == nil then
-		item:set_min( 8 )
-		item:set_max( GoonHUD.Options.EnemyManager.MaxCorpses )
-		item._value = GoonHUD.Options.EnemyManager.CurrentMaxCorpses
-		item.setup = true
-	end
-
 	GoonHUD.Options.EnemyManager.CurrentMaxCorpses = math.floor( item:value() )
 	GoonHUD.Localization.OptionsMenu_CorpseAmountDesc = "Maximum number of corpses allowed (Current: " .. math.floor(GoonHUD.Options.EnemyManager.CurrentMaxCorpses) .. ")"
 	GoonHUD.Options:Save()
-
 end
+
+-- function MenuCallbackHandler:toggle_developer_mask(item)
+-- 	local use_mask = item:value() == "on"
+-- 	if SystemInfo:platform() ~= Idstring("WIN32") or not managers.network.account:is_developer() then
+-- 		use_mask = false
+-- 	end
+
+-- 	managers.user:set_setting("developer_mask", use_mask)
+-- end
 
 -- Allow restarting multiplayer missions if you are the host
 -- 10/7/14 - Disabled due to crashing on pressing escape for some players
