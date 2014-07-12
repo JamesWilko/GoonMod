@@ -7,6 +7,8 @@ Options.EnemyManager = {}
 Options.EnemyManager.CustomCorpseLimit = true
 Options.EnemyManager.MaxCorpses = 1024
 Options.EnemyManager.CurrentMaxCorpses = 256
+Options.EnemyManager.ShowGrenadeMarker = false
+Options.EnemyManager.UseDefaultGrenadeTimer = true
 
 function Options:GetSaveString()
 
@@ -58,7 +60,7 @@ function Options:Load(fileName)
 
 		if loadKey then
 			key = tonumber(loadKey) and tonumber(loadKey) or loadKey
-			Options[key] = {}
+			Options[key] = Options[key] or {}
 		end
 
 		local param, val = line:match('^([%w|_]+)%s-=%s-(.+)$')

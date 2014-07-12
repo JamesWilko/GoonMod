@@ -9,4 +9,5 @@ Localization.OptionsMenu_CorpseToggle = "Use Custom Corpse Amount"
 Localization.OptionsMenu_CorpseToggleDesc = "Use the custom amount of corpses instead of the default amount (8)"
 Localization.OptionsMenu_CorpseAmount = "Corpse Amount"
 Localization.OptionsMenu_CorpseAmountDesc = "Maximum number of corpses allowed (Current: " .. math.floor(GoonHUD.Options.EnemyManager.CurrentMaxCorpses) .. ")"
-
+Localization.OptionsMenu_GrenadeMarker = "Show Markers on Flashbangs"
+Localization.OptionsMenu_GrenadeMarkerDesc = "Show a HUD marker when a flashbang is deployed"

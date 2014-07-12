@@ -11,6 +11,7 @@ local requiredScriptsToLoad = {
 	["lib/managers/enemymanager"] = "EnemyManager.lua",
 	["lib/managers/menumanager"] = "MenuManager.lua",
 	["lib/managers/localizationmanager"] = "LocalizationManager.lua",
+	["lib/units/weapons/grenades/quicksmokegrenade"] = "QuickSmokeGrenade.lua",
 	["lib/managers/preplanningmanager"] = "PreplanningManager.lua",
 	["lib/tweak_data/preplanningtweakdata"] = "PreplanningTweakData.lua"
 }
