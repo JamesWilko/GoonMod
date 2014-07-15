@@ -13,14 +13,11 @@ PersistScripts:
 
 PostRequireScripts:
 # GoonHUD
-  - [lib/managers/systemmenumanager, GoonHud/goonhud.lua]
   - [lib/managers/menumanager, GoonHud/goonhud.lua]
   - [lib/managers/chatmanager, GoonHud/goonhud.lua]
   - [lib/managers/enemymanager, GoonHud/goonhud.lua]
   - [lib/managers/localizationmanager, GoonHud/goonhud.lua]
   - [lib/units/weapons/grenades/quicksmokegrenade, GoonHud/goonhud.lua]
-  # - [lib/managers/preplanningmanager, GoonHud/goonhud.lua]
-  # - [lib/tweak_data/preplanningtweakdata, GoonHud/goonhud.lua]
 
 # CloseScripts:
 #   - LUA\statesaver.lua

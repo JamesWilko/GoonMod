@@ -8,6 +8,81 @@ function MenuManager.init(this, ...)
 	Hooks:Call( "MenuManagerInitialize", this )
 end
 
+-- Helper
+MenuManager.GoonHUDHelper = {}
+function MenuManager.GoonHUDHelper.AddToggle( toggleName, text, help, callbackFunction, saveData, menu )
+
+	local data = {
+		type = "CoreMenuItemToggle.ItemToggle",
+		{
+			_meta = "option",
+			icon = "guis/textures/menu_tickbox",
+			value = "on",
+			x = 24,
+			y = 0,
+			w = 24,
+			h = 24,
+			s_icon = "guis/textures/menu_tickbox",
+			s_x = 24,
+			s_y = 24,
+			s_w = 24,
+			s_h = 24
+		},
+		{
+			_meta = "option",
+			icon = "guis/textures/menu_tickbox",
+			value = "off",
+			x = 0,
+			y = 0,
+			w = 24,
+			h = 24,
+			s_icon = "guis/textures/menu_tickbox",
+			s_x = 0,
+			s_y = 24,
+			s_w = 24,
+			s_h = 24
+		}
+	}
+
+	local params = {
+		name = toggleName,
+		text_id = text,
+		help_id = help,
+		callback = callbackFunction,
+		disabled_color = Color( 0.25, 1, 1, 1 ),
+		icon_by_text = false
+	}
+
+	local menuItem = menu:create_item( data, params )
+	menuItem:set_value( saveData and "on" or "off" )
+	menu:add_item( menuItem )
+
+end
+
+function MenuManager.GoonHUDHelper.AddSlider( sliderName, text, help, callbackFunction, saveData, menu )
+
+	local data = {
+		type = "CoreMenuItemSlider.ItemSlider",
+		min = 8,
+		max = 1024,
+		step = 1,
+		show_value = false
+	}
+
+	local params = {
+		name = sliderName,
+		text_id = text,
+		help_id = help,
+		callback = callbackFunction,
+		disabled_color = Color(0.25, 1, 1, 1),
+	}
+
+	local menuItem = menu:create_item(data, params)
+	menuItem:set_value( saveData or 1 )
+	menu:add_item(menuItem)
+
+end
+
 -- Add GoonHUD to options
 Hooks:Add( "MenuManagerInitialize", "MenuManagerInitialize_AddGoonHUDMenuItem", function( menu_manager )
 
@@ -61,59 +136,34 @@ Hooks:Add( "MenuManagerInitialize", "MenuManagerInitialize_AddGoonHUDMenuItem", 
 	goonhudMenu._items = {}
 
 	-- Grenade Marker Toggle
-	local grenadeMarkerData = {
-		type = "CoreMenuItemToggle.ItemToggle",
-		clone( toggleOnData ),
-		clone( toggleOffData )
-	}
-	local grenadeMarkerParams = {
-		name = "toggle_grenade_marker",
-		text_id = "OptionsMenu_GrenadeMarker",
-		help_id = "OptionsMenu_GrenadeMarkerDesc",
-		callback = "toggle_grenade_marker",
-		disabled_color = Color(0.25, 1, 1, 1),
-		icon_by_text = false
-	}
-	local grenademarkertoggle_menu_item = goonhudMenu:create_item(grenadeMarkerData, grenadeMarkerParams)
-	grenademarkertoggle_menu_item:set_value( GoonHUD.Options.EnemyManager.ShowGrenadeMarker and "on" or "off" )
-	goonhudMenu:add_item(grenademarkertoggle_menu_item)
+	MenuManager.GoonHUDHelper.AddToggle(
+		"toggle_grenade_marker",
+		"OptionsMenu_GrenadeMarker",
+		"OptionsMenu_GrenadeMarkerDesc",
+		"toggle_grenade_marker",
+		GoonHUD.Options.EnemyManager.ShowGrenadeMarker,
+		goonhudMenu
+	)
 
 	-- Custom Corpse Amount Toggle
-	local corpseToggleData = {
-		type = "CoreMenuItemToggle.ItemToggle",
-		clone( toggleOnData ),
-		clone( toggleOffData )
-	}
-	local corpseToggleParams = {
-		name = "toggle_custom_corpse",
-		text_id = "OptionsMenu_CorpseToggle",
-		help_id = "OptionsMenu_CorpseToggleDesc",
-		callback = "toggle_corpse",
-		disabled_color = Color(0.25, 1, 1, 1),
-		icon_by_text = false
-	}
-	local corpsetoggle_menu_item = goonhudMenu:create_item(corpseToggleData, corpseToggleParams)
-	corpsetoggle_menu_item:set_value( GoonHUD.Options.EnemyManager.CustomCorpseLimit and "on" or "off" )
-	goonhudMenu:add_item(corpsetoggle_menu_item)
+	MenuManager.GoonHUDHelper.AddToggle(
+		"toggle_custom_corpse",
+		"OptionsMenu_CorpseToggle",
+		"OptionsMenu_CorpseToggleDesc",
+		"toggle_corpse",
+		GoonHUD.Options.EnemyManager.CustomCorpseLimit,
+		goonhudMenu
+	)
 
 	-- Corpse Amount Slider
-	local corpseSliderData = {
-		type = "CoreMenuItemSlider.ItemSlider",
-		min = 8,
-		max = 1024,
-		step = 1,
-		show_value = false
-	}
-	local corpseSliderParams = {
-		name = "corpse_amount_slider",
-		text_id = "OptionsMenu_CorpseAmount",
-		help_id = "OptionsMenu_CorpseAmountDesc",
-		callback = "set_corpse_amount",
-		disabled_color = Color(0.25, 1, 1, 1),
-	}
-	local corpseslider_menu_item = goonhudMenu:create_item(corpseSliderData, corpseSliderParams)
-	corpseslider_menu_item:set_value( GoonHUD.Options.EnemyManager.CurrentMaxCorpses or 8 )
-	goonhudMenu:add_item(corpseslider_menu_item)
+	MenuManager.GoonHUDHelper.AddSlider(
+		"corpse_amount_slider",
+		"OptionsMenu_CorpseAmount",
+		"OptionsMenu_CorpseAmountDesc",
+		"set_corpse_amount",
+		GoonHUD.Options.EnemyManager.CurrentMaxCorpses,
+		goonhudMenu
+	)
 
 	-- Add back button
 	MenuManager:add_back_button(goonhudMenu)
@@ -131,6 +181,7 @@ Hooks:Add( "MenuManagerInitialize", "MenuManagerInitialize_AddGoonHUDMenuItem", 
 
 end )
 
+-- Callbacks
 function MenuCallbackHandler:toggle_corpse(item)
 	GoonHUD.Options.EnemyManager.CustomCorpseLimit = item:value() == "on" and true or false
 	GoonHUD.Options:Save()

@@ -3,12 +3,19 @@ CloneClass( QuickSmokeGrenade )
 
 QuickSmokeGrenade.waypoint = "GoonHUDGrenadeWaypoint_"
 
+Hooks:RegisterHook( "QuickSmokeGrenadeActivate" )
 function QuickSmokeGrenade.activate(this, pos, duration)
-
 	this.orig.activate(this, pos, duration)
-	if GoonHUD.Options.EnemyManager.UseDefaultGrenadeTimer == false then
-		this._timer = 2
-	end
+	Hooks:Call("QuickSmokeGrenadeActivate", this, pos, duration)
+end
+
+Hooks:RegisterHook( "QuickSmokeGrenadeDetonate" )
+function QuickSmokeGrenade.detonate(this)
+	this.orig.detonate(this)
+	Hooks:Call("QuickSmokeGrenadeDetonate", this)
+end
+
+Hooks:Add( "QuickSmokeGrenadeActivate", "QuickSmokeGrenadeActivate_Marker", function( this, pos, duration )
 
 	if GoonHUD.Options.EnemyManager.ShowGrenadeMarker then
 		this.grenadeID = tostring(math.random(0, 10000))
@@ -18,11 +25,12 @@ function QuickSmokeGrenade.activate(this, pos, duration)
 		)
 	end
 
-end
+end )
 
-function QuickSmokeGrenade.detonate(this)
+Hooks:Add( "QuickSmokeGrenadeDetonate", "QuickSmokeGrenadeDetonate_Marker", function( this )
+
 	if GoonHUD.Options.EnemyManager.ShowGrenadeMarker then
 		managers.hud:remove_waypoint( QuickSmokeGrenade.waypoint .. this.grenadeID )
 	end
-	this.orig.detonate(this)
-end
+
+end )
