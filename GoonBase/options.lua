@@ -1,14 +1,13 @@
 
-_G.GoonHUD.Options = _G.GoonHUD.Options or {}
-local Options = _G.GoonHUD.Options
-Options.SaveFile = "GoonHUD/options.ini"
+_G.GoonBase.Options = _G.GoonBase.Options or {}
+local Options = _G.GoonBase.Options
+Options.SaveFile = GoonBase.Path .. "options.ini"
 
 Options.EnemyManager = {}
 Options.EnemyManager.CustomCorpseLimit = true
 Options.EnemyManager.MaxCorpses = 1024
 Options.EnemyManager.CurrentMaxCorpses = 256
 Options.EnemyManager.ShowGrenadeMarker = false
-Options.EnemyManager.UseDefaultGrenadeTimer = true
 
 function Options:GetSaveString()
 
