@@ -6,7 +6,7 @@
 -- Mod Definition
 local Mod = class( BaseMod )
 Mod.id = "TrainHeistPlans"
-Mod.Name = "Seperate Train Heist"
+Mod.Name = "Separate Train Heist"
 Mod.Desc = "The train heist from the Armoured Transport DLC is available as a separate heist"
 Mod.Requirements = { "ExtendedInventory" }
 Mod.Incompatibilities = {}
