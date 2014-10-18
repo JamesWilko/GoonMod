@@ -6,8 +6,6 @@ Config:
   ExtraRows: 10
 
 KeyBindings:
-  # - [VK_F1, GoonBase/lua/PlaceCustomWaypoint.lua]
-  # - [VK_F2, GoonBase/lua/RemoveCustomWaypoint.lua]
 
 PersistScripts:
 
@@ -19,22 +17,28 @@ PostRequireScripts:
   - [lib/managers/enemymanager, GoonBase/goonbase.lua]
   - [lib/units/weapons/grenades/quicksmokegrenade, GoonBase/goonbase.lua]
   - [lib/managers/hudmanager, GoonBase/goonbase.lua]
+  - [lib/managers/experiencemanager, GoonBase/goonbase.lua]
+  - [lib/tweak_data/infamytweakdata, GoonBase/goonbase.lua]
+  - [lib/managers/achievmentmanager, GoonBase/goonbase.lua]
+  - [lib/managers/jobmanager, GoonBase/goonbase.lua]
+  - [lib/managers/group_ai_states/groupaistatebesiege, GoonBase/goonbase.lua]
+  - [lib/units/beings/player/states/playerstandard, GoonBase/goonbase.lua]
+  - [lib/managers/gageassignmentmanager, GoonBase/goonbase.lua]
+  - [lib/setups/gamesetup, GoonBase/goonbase.lua]
+  - [lib/setups/menusetup, GoonBase/goonbase.lua]
+  - [lib/managers/menu/blackmarketgui, GoonBase/goonbase.lua]
+  - [lib/managers/blackmarketmanager, GoonBase/goonbase.lua]
+  - [lib/tweak_data/groupaitweakdata, GoonBase/goonbase.lua]
+  - [lib/tweak_data/charactertweakdata, GoonBase/goonbase.lua]
+  - [lib/units/enemies/cop/copinventory, GoonBase/goonbase.lua]
+  - [lib/managers/mission/elementlasertrigger, GoonBase/goonbase.lua]
+  - [lib/units/weapons/weaponflashlight, GoonBase/goonbase.lua]
+  - [lib/units/weapons/weaponlaser, GoonBase/goonbase.lua]
+  - [lib/tweak_data/levelstweakdata, GoonBase/goonbase.lua]
+  - [lib/tweak_data/assetstweakdata, GoonBase/goonbase.lua]
+  - [lib/tweak_data/narrativetweakdata, GoonBase/goonbase.lua]
+  - [lib/tweak_data/weapontweakdata, GoonBase/goonbase.lua]
+  - [lib/managers/menu/menunodegui, GoonBase/goonbase.lua]
+  - [lib/managers/menu/items/menuitemcustomizecontroller, GoonBase/goonbase.lua]
 
-  # - [lib/setups/menusetup, GoonBase/goonbase.lua]
-  # - [lib/managers/menu/blackmarketgui, GoonBase/goonbase.lua]
-  # - [lib/managers/blackmarketmanager, GoonBase/goonbase.lua]
-
-  # - [lib/units/civilians/civiliandamage, GoonBase/goonbase.lua]
-  # - [lib/managers/trademanager, GoonBase/goonbase.lua]
-  # - [lib/managers/hintmanager, GoonBase/goonbase.lua]
-  # - [lib/managers/playermanager, GoonBase/goonbase.lua]
-  # - [lib/managers/hud/hudstageendscreen, GoonBase/goonbase.lua]
-  # - [lib/units/beings/player/playerdamage, GoonBase/goonbase.lua]
-  # - [lib/managers/hud/hudblackscreen, GoonBase/goonbase.lua]
-  # - [lib/managers/hud/hudmissionbriefing, GoonBase/goonbase.lua]
-  # - [lib/managers/hud/hudplayercustody, GoonBase/goonbase.lua]
-  # - [lib/network/base/handlers/connectionnetworkhandler, GoonBase/goonbase.lua]
-  # - [lib/managers/menu/contractboxgui, GoonBase/goonbase.lua]
-
-# CloseScripts:
-#   - LUA\statesaver.lua
+# -- END OF FILE

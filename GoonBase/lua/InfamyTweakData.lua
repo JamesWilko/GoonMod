@@ -3,10 +3,10 @@
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
-CloneClass( LocalizationManager )
+CloneClass( InfamyTweakData )
 
-function LocalizationManager.text(this, str, ...)
-	return _G.GoonBase.Localization[str] or this.orig.text(this, str, ...)
+function InfamyTweakData.init(self)
+	self.orig.init(self)
 end
 
 -- END OF FILE

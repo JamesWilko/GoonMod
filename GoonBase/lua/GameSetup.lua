@@ -3,10 +3,12 @@
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
-CloneClass( LocalizationManager )
+CloneClass( GameSetup )
 
-function LocalizationManager.text(this, str, ...)
-	return _G.GoonBase.Localization[str] or this.orig.text(this, str, ...)
+Hooks:RegisterHook("GameSetupUpdate")
+function GameSetup.update(this, t, dt)
+	this.orig.update(this, t, dt)
+	Hooks:Call("GameSetupUpdate", t, dt)
 end
 
 -- END OF FILE

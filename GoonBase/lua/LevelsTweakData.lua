@@ -3,10 +3,12 @@
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
-CloneClass( LocalizationManager )
+CloneClass( LevelsTweakData )
 
-function LocalizationManager.text(this, str, ...)
-	return _G.GoonBase.Localization[str] or this.orig.text(this, str, ...)
+Hooks:RegisterHook("LevelsTweakDataInit")
+function LevelsTweakData.init(self)
+	self.orig.init(self)
+	Hooks:Call("LevelsTweakDataInit", self)
 end
 
 -- END OF FILE

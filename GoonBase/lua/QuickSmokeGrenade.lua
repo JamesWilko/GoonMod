@@ -1,7 +1,9 @@
+----------
+-- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:02:05 PM
+-- Copyright 2014, James Wilkinson, Overkill Software
+----------
 
 CloneClass( QuickSmokeGrenade )
-
-QuickSmokeGrenade.waypoint = "GoonBaseGrenadeWaypoint_"
 
 Hooks:RegisterHook( "QuickSmokeGrenadeActivate" )
 function QuickSmokeGrenade.activate(this, pos, duration)
@@ -15,22 +17,4 @@ function QuickSmokeGrenade.detonate(this)
 	Hooks:Call("QuickSmokeGrenadeDetonate", this)
 end
 
-Hooks:Add( "QuickSmokeGrenadeActivate", "QuickSmokeGrenadeActivate_Marker", function( this, pos, duration )
-
-	if GoonBase.Options.EnemyManager.ShowGrenadeMarker then
-		this.grenadeID = tostring(math.random(0, 10000))
-		managers.hud:add_waypoint(
-			QuickSmokeGrenade.waypoint .. this.grenadeID,
-			{ icon = 'pd2_kill', distance = true, position = pos, no_sync = false, present_timer = 0, state = "present", radius = 100, color = Color.yellow, blend_mode = "add" } 
-		)
-	end
-
-end )
-
-Hooks:Add( "QuickSmokeGrenadeDetonate", "QuickSmokeGrenadeDetonate_Marker", function( this )
-
-	if GoonBase.Options.EnemyManager.ShowGrenadeMarker then
-		managers.hud:remove_waypoint( QuickSmokeGrenade.waypoint .. this.grenadeID )
-	end
-
-end )
+-- END OF FILE

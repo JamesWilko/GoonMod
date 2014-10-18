@@ -1,2 +1,0 @@
-
-_G.GoonHUD.RemoveCustomWaypoint()

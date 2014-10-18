@@ -3,10 +3,10 @@
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
-CloneClass( LocalizationManager )
+CloneClass( ElementSpawnGrenade )
 
-function LocalizationManager.text(this, str, ...)
-	return _G.GoonBase.Localization[str] or this.orig.text(this, str, ...)
+function ElementSpawnGrenade.on_executed(self, instigator)
+	self.orig.on_executed(self, instigator)
 end
 
 -- END OF FILE

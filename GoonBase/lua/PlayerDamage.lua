@@ -1,3 +1,7 @@
+----------
+-- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:02:05 PM
+-- Copyright 2014, James Wilkinson, Overkill Software
+----------
 
 CloneClass( PlayerDamage )
 
@@ -13,16 +17,8 @@ end
 
 Hooks:RegisterHook( "PlayerDamageOnDowned" )
 function PlayerDamage.on_downed(self)
-
-	self._downed_timer = (GoonHUD.Ironman:IsEnabled() and GoonHUD.Ironman:PlayerShouldDie(self)) and 0 or self:down_time()
-	self._downed_start_time = self._downed_timer
-	self._downed_paused_counter = 0
-	managers.hud:pd_start_timer({
-		time = self._downed_timer
-	})
-	managers.hud:on_downed()
-	self:_stop_tinnitus()
-
+	self.orig.on_downed(self)
 	Hooks:Call("PlayerDamageOnDowned", self)
-
 end
+
+-- END OF FILE
