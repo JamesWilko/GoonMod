@@ -42,6 +42,7 @@ GoonBase\mods\colors\weapon_flashlight.lua
 GoonBase\mods\colors\weapon_laser.lua
 GoonBase\mods\colors\world_laser_colors.lua
 GoonBase\mods\body_count.lua
+GoonBase\mods\custom_waypoints.lua
 GoonBase\mods\extended_inventory.lua
 GoonBase\mods\gage_coins.lua
 GoonBase\mods\grenade_indicator.lua
@@ -51,6 +52,7 @@ GoonBase\mods\push_to_interact.lua
 GoonBase\mods\trading.lua
 GoonBase\mods\train_heist_plans.lua
 GoonBase\mods\weapon_remember_gadget.lua
+GoonBase\mods\zoom_sensitivity.lua
 GoonBase\mutators\base_mutator.lua
 GoonBase\mutators\mutator_all_bulldozers.lua
 GoonBase\mutators\mutator_all_cloakers.lua

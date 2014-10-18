@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 10/19/2014 12:01:24 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -16,6 +16,12 @@ Hooks:RegisterHook( "MenuManagerOnOpenMenu" )
 function MenuManager.open_menu(this, menu_name, position)
 	this.orig.open_menu(this, menu_name, position)
 	Hooks:Call( "MenuManagerOnOpenMenu", this, menu_name, position )
+end
+
+Hooks:RegisterHook( "MenuManagerSetMouseSensitivity" )
+function MenuManager.set_mouse_sensitivity(self, zoomed)
+	self.orig.set_mouse_sensitivity(self, zoomed)
+	Hooks:Call( "MenuManagerSetMouseSensitivity", self, zoomed )
 end
 
 -- Add GoonBase to options

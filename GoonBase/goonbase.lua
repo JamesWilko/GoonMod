@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 10/19/2014 12:01:24 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -45,6 +45,7 @@ GoonBase.ModFiles = {
 	"mods/trading.lua",
 	"mods/train_heist_plans.lua",
 	"mods/weapon_remember_gadget.lua",
+	"mods/zoom_sensitivity.lua",
 }
 
 GoonBase.RequireHookFiles = {
