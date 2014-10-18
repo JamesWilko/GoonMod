@@ -170,11 +170,11 @@ function BaseMutator:IsEnabled()
 		return false
 	end
 
-	-- if Global.game_settings ~= nil then
-	-- 	if Global.game_settings.permission == "public" then
-	-- 		return false
-	-- 	end
-	-- end
+	if Global.game_settings ~= nil then
+		if Global.game_settings.permission == "public" then
+			return false
+		end
+	end
 
 	return GoonBase.Options.Mutators[self.Id] or false
 
