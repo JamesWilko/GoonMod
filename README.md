@@ -9,6 +9,7 @@ This is not a complete modification yet. There will be bugs, there might be cras
 ## How do I install GoonMod?
 Download a ready-to-go version of GoonMod from the [releases page](https://github.com/JamesWilko/GoonMod/releases), or by downloading the [master archive](https://github.com/JamesWilko/GoonMod/archive/master.zip).
 You will then want to extract all of the files in the zip archive to your Payday 2 Steam installation folder. So that the files and folders from the archive are in the same folder as your payday2_win32_release.exe executable.
+If you use the master archive version, you can safely delete the files 'LICENSE.md', 'README.md', 'update_list.txt', and 'update_version.txt'.
 
 ![GoonBase Installation](http://payday.jameswilko.com/github/goonmod_installation.jpg "GoonBase Installation")
 
