@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:35:52 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -26,7 +26,7 @@ Mutators.MenuID = "goonbase_mutators_menu"
 Mutators.LoadedMutators = Mutators.LoadedMutators or {}
 
 -- Paths
-Mutators.MutatorsPath = "mutators/"
+Mutators.MutatorsPath = "/"
 Mutators.MutatorsList = {
 	"mutators/base_mutator.lua",
 	"mutators/mutator_all_bulldozers.lua",

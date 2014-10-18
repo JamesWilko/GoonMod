@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:35:52 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -26,8 +26,8 @@ CustomWaypoints.MenuID = "goonbase_custom_waypoints_menu"
 CustomWaypoints.PlaceWaypointName = "GoonBasePlaceWaypoint"
 CustomWaypoints.RemoveWaypointName = "GoonBaseRemoveWaypoint"
 CustomWaypoints.CustomKeys = {
-	PLACE = GoonBase.Options.CustomWaypoints.PlaceWaypoint,
-	REMOVE = GoonBase.Options.CustomWaypoints.RemoveWaypoint
+	PLACE = GoonBase.Options.CustomWaypoints ~= nil and GoonBase.Options.CustomWaypoints.PlaceWaypoint or "k",
+	REMOVE = GoonBase.Options.CustomWaypoints ~= nil and GoonBase.Options.CustomWaypoints.RemoveWaypoint or "l"
 }
 
 -- Network 
