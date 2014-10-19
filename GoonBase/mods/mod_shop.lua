@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 10/19/2014 6:07:22 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -27,6 +27,12 @@ local ExtendedInv = _G.GoonBase.ExtendedInventory
 ModShop.PurchaseCurrency = "gage_coin"
 ModShop.CostRegular = 1
 ModShop.CostInfamous = 3
+
+ModShop.ExclusionList = {
+	["nothing"] = true,
+	["no_color_no_material"] = true,
+	["plastic"] = true,
+}
 
 -- Localization
 local Localization = GoonBase.Localization
@@ -85,11 +91,17 @@ Hooks:Add("BlackMarketGUIPostSetup", "BlackMarketGUIPostSetup_" .. Mod:ID(), fun
 end)
 
 Hooks:Add("BlackMarketGUIOnPopulateModsActionList", "BlackMarketGUIOnPopulateModsActionList_" .. Mod:ID(), function(gui, data)
-	table.insert(data, "wm_modshop")
+	if data.global_value == nil or data.global_value == "normal" or managers.dlc:has_dlc(data.global_value) then
+		table.insert(data, "wm_modshop")
+	end
 end)
 
 Hooks:Add("BlackMarketGUIOnPopulateMaskModsActionList", "BlackMarketGUIOnPopulateMaskModsActionList_" .. Mod:ID(), function(gui, data)
-	table.insert(data, "mp_modshop")
+	if ModShop.ExclusionList[data.name] ~= true then
+		if data.global_value == nil or data.global_value == "normal" or managers.dlc:has_dlc(data.global_value) then
+			table.insert(data, "mp_modshop")
+		end
+	end
 end)
 
 -- Purchase Hooks

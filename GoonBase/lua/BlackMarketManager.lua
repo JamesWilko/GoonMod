@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 10/19/2014 6:07:22 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -21,6 +21,10 @@ end
 function BlackMarketManager.get_inventory_category(self, category)
 
 	local t = {}
+	local exclude = {
+		["nothing"] = true,
+		["no_color_no_material"] = true,
+	}
 
 	for global_value, categories in pairs(self._global.inventory) do
 		if categories[category] then
@@ -45,10 +49,10 @@ function BlackMarketManager.get_inventory_category(self, category)
 			end
 		end
 
-		if not already_in_table then
+		if not already_in_table and exclude[k] ~= true then
 			table.insert(t, {
 				id = k,
-				global_value = v.dlc or v.global_value,
+				global_value = v.dlc or v.global_value or "normal",
 				amount = 0
 			})
 		end
