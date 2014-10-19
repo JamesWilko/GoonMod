@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/19/2014 6:07:22 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 10/20/2014 8:26:44 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -102,6 +102,29 @@ Hooks:Add("BlackMarketGUIOnPopulateMaskModsActionList", "BlackMarketGUIOnPopulat
 			table.insert(data, "mp_modshop")
 		end
 	end
+end)
+
+Hooks:Add("BlackMarketManagerModifyGetInventoryCategory", "BlackMarketManagerModifyGetInventoryCategory_" .. Mod:ID(), function(blackmarket, category, data)
+
+	for k, v in pairs( tweak_data.blackmarket[category] ) do
+
+		local already_in_table = false
+		for x, y in pairs( data ) do
+			if y.id == k then
+				already_in_table = true
+			end
+		end
+
+		if not already_in_table and ModShop.ExclusionList[k] ~= true then
+			table.insert(data, {
+				id = k,
+				global_value = v.dlc or v.global_value or "normal",
+				amount = 0
+			})
+		end
+		
+	end
+
 end)
 
 -- Purchase Hooks

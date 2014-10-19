@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 10/20/2014 8:26:44 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -157,6 +157,13 @@ function Mods:VerifyAllRequirements()
 	for k, v in pairs( Mods.LoadedMods ) do
 		v:VerifyRequirements()
 	end
+end
+
+function Mods:IsEnabled( mod_id )
+	if Mods.EnabledMods ~= nil and Mods.EnabledMods[mod_id] ~= nil then
+		return Mods.EnabledMods[mod_id]:IsEnabled()
+	end
+	return false
 end
 
 -- Hooks

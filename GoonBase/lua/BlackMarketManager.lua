@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/19/2014 6:07:22 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 10/20/2014 8:26:44 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -18,13 +18,10 @@ function BlackMarketManager._setup(self)
 	Hooks:Call("BlackMarketManagerPostSetup", self)
 end
 
+Hooks:RegisterHook("BlackMarketManagerModifyGetInventoryCategory")
 function BlackMarketManager.get_inventory_category(self, category)
 
 	local t = {}
-	local exclude = {
-		["nothing"] = true,
-		["no_color_no_material"] = true,
-	}
 
 	for global_value, categories in pairs(self._global.inventory) do
 		if categories[category] then
@@ -40,24 +37,7 @@ function BlackMarketManager.get_inventory_category(self, category)
 		end
 	end
 
-	for k, v in pairs( tweak_data.blackmarket[category] ) do
-
-		local already_in_table = false
-		for x, y in pairs( t ) do
-			if y.id == k then
-				already_in_table = true
-			end
-		end
-
-		if not already_in_table and exclude[k] ~= true then
-			table.insert(t, {
-				id = k,
-				global_value = v.dlc or v.global_value or "normal",
-				amount = 0
-			})
-		end
-		
-	end
+	Hooks:Call("BlackMarketManagerModifyGetInventoryCategory", self, category, t)
 
 	return t
 
