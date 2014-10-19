@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:35:52 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 10/19/2014 9:35:49 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -51,10 +51,6 @@ Localization.OptionsMenu_CustomWaypointShowDistanceTitle = "Show Distance on Way
 Localization.OptionsMenu_CustomWaypointShowDistanceMessage = "Show how far away you are from custom waypoints"
 
 -- Updates
-Hooks:Add("MenuUpdate", "MenuUpdate_" .. Mod:ID(), function(t, dt)
-	CustomWaypoints:UpdateBindings()
-end)
-
 Hooks:Add("GameSetupUpdate", "GameSetupUpdate_" .. Mod:ID(), function(t, dt)
 	CustomWaypoints:UpdateBindings()
 end)

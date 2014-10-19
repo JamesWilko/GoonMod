@@ -59,8 +59,10 @@ GoonBase\mutators\mutator_all_cloakers.lua
 GoonBase\mutators\mutator_all_shields.lua
 GoonBase\mutators\mutator_all_tazers.lua
 GoonBase\mutators\mutator_insane_spawnrate.lua
+GoonBase\mutators\mutator_insane_spawnrate_cops.lua
 GoonBase\mutators\mutator_lightning_speed.lua
 GoonBase\mutators\mutator_suicidal_spawnrate.lua
+GoonBase\mutators\mutator_suicidal_spawnrate_cops.lua
 GoonBase\req\autils.lua
 GoonBase\req\hooks.lua
 GoonBase\req\hooks_command_queue.lua

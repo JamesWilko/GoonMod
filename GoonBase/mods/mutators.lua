@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:35:52 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 10/19/2014 9:35:49 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -34,8 +34,10 @@ Mutators.MutatorsList = {
 	"mutators/mutator_all_shields.lua",
 	"mutators/mutator_all_tazers.lua",
 	"mutators/mutator_insane_spawnrate.lua",
+	"mutators/mutator_insane_spawnrate_cops.lua",
 	"mutators/mutator_lightning_speed.lua",
 	"mutators/mutator_suicidal_spawnrate.lua",
+	"mutators/mutator_suicidal_spawnrate_cops.lua",
 }
 Mutators.MenuPrefix = "toggle_mutator_"
 
