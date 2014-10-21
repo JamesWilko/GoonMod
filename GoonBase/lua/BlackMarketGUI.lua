@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 10/22/2014 1:45:29 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -331,7 +331,7 @@ function BlackMarketGui.populate_masks(self, data)
 
 	local new_data = {}
 	local crafted_category = managers.blackmarket:get_crafted_category("masks") or {}
-	local mini_icon_helper = math.round((self._panel:h() - (tweak_data.menu.pd2_medium_font_size + 10) - 70) * GRID_H_MUL / 3) - 16
+	local mini_icon_helper = math.round((self._panel:h() - (tweak_data.menu.pd2_medium_font_size + 10) - 60) * GRID_H_MUL / 3) - 16
 	local max_items = data.override_slots and data.override_slots[1] * data.override_slots[2] or 9
 	local start_crafted_item = data.start_crafted_item or 1
 	local hold_crafted_item = managers.blackmarket:get_hold_crafted_item()
@@ -416,9 +416,9 @@ function BlackMarketGui.populate_masks(self, data)
 					table.insert(new_data, "m_preview")
 				end
 
-				Hooks:Call("BlackMarketGUIOnPopulateMasksActionList", self, new_data)
-
 			end
+
+			Hooks:Call("BlackMarketGUIOnPopulateMasksActionList", self, new_data)
 
 			if i ~= 1 then
 				if 0 < managers.money:get_mask_sell_value(new_data.name, new_data.global_value) then
@@ -1257,6 +1257,123 @@ function BlackMarketGui._update_info_text(self, slot_data, updated_texts, data)
 		self._rename_caret:set_w(2)
 		self._rename_caret:set_h(h)
 		self._rename_caret:set_world_position(x + w, y)
+	end
+
+end
+
+Hooks:RegisterHook("BlackMarketGUIOnPopulateBuyMasks")
+Hooks:RegisterHook("BlackMarketGUIOnPopulateBuyMasksActionList")
+function BlackMarketGui.populate_buy_mask(self, data)
+
+	Hooks:Call("BlackMarketGUIOnPopulateBuyMasks", self, data)
+
+	local new_data = {}
+	local guis_catalog = "guis/"
+	local max_masks = #data.on_create_data
+
+	for i = 1, max_masks do
+		data[i] = nil
+	end
+
+	for i = 1, #data.on_create_data do
+
+		guis_catalog = "guis/"
+
+		local bundle_folder = tweak_data.blackmarket.masks[data.on_create_data[i].mask_id] and tweak_data.blackmarket.masks[data.on_create_data[i].mask_id].texture_bundle_folder
+		if bundle_folder then
+			guis_catalog = guis_catalog .. "dlcs/" .. tostring(bundle_folder) .. "/"
+		end
+
+		new_data = {}
+		new_data.name = data.on_create_data[i].mask_id
+		new_data.name_localized = managers.localization:text(tweak_data.blackmarket.masks[new_data.name].name_id)
+		new_data.category = data.category
+		new_data.slot = data.prev_node_data and data.prev_node_data.slot
+		new_data.global_value = data.on_create_data[i].global_value
+		new_data.unlocked = managers.blackmarket:get_item_amount(new_data.global_value, "masks", new_data.name, true) or 0
+		new_data.equipped = false
+		new_data.num_backs = data.prev_node_data.num_backs + 1
+		new_data.bitmap_texture = guis_catalog .. "textures/pd2/blackmarket/icons/masks/" .. new_data.name
+		new_data.stream = false
+
+		if not new_data.global_value then
+			Application:debug("BlackMarketGui:populate_buy_mask( data ) Missing global value on mask", new_data.name)
+		end
+
+		if tweak_data.lootdrop.global_values[new_data.global_value] and tweak_data.lootdrop.global_values[new_data.global_value].dlc and not tweak_data.dlc[new_data.global_value].free and not managers.dlc:has_dlc(new_data.global_value) then
+			new_data.unlocked = -math.abs(new_data.unlocked)
+			new_data.lock_texture = self:get_lock_icon(new_data)
+			new_data.dlc_locked = tweak_data.lootdrop.global_values[new_data.global_value].unlock_id or "bm_menu_dlc_locked"
+		end
+
+		if tweak_data.blackmarket.masks[new_data.name].infamy_lock then
+
+			local infamy_lock = tweak_data.blackmarket.masks[new_data.name].infamy_lock
+			local is_unlocked = managers.infamy:owned(infamy_lock)
+			if not is_unlocked then
+				new_data.unlocked = -math.abs(new_data.unlocked)
+				new_data.lock_texture = "guis/textures/pd2/lock_infamy"
+				new_data.infamy_lock = infamy_lock
+			end
+
+		end
+
+		if new_data.unlocked and new_data.unlocked > 0 then
+
+			table.insert(new_data, "bm_buy")
+			table.insert(new_data, "bm_preview")
+			if 0 < managers.money:get_mask_sell_value(new_data.name, new_data.global_value) then
+				table.insert(new_data, "bm_sell")
+			end
+
+		else
+
+			new_data.mid_text = ""
+			new_data.lock_texture = new_data.lock_texture or true
+
+		end
+
+		Hooks:Call("BlackMarketGUIOnPopulateBuyMasksActionList", self, new_data)
+
+		if managers.blackmarket:got_new_drop(new_data.global_value or "normal", "masks", new_data.name) then
+
+			new_data.mini_icons = new_data.mini_icons or {}
+			table.insert(new_data.mini_icons, {
+				name = "new_drop",
+				texture = "guis/textures/pd2/blackmarket/inv_newdrop",
+				right = 0,
+				top = 0,
+				layer = 1,
+				w = 16,
+				h = 16,
+				stream = false
+			})
+			new_data.new_drop_data = {
+				new_data.global_value or "normal",
+				"masks",
+				new_data.name
+			}
+
+		end
+
+		data[i] = new_data
+
+	end
+
+	local max_page = data.override_slots[1] * data.override_slots[2]
+	for i = 1, math.max(math.ceil(max_masks / data.override_slots[1]) * data.override_slots[1], max_page) do
+
+		if not data[i] then
+			new_data = {}
+			new_data.name = "empty"
+			new_data.name_localized = ""
+			new_data.category = data.category
+			new_data.slot = i
+			new_data.unlocked = true
+			new_data.equipped = false
+			data[i] = new_data
+		end
+
 	end
 
 end

@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/19/2014 9:35:49 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 10/22/2014 1:45:29 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -8,7 +8,7 @@ if not RequiredScript then return end
 if not _G.GoonBase then
 	_G.GoonBase = {}
 	GoonBase.Version = 10
-	GoonBase.GameVersion = "1.16.0"
+	GoonBase.GameVersion = "1.16.1"
 	GoonBase.LogFile = "GoonBase.log"
 	GoonBase.Path = "GoonBase/"
 	GoonBase.LuaPath = "GoonBase/lua/"
@@ -62,6 +62,7 @@ GoonBase.HookFiles = {
 	["lib/units/weapons/grenades/quicksmokegrenade"] = "QuickSmokeGrenade.lua",
 	["lib/managers/hudmanager"] = "HUDManager.lua",
 	["lib/managers/jobmanager"] = "JobManager.lua",
+	["lib/managers/groupaimanager"] = "GroupAIManager.lua",
 	["lib/managers/group_ai_states/groupaistatebesiege"] = "GroupAIStateBesiege.lua",
 	["lib/units/beings/player/states/playerstandard"] = "PlayerStandard.lua",
 	["lib/managers/gageassignmentmanager"] = "GageAssignmentManager.lua",
@@ -74,6 +75,7 @@ GoonBase.HookFiles = {
 	["lib/tweak_data/groupaitweakdata"] = "GroupAITweakData.lua",
 	["lib/tweak_data/charactertweakdata"] = "CharacterTweakData.lua",
 	["lib/units/enemies/cop/copinventory"] = "CopInventory.lua",
+	["lib/units/enemies/cop/copdamage"] = "CopDamage.lua",
 	["lib/managers/mission/elementlasertrigger"] = "ElementLaserTrigger.lua",
 	["lib/units/weapons/weaponflashlight"] = "WeaponFlashlight.lua",
 	["lib/units/weapons/weaponlaser"] = "WeaponLaser.lua",

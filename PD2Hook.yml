@@ -10,7 +10,7 @@ KeyBindings:
 PersistScripts:
 
 PostRequireScripts:
-# GoonBase
+# GOONBASE_HOOKS
   - [lib/managers/localizationmanager, GoonBase/goonbase.lua]
   - [lib/managers/menumanager, GoonBase/goonbase.lua]
   - [lib/managers/chatmanager, GoonBase/goonbase.lua]
@@ -40,5 +40,6 @@ PostRequireScripts:
   - [lib/tweak_data/weapontweakdata, GoonBase/goonbase.lua]
   - [lib/managers/menu/menunodegui, GoonBase/goonbase.lua]
   - [lib/managers/menu/items/menuitemcustomizecontroller, GoonBase/goonbase.lua]
+# END
 
 # -- END OF FILE

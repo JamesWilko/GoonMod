@@ -1,13 +1,13 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/20/2014 8:26:44 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 10/22/2014 1:45:29 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
 -- Mod Definition
 local Mod = class( BaseMod )
 Mod.id = "BlackmarketModShop"
-Mod.Name = "Gage's Weapon Mod Shop"
-Mod.Desc = "Gage will sell you specific weapon parts and mask customization items in return for Gage Coins"
+Mod.Name = "Gage's Mod Shop"
+Mod.Desc = "Gage will sell you weapon parts, masks, and mask customization items in return for Gage Coins"
 Mod.Requirements = { "ExtendedInventory", "GageCoins" }
 Mod.Incompatibilities = {}
 
@@ -32,6 +32,23 @@ ModShop.ExclusionList = {
 	["nothing"] = true,
 	["no_color_no_material"] = true,
 	["plastic"] = true,
+	["character_locked"] = true,
+}
+
+ModShop.MaskAllowanceList = {
+	["normal"] = true,
+	["halloween"] = true,
+	["infamous"] = true,
+}
+
+ModShop.MaskPricing = {
+	["default"] = 5,
+	["dlc"] = 5,
+	["normal"] = 5,
+	["pd2_clan"] = 3,
+	["halloween"] = 8,
+	["infamous"] = 15,
+	["infamy"] = 10,
 }
 
 -- Localization
@@ -63,6 +80,11 @@ Hooks:Add("BlackMarketGUIPostSetup", "BlackMarketGUIPostSetup_" .. Mod:ID(), fun
 		Hooks:Call("ModShopAttemptPurchaseWeaponMod", data)
 	end
 
+	Hooks:RegisterHook("ModShopAttemptPurchaseMask")
+	gui.modshop_purchase_mask_callback = function(self, data)
+		Hooks:Call("ModShopAttemptPurchaseMask", data)
+	end
+
 	Hooks:RegisterHook("ModShopAttemptPurchaseMaskPart")
 	gui.modshop_purchase_mask_part_callback = function(self, data)
 		Hooks:Call("ModShopAttemptPurchaseMaskPart", data)
@@ -76,6 +98,14 @@ Hooks:Add("BlackMarketGUIPostSetup", "BlackMarketGUIPostSetup_" .. Mod:ID(), fun
 		callback = callback(gui, gui, "modshop_purchase_weaponmod_callback")
 	}
 
+	local bm_modshop = {
+		prio = 5,
+		btn = "BTN_X",
+		pc_btn = nil,
+		name = "ModShop_BlackmarketPurchaseWithGageCoins",
+		callback = callback(gui, gui, "modshop_purchase_mask_callback")
+	}
+
 	local mp_modshop = {
 		prio = 5,
 		btn = "BTN_X",
@@ -86,6 +116,7 @@ Hooks:Add("BlackMarketGUIPostSetup", "BlackMarketGUIPostSetup_" .. Mod:ID(), fun
 
 	local btn_x = 10
 	gui._btns["wm_modshop"] = BlackMarketGuiButtonItem:new(gui._buttons, wm_modshop, btn_x)
+	gui._btns["bm_modshop"] = BlackMarketGuiButtonItem:new(gui._buttons, bm_modshop, btn_x)
 	gui._btns["mp_modshop"] = BlackMarketGuiButtonItem:new(gui._buttons, mp_modshop, btn_x)
 
 end)
@@ -95,6 +126,47 @@ Hooks:Add("BlackMarketGUIOnPopulateModsActionList", "BlackMarketGUIOnPopulateMod
 		table.insert(data, "wm_modshop")
 	end
 end)
+
+Hooks:Add("BlackMarketGUIOnPopulateBuyMasksActionList", "BlackMarketGUIOnPopulateBuyMasksActionList_" .. Mod:ID(), function(gui, data)
+	if ModShop:MaskAllowed(data) then
+		table.insert(data, "bm_modshop")
+	end
+end)
+
+function ModShop:MaskAllowed(mask)
+
+	if mask == nil then
+		return false
+	end
+
+	local gv = mask.global_value
+	if gv == nil then
+		return true
+	end
+
+	if ModShop.ExclusionList[mask.name] == true or ModShop.ExclusionList[gv] == true then
+		return false
+	end
+
+	local infamy_lock = mask.infamy_lock
+	if infamy_lock ~= nil or gv == "infamy" then
+		local is_unlocked = managers.infamy:owned(infamy_lock)
+		if not is_unlocked then
+			return false
+		end
+	end
+
+	if ModShop.MaskAllowanceList[gv] then
+		return true
+	end
+
+	if not managers.dlc:has_dlc(gv) then
+		return false
+	end
+
+	return true
+
+end
 
 Hooks:Add("BlackMarketGUIOnPopulateMaskModsActionList", "BlackMarketGUIOnPopulateMaskModsActionList_" .. Mod:ID(), function(gui, data)
 	if ModShop.ExclusionList[data.name] ~= true then
@@ -129,19 +201,23 @@ end)
 
 -- Purchase Hooks
 Hooks:Add("ModShopAttemptPurchaseWeaponMod", "ModShopAttemptPurchaseWeaponMod_" .. Mod:ID(), function(data)
-	ModShop:SetPurchaseData(data)
+	ModShop:SetWeaponModPurchaseData(data)
+	ModShop:ShowPurchaseMenu()
+end)
+
+Hooks:Add("ModShopAttemptPurchaseMask", "ModShopAttemptPurchaseMask_" .. Mod:ID(), function(data)
+	PrintTable(data)
+	ModShop:SetMaskPurchaseData(data)
 	ModShop:ShowPurchaseMenu()
 end)
 
 Hooks:Add("ModShopAttemptPurchaseMaskPart", "ModShopAttemptPurchaseMaskPart_" .. Mod:ID(), function(data)
-	ModShop:SetPurchaseData(data)
+	ModShop:SetMaskPartPurchaseData(data)
 	ModShop:ShowPurchaseMenu()
 end)
 
 -- Purchase Menu
-function ModShop:SetPurchaseData(data)
-
-	local psuccess, perror = pcall(function()
+function ModShop:SetPurchaseData( data )
 
 	self._purchase_data = {}
 	self._purchase_data.name = data.name
@@ -150,30 +226,76 @@ function ModShop:SetPurchaseData(data)
 	self._purchase_data.global_value = data.global_value
 	self._purchase_data.cost = ModShop.CostRegular
 
-	-- Weapon mod costs
-	if ModShop:IsWeaponMod(data.category) then
-		if data.free_of_charge ~= nil and data.free_of_charge == true then
-			self._purchase_data.free_of_charge = true
-		end
+end
+
+function ModShop:SetWeaponModPurchaseData( data )
+
+	local psuccess, perror = pcall(function()
+
+		self:SetPurchaseData( data )
+
+		if self:IsWeaponMod( data.category ) then
+			if data.free_of_charge ~= nil and data.free_of_charge == true then
+				self._purchase_data.free_of_charge = true
+			end
+		end	
+
+	end)
+	if not psuccess then
+		Print("[Error] " .. perror)
 	end
 
-	-- Infamous mask part costs
-	if ModShop:IsMaskPart(data.category) then
+end
 
-		local mod_data = tweak_data.blackmarket[data.category][data.name]
-		if mod_data ~= nil then
+function ModShop:SetMaskPurchaseData( data )
 
-			if mod_data.infamous ~= nil and mod_data.infamous == true then
-				self._purchase_data.cost = ModShop.CostInfamous
+	local psuccess, perror = pcall(function()
+
+		self:SetPurchaseData( data )
+
+		if self:IsMask( data.category ) then
+
+			local price = ModShop.MaskPricing[ data.global_value ] or ModShop.MaskPricing["default"]
+			if data.dlc ~= nil then
+				price = ModShop.MaskPricing["dlc"]
+			end
+			if data.infamy_lock ~= nil then
+				price = ModShop.MaskPricing["infamy"]
 			end
 
-			if mod_data.global_value == "infamy" or mod_data.infamy_lock ~= nil then
-				self._purchase_data.cost = ModShop.CostInfamous
-			end
+			self._purchase_data.cost = price
 
 		end
 
+	end)
+	if not psuccess then
+		Print("[Error] " .. perror)
 	end
+
+end
+
+function ModShop:SetMaskPartPurchaseData( data )
+
+	local psuccess, perror = pcall(function()
+
+		self:SetPurchaseData( data )
+
+		if self:IsMaskPart( data.category ) then
+
+			local mod_data = tweak_data.blackmarket[data.category][data.name]
+			if mod_data ~= nil then
+
+				if mod_data.infamous ~= nil and mod_data.infamous == true then
+					self._purchase_data.cost = ModShop.CostInfamous
+				end
+
+				if mod_data.global_value == "infamy" or mod_data.infamy_lock ~= nil then
+					self._purchase_data.cost = ModShop.CostInfamous
+				end
+
+			end
+
+		end
 
 	end)
 	if not psuccess then
@@ -284,6 +406,13 @@ end
 
 function ModShop:IsWeaponMod(category)
 	if category == "primaries" or category == "secondaries" then
+		return true
+	end
+	return false
+end
+
+function ModShop:IsMask(category)
+	if category == "masks" then
 		return true
 	end
 	return false

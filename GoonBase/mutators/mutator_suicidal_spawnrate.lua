@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/19/2014 9:35:49 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 10/22/2014 1:45:29 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -458,8 +458,8 @@ function Mutator:ModifyTweakData(data, difficulty_index)
 		spawn = {
 			{
 				unit = "spooc",
-				freq = 4,
-				amount_min = 6,
+				freq = 2,
+				amount_min = 2,
 				tactics = self._tactics.spooc,
 				rank = 1
 			}
@@ -468,15 +468,15 @@ function Mutator:ModifyTweakData(data, difficulty_index)
 	self.enemy_spawn_groups.FBI_spoocs = self.enemy_spawn_groups.single_spooc
 
 	self.besiege.assault.force = {
-		50,
-		80,
-		100
+		200,
+		300,
+		400
 	}
 
 	self.besiege.assault.force_pool = {
-		200,
 		400,
-		800
+		800,
+		1500
 	}
 
 	self.besiege.reenforce.interval = {
@@ -498,97 +498,35 @@ function Mutator:ModifyTweakData(data, difficulty_index)
 		32
 	}
 
-	self._tactics = {
-		CS_cop = {
-			"ranged_fire"
-		},
-		CS_cop_stealth = {
-			"flank",
-		},
-		CS_swat_rifle = {
-			"smoke_grenade",
-			"charge",
-			"ranged_fire",
-			"deathguard"
-		},
-		CS_swat_shotgun = {
-			"charge",
-		},
-		CS_swat_heavy = {
-			"charge",
-		},
-		CS_shield = {
-			"charge",
-			"shield",
-		},
-		CS_swat_rifle_flank = {
-			"flank",
-			"charge",
-		},
-		CS_swat_shotgun_flank = {
-			"flank",
-			"charge",
-		},
-		CS_swat_heavy_flank = {
-			"flank",
-			"charge",
-		},
-		CS_shield_flank = {
-			"flank",
-			"charge",
-			"shield"
-		},
-		CS_tazer = {
-			"flank",
-			"charge",
-			"murder"
-		},
-		CS_sniper = {
-			"ranged_fire",
-		},
-		FBI_suit = {
-			"flank",
-			"ranged_fire",
-		},
-		FBI_suit_stealth = {
-			"flank"
-		},
-		FBI_swat_rifle = {
-			"charge",
-		},
-		FBI_swat_shotgun = {
-			"charge",
-		},
-		FBI_heavy = {
-			"charge",
-		},
-		FBI_shield = {
-			"charge",
-			"shield",
-		},
-		FBI_swat_rifle_flank = {
-			"flank",
-			"charge",
-		},
-		FBI_swat_shotgun_flank = {
-			"flank",
-			"charge",
-		},
-		FBI_heavy_flank = {
-			"flank",
-			"charge",
-		},
-		FBI_shield_flank = {
-			"flank",
-			"charge",
-			"shield"
-		},
-		FBI_tank = {
-			"charge",
-		},
-		spooc = {
-			"charge",
-		}
+	self.besiege.assault.hostage_hesitation_delay = {
+		0,
+		0,
+		0
+	}
+
+	self.besiege.assault.delay = {
+		20,
+		15,
+		10
+	}
+
+	self.besiege.assault.sustain_duration_min = {
+		120,
+		160,
+		240
+	}
+
+	self.besiege.assault.sustain_duration_max = {
+		240,
+		320,
+		480
+	}
+
+	self.besiege.assault.sustain_duration_balance_mul = {
+		1.3,
+		1.5,
+		1.7,
+		1.9
 	}
 
 end
