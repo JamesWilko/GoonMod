@@ -8,7 +8,7 @@ This is not a complete modification yet. There will be bugs, there might be cras
 
 ## Mod List
 These are the mods which are currently packaged with GoonMod:  
-**Corpse Delimiter: ** Raise the number of corpses allowed to astronomical levels. Also include options to despawn shields after they are killed.  
+**Corpse Delimiter:** Raise the number of corpses allowed to astronomical levels. Also include options to despawn shields after they are killed.  
 **Crime.net Cargo:** Send and receive weapons, weapon mods, masks, and mask parts between your friends and other players.  
 **Mutators:** Micro-gameplay mods that add new give you new gameplay modes and experiences.  
 **Extended Inventory:** Allows mods to add new items to your inventory.  
@@ -21,7 +21,7 @@ These are the mods which are currently packaged with GoonMod:
 **Custom World Lasers:** Customize the lasers in game, like the ones in GO Bank or Framing Frame, to your own liking.  
 **Normalized Ironsights:** Your sensitivity will drop the futher you zoom in with ironsights to allow you to aim better.  
 **Remember Gadget State:** Gadgets on your weapons will remember if they were on or off when you put them away and pull them back out.  
-**Push-to-Interact: ** Push the button and wait. No more holding the key down.  
+**Push-to-Interact:** Push the button and wait. No more holding the key down.  
 
 ## How do I install GoonMod?
 Download a ready-to-go version of GoonMod from the [releases page](https://github.com/JamesWilko/GoonMod/releases), or by downloading the [master archive](https://github.com/JamesWilko/GoonMod/archive/master.zip).
