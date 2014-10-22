@@ -6,6 +6,23 @@ GoonMod is a Lua modification for Payday 2 that adds new gameplay features. Most
 ## Beta?
 This is not a complete modification yet. There will be bugs, there might be crashes. None of this should affect your Payday 2 save, as everything in GoonMod is designed to be saved externally so that it doesn't interfere with, or leave garbage data in your Payday 2 file if you uninstall it. **However, you should [backup your Payday 2 save file](http://steamcommunity.com/sharedfiles/filedetails/?id=170416480) if you are worried about using this mod.**
 
+## Mod List
+These are the mods which are currently packaged with GoonMod:  
+**Corpse Delimiter: ** Raise the number of corpses allowed to astronomical levels. Also include options to despawn shields after they are killed.  
+**Crime.net Cargo:** Send and receive weapons, weapon mods, masks, and mask parts between your friends and other players.  
+**Mutators:** Micro-gameplay mods that add new give you new gameplay modes and experiences.  
+**Extended Inventory:** Allows mods to add new items to your inventory.  
+**Gage Coins:** Gage will give you a coin for every courier package you complete. (Requires Extended Inventory)  
+**Gage Mod Shop:** Gage is opening up to new business opportunities. You can now buy weapon mods, masks, and mask parts using Gage Coins. (Requires Extended Inventory and Gage Coins)  
+**Separate Train Heist:** Don't worry about accidentally grabbing the train intel again, picking up the intel will allow you to visit the Train Heist on your own time. (Requires Extended Inventory)   
+**Custom Waypoints:** Set a marker for your buddies, and co-ordinate with them much easier and faster.  
+**Grenade Indicator:** Tired of surprise flashbangs? Adds an indicator shortly before they detonate to give you a chance to react.  
+**Custom Weapon Laser and Lights:** Customize the colour of your weapon laser and flashlight attachments, or have you own personal rave with a disco-laser.  
+**Custom World Lasers:** Customize the lasers in game, like the ones in GO Bank or Framing Frame, to your own liking.  
+**Normalized Ironsights:** Your sensitivity will drop the futher you zoom in with ironsights to allow you to aim better.  
+**Remember Gadget State:** Gadgets on your weapons will remember if they were on or off when you put them away and pull them back out.  
+**Push-to-Interact: ** Push the button and wait. No more holding the key down.  
+
 ## How do I install GoonMod?
 Download a ready-to-go version of GoonMod from the [releases page](https://github.com/JamesWilko/GoonMod/releases), or by downloading the [master archive](https://github.com/JamesWilko/GoonMod/archive/master.zip).
 You will then want to extract all of the files in the zip archive to your Payday 2 Steam installation folder. So that the files and folders from the archive are in the same folder as your payday2_win32_release.exe executable.
