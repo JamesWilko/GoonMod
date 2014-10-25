@@ -94,7 +94,7 @@ function MenuNodeGui._key_press(self, o, key, input_id, item, no_add)
 	else
 		if connections[item:parameters().button] == nil then
 			for k, v in pairs( connections ) do
-				connections[item:parameters().button] = v
+				connections[item:parameters().button] = clone(v)
 				break
 			end
 			connections[item:parameters().button]._name = item:parameters().connection_name
