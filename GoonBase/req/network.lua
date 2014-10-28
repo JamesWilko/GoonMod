@@ -37,6 +37,9 @@ function GNetwork:IsClient()
 end
 
 function GNetwork:LocalPeerID()
+	if managers.network == nil or managers.network:session() == nil or managers.network:session():local_peer() == nil then
+		return 0
+	end
 	return managers.network:session():local_peer():id() or 0
 end
 
