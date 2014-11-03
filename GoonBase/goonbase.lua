@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/22/2014 1:45:29 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/3/2014 6:23:30 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -8,7 +8,7 @@ if not RequiredScript then return end
 if not _G.GoonBase then
 	_G.GoonBase = {}
 	GoonBase.Version = 10
-	GoonBase.GameVersion = "1.16.1"
+	GoonBase.GameVersion = "1.18.0"
 	GoonBase.LogFile = "GoonBase.log"
 	GoonBase.Path = "GoonBase/"
 	GoonBase.LuaPath = "GoonBase/lua/"
@@ -51,6 +51,7 @@ GoonBase.ModFiles = {
 GoonBase.RequireHookFiles = {
 	"lib/managers/localizationmanager",
 	"lib/managers/menumanager",
+	"lib/setups/menusetup"
 }
 
 GoonBase.HookFiles = {
@@ -63,11 +64,13 @@ GoonBase.HookFiles = {
 	["lib/managers/hudmanager"] = "HUDManager.lua",
 	["lib/managers/jobmanager"] = "JobManager.lua",
 	["lib/managers/groupaimanager"] = "GroupAIManager.lua",
+	["lib/managers/group_ai_states/groupaistatebase"] = "GroupAIStateBase.lua",
 	["lib/managers/group_ai_states/groupaistatebesiege"] = "GroupAIStateBesiege.lua",
 	["lib/units/beings/player/states/playerstandard"] = "PlayerStandard.lua",
 	["lib/managers/gageassignmentmanager"] = "GageAssignmentManager.lua",
 	["lib/managers/achievmentmanager"] = "AchievementManager.lua",
 	["lib/tweak_data/infamytweakdata"] = "InfamyTweakData.lua",
+	-- ["lib/setups/setup"] = "Setup.lua",
 	["lib/setups/gamesetup"] = "GameSetup.lua",
 	["lib/setups/menusetup"] = "MenuSetup.lua",
 	["lib/managers/menu/blackmarketgui"] = "BlackMarketGUI.lua",
@@ -84,14 +87,45 @@ GoonBase.HookFiles = {
 	["lib/tweak_data/narrativetweakdata"] = "NarrativeTweakData.lua",
 	["lib/managers/menu/menunodegui"] = "MenuNodeGUI.lua",
 	["lib/managers/menu/items/menuitemcustomizecontroller"] = "MenuItemCustomizeController.lua",
+	["lib/network/networkgame"] = "NetworkGame.lua",
+	["lib/managers/criminalsmanager"] = "CriminalsManager.lua",
 
 }
 
 -- Required Global Functions
+function _G.Print( ... )
+
+	local str = ""
+	for k, v in ipairs( arg ) do
+		str = str .. tostring(v)
+	end
+	str = str .. "\n"
+	io.stderr:write( str )
+
+	local file = io.open( GoonBase.LogFile, "a+" )
+	io.output( file )
+	io.write( str )
+	io.close( file )
+
+end
+
+function io.file_is_readable( fname )
+	local file = io.open(fname, "r" )
+	if file ~= nil then
+		io.close(file)
+		return true
+	end
+	return false
+end
+
 function _G.SafeDoFile( fileName )
 
 	local success, errorMsg = pcall(function()
-		dofile( fileName )
+		if io.file_is_readable( fileName ) then
+			dofile( fileName )
+		else
+			Print("[Error] Could not open file '" .. fileName .. "'! Does it exist, is it readable?")
+		end
 	end)
 
 	if not success then
@@ -111,7 +145,9 @@ if not GoonBase.HasLoadedScripts then
 	end
 
 	-- Check if version is supported
-	GoonBase.SupportedVersion = GoonBase.Updates:IsSupportedVersion()
+	if GoonBase.Updates ~= nil then
+		GoonBase.SupportedVersion = GoonBase.Updates:IsSupportedVersion()
+	end
 
 	-- Run hooks
 	if Hooks ~= nil then

@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/22/2014 1:45:29 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/3/2014 6:23:30 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -9,10 +9,11 @@ Mutator.OptionsName = "National Guard Response"
 Mutator.OptionsDesc = "Increases the number of police that spawn to an ungodly level"
 Mutator.Incompatibilities = { "SuicidalSpawnRateCops", "InsaneSpawnRate", "InsaneSpawnRateCops" }
 
-Mutator.HookSpawnGroups = "GroupAITweakDataPostInitEnemySpawnGroups_SuicidalSpawnRate"
-Mutator.HookSpawnCategories = "GroupAITweakDataPostInitUnitCategories_SuicidalSpawnRate"
-Mutator.HookEnemyData = "EnemyManagerInitEnemyData_SuicidalSpawnRate"
-Mutator.HookGroupAIState = "GroupAIStateBesiegeInit_SuicidalSpawnRate"
+Mutator.HookSpawnGroups = "GroupAITweakDataPostInitEnemySpawnGroups_" .. Mutator.Id
+Mutator.HookSpawnCategories = "GroupAITweakDataPostInitUnitCategories_" .. Mutator.Id
+Mutator.HookEnemyData = "EnemyManagerInitEnemyData_" .. Mutator.Id
+Mutator.HookGroupAIState = "GroupAIStateBesiegeInit_" .. Mutator.Id
+Mutator.CopDamageMover = "CopDamageSetMoverCollisionState_" .. Mutator.Id
 
 Hooks:Add("GoonBaseRegisterMutators", "GoonBaseRegisterMutators_SuicidalSpawnRate", function()
 	GoonBase.Mutators:RegisterMutator( Mutator )
@@ -32,6 +33,9 @@ function Mutator:OnEnabled()
 	Hooks:Add("GroupAIStateBesiegeInit", self.HookGroupAIState, function(ai_state)
 		GroupAIStateBesiege._MAX_SIMULTANEOUS_SPAWNS = 3000
 	end)
+	Hooks:Add("CopDamageSetMoverCollisionState", self.CopDamageMover, function(cop_damage, state)
+		return false
+	end)
 
 end
 
@@ -40,6 +44,7 @@ function Mutator:OnDisabled()
 	Hooks:Remove(self.HookSpawnGroups)
 	Hooks:Remove(self.HookEnemyData)
 	Hooks:Remove(self.HookGroupAIState)
+	Hooks:Remove(self.CopDamageMover)
 end
 
 function Mutator:ModifyUnitCategories(data, difficulty_index)

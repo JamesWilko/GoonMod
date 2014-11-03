@@ -1,21 +1,9 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/3/2014 6:23:30 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
 _G.GoonBase.Utils = _G.GoonBase.Utils or {}
-
-function _G.Print(args)
-
-	local str = tostring( args ) .. "\n"
-	io.stderr:write( str )
-
-	local file = io.open( GoonBase.LogFile, "a+" )
-	io.output( file )
-	io.write( str )
-	io.close( file )
-
-end
 
 function _G.CloneClass(class)
 	if not class.orig then
@@ -215,6 +203,5 @@ function Base64:Decode(data)
 	return data
 
 end
-
 
 -- END OF FILE

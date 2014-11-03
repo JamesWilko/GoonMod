@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/3/2014 6:23:30 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -136,7 +136,6 @@ function Mutator:ModifyUnitCategories(data, difficulty_index)
 		shield = 0,
 	}
 
-	data.unit_categories = {}
 	data.unit_categories.CS_tazer.units = {
 		Idstring("units/payday2/characters/ene_tazer_1/ene_tazer_1"),
 		Idstring("units/payday2/characters/ene_tazer_1/ene_tazer_1"),

@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/3/2014 6:23:30 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -22,8 +22,8 @@ end
 
 Hooks:RegisterHook("PlayerStandardChangingWeapon")
 function PlayerStandard._changing_weapon(self)
-	self.orig._changing_weapon(self)
 	Hooks:Call("PlayerStandardChangingWeapon", self)
+	return self.orig._changing_weapon(self)
 end
 
 -- END OF FILE

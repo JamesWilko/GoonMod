@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/3/2014 6:23:30 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -20,10 +20,12 @@ Updates.FileExts = {
 	["lua"] = true,
 	["txt"] = true,
 	["ini"] = true,
+	["yml"] = true,
 	["dll"] = true
 }
 Updates.PatchNotesURL = "https://google.com/"
 Updates.UpdateFileLocation = "GoonBase/req/updates.lua"
+Updates.HookFileLocation = "PD2Hook.yml"
 Updates.FilesToUpdate = {}
 Updates.FilesCurrentlyUpdating = 0
 Updates.FileCurrentlyProcessing = 0
@@ -40,6 +42,7 @@ GoonBase.Options.Updates.FirstTimeStartup = true
 GoonBase.Options.Updates.CheckForUpdates = true
 GoonBase.Options.Updates.BypassUnsupported = false
 GoonBase.Options.Updates.GameVersion = ""
+GoonBase.Options.Updates.ShownUpdateWindow = false
 GoonBase.Options:Load()
 
 -- Localization
@@ -67,10 +70,16 @@ Localization.Updates_ManualMessage = "A manual update to GoonMod is required. Yo
 Localization.Updates_ManualAccept = "View Update"
 Localization.Updates_ManualLater = "Update Later"
 
-Localization.Updates_VersionMismatchTitle = "Unsupported Version"
-Localization.Updates_VersionMismatchMessage = [[Your version of Payday 2 is currently unsupported. Most of GoonMod has disabled itself in order to prevent any crashes with this version.
+Localization.Updates_NoUpdateTitle = "No Update Required"
+Localization.Updates_NoUpdateMessage = "Your GoonMod installation is currently up-to-date."
+Localization.Updates_NoUpdateAccept = "OK"
 
-An update may be available for download shortly, but if you wish to force GoonMod to work, you can do so from the options menu.]]
+Localization.Updates_VersionMismatchTitle = "Unsupported Version"
+Localization.Updates_VersionMismatchMessage = [[Your version of Payday 2 is currently unsupported, your game has probably updated.
+
+Your Modifications menu may appear empty, and any enabled mods have been disabled to prevent any unwanted crashes.
+
+An update may be available for download shortly, but if you wish to force GoonMod to work, and to load your mods, you can do so from the options menu.]]
 Localization.Updates_VersionMismatchAccept = "OK"
 
 Localization.Updates_UpdateCompleteTitle = "Update Complete!"
@@ -83,8 +92,10 @@ Localization.Updates_UpdateErrorMessage = [[An error occurred during the update.
 Please contact, and send your GoonBase.log file from your Payday 2 folder to the mod author if you experience further problems.]]
 Localization.Updates_UpdateErrorAccept = "OK"
 
-Localization.Updates_Options_CheckForUpdates = "Check For Updates"
+Localization.Updates_Options_CheckForUpdates = "Automically Check For Updates"
 Localization.Updates_Options_CheckForUpdatesDesc = "Automatically check for and download GoonMod updates"
+Localization.Updates_Options_CheckNow = "Check For Updates Now"
+Localization.Updates_Options_CheckNowDesc = "Immediately check for any updates to GoonMod"
 Localization.Updates_Options_IgnoreUnsupported = "Ignore Unsupported Version"
 Localization.Updates_Options_IgnoreUnsupportedDesc = "Ignore the unsupported version check and run all GoonMod modules anyway (Requires Restart)"
 
@@ -94,8 +105,15 @@ Hooks:Add("MenuManagerOnOpenMenu", "MenuManagerOnOpenMenu_Updates", function( me
 	-- Check for updates after going to the main menu
 	if menu == "menu_main" then
 
+		if GoonBase.Options.Updates.ShownUpdateWindow then
+			return
+		end
+
 		-- Check for first time setup
 		if GoonBase.Options.Updates.FirstTimeStartup then
+			if not Updates:IsSupportedVersion() then
+				Updates:GameVersionMismatchWindow()
+			end
 			Queue:Add("MenuManagerInitialize_Updates_FirstTime", Updates.FirstTimeSetup, 0.25)
 			return
 		end
@@ -107,20 +125,6 @@ Hooks:Add("MenuManagerOnOpenMenu", "MenuManagerOnOpenMenu_Updates", function( me
 
 end)
 
-function Updates:InitialCheckForUpdates()
-
-	-- Check game version
-	if not Updates:IsSupportedVersion() then
-		Updates:GameVersionMismatchWindow()
-	end
-
-	-- Only check for updates immediately if allowed
-	if GoonBase.Options.Updates.CheckForUpdates then
-		Queue:Add("MenuManagerInitialize_Updates", Updates.CheckForUpdates, 1)
-	end
-
-end
-
 Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_Updates", function( menu_manager )
 
 	local success, err = pcall(function()
@@ -128,6 +132,11 @@ Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_Updates"
 		MenuCallbackHandler.toggle_updates_checkforupdates = function(this, item)
 			GoonBase.Options.Updates.CheckForUpdates = item:value() == "on" and true or false
 			GoonBase.Options:Save()
+		end
+
+		MenuCallbackHandler.button_check_for_updates = function(this, item)
+			Updates._force_check = true
+			Updates:CheckForUpdates(true)
 		end
 
 		MenuCallbackHandler.toggle_unsupported_bypass = function(this, item)
@@ -145,6 +154,16 @@ Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_Updates"
 			priority = 999
 		})
 
+		GoonBase.MenuHelper:AddButton({
+			id = "button_updates_check_now",
+			title = "Updates_Options_CheckNow",
+			desc = "Updates_Options_CheckNowDesc",
+			callback = "button_check_for_updates",
+			menu_id = "goonbase_options_menu",
+			priority = 998,
+		})
+
+
 		if GoonBase.Options.Updates.BypassUnsupported or not Updates:IsSupportedVersion() then
 			GoonBase.MenuHelper:AddToggle({
 				id = "toggle_unsupported_bypass",
@@ -161,6 +180,25 @@ Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_Updates"
 	if not success then PrintTable(err) end
 
 end)
+
+Hooks:Add("SetupOnQuit", "SetupOnQuit_Updates", function(setup)
+	GoonBase.Options.Updates.ShownUpdateWindow = false
+	GoonBase.Options:Save()
+end)
+
+function Updates:InitialCheckForUpdates()
+
+	-- Check game version
+	if not Updates:IsSupportedVersion() then
+		Updates:GameVersionMismatchWindow()
+	end
+
+	-- Only check for updates immediately if allowed
+	if GoonBase.Options.Updates.CheckForUpdates then
+		Queue:Add("MenuManagerInitialize_Updates", Updates.CheckForUpdates, 1)
+	end
+
+end
 
 -- First Time Setup
 function Updates:FirstTimeSetup()
@@ -199,11 +237,11 @@ function Updates.FirstTimeSetup_UpdatesOff()
 end
 
 -- Update Check
-function Updates:CheckForUpdates()
+function Updates:CheckForUpdates( force )
 
-	if not GoonBase.Options.Updates.CheckForUpdates then return end
+	if not force and not GoonBase.Options.Updates.CheckForUpdates then return end
 
-	if not Updates.HasCheckedForUpdates then
+	if force or not Updates.HasCheckedForUpdates then
 		UPrint("Requesting update version...")
 		Print( Updates.BasePath .. Updates.Version .. Updates.BasePathToken )
 		Steam:http_request(Updates.BasePath .. Updates.Version .. Updates.BasePathToken, callback(Updates, Updates, "UpdateVersionCallback"))
@@ -213,12 +251,8 @@ end
 
 function Updates:GetUpdateFileList()
 
-	if not GoonBase.Options.Updates.CheckForUpdates then return end
-
-	if not Updates.HasCheckedForUpdates then
-		UPrint("Requesting file list from server...")
-		Steam:http_request(Updates.BasePath .. Updates.FileList .. Updates.BasePathToken, callback(Updates, Updates, "UpdateListCallback"))
-	end
+	UPrint("Requesting file list from server...")
+	Steam:http_request(Updates.BasePath .. Updates.FileList .. Updates.BasePathToken, callback(Updates, Updates, "UpdateListCallback"))
 
 end
 
@@ -360,6 +394,20 @@ function Updates.ManualUpdateCallback()
 	Updates:ShowPatchNotes()
 end
 
+function Updates:ShowNoUpdates()
+
+	local title = managers.localization:text("Updates_NoUpdateTitle")
+	local message = managers.localization:text("Updates_NoUpdateMessage")
+	local menuOptions = {}
+	menuOptions[1] = {
+		text = managers.localization:text("Updates_NoUpdateAccept"),
+		is_cancel_button = true
+	}
+	local updateWindow = SimpleMenu:New(title, message, menuOptions)
+	updateWindow:Show()
+
+end
+
 -- Updating Window
 function Updates:ShowUpdatingWindow()
 
@@ -421,13 +469,8 @@ function Updates.ForceCloseGame()
 	setup:quit()
 end
 
--- Error Display
-function Updates:ShowUpdateErrors()
-
-end
-
 -- Callback
-function Updates:UpdateVersionCallback(success, file)
+function Updates:UpdateVersionCallback( success, file )
 
 	local psuccess, perror = pcall(function()
 
@@ -464,6 +507,10 @@ function Updates:UpdateVersionCallback(success, file)
 		
 		-- Check if update required
 		if not shouldUpdate then
+			if Updates._force_check then
+				Updates:ShowNoUpdates()
+				Updates._force_check = nil
+			end
 			return
 		end
 
@@ -480,6 +527,9 @@ function Updates:UpdateVersionCallback(success, file)
 			-- Automatic Update
 			Updates:GetUpdateFileList()
 		end
+
+		GoonBase.Options.Updates.ShownUpdateWindow = true
+		GoonBase.Options:Save()
 
 	end)
 	if not psuccess then
@@ -537,6 +587,11 @@ function Updates:UpdateFileCallback(fileName, success, data)
 			data = string.gsub( data, "(-- END OF FILE.*)", "" )
 		end
 
+		-- Process hook file separately
+		if fileName == self.HookFileLocation then
+			data = self:ProcessHookFile( data )
+		end
+
 		-- Save file
 		local file = io.open(fileName, "w+")
 		io.output(file)
@@ -561,6 +616,79 @@ function Updates:UpdateFileCallback(fileName, success, data)
 
 	-- Continue
 	Updates:UpdateNextFileInList()
+
+end
+
+function Updates:ProcessHookFile( data )
+
+	local localfile_data = {}
+	local update_data = {}
+	local write_data = true
+
+	-- Get local data
+	write_data = true
+	for line in io.lines( self.HookFileLocation ) do
+
+		if line ~= nil then
+
+			local linetrim = line:gsub("^%s*(.-)%s*$", "%1")
+			if linetrim == "# GOONBASE" then
+				write_data = false
+				table.insert( localfile_data, line )
+			elseif linetrim == "# END" then
+				write_data = true
+				table.insert( localfile_data, line )
+			elseif write_data then
+				table.insert( localfile_data, line )
+			end
+
+		end
+
+	end
+
+	-- Get data from update
+	local data_lines = string.split( data, "[\n]" )
+	write_data = false
+	for l, line in pairs( data_lines ) do
+
+		if line ~= nil then
+
+			local linetrim = line:gsub("^%s*(.-)%s*$", "%1")
+			if linetrim == "# GOONBASE" then
+				write_data = true
+			elseif linetrim == "# END" then
+				write_data = false
+			elseif write_data then
+				table.insert( update_data, line )
+			end
+
+		end
+
+	end
+
+	-- Merge data
+	local merged = false
+	for l, line in pairs( localfile_data ) do
+
+		local linetrim = line:gsub("^%s*(.-)%s*$", "%1")
+		if linetrim == "# GOONBASE" and not merged then
+			for i = 1, #update_data, 1 do
+				table.insert( localfile_data, l + i, update_data[i] )
+			end
+			merged = true
+		end
+
+	end
+
+	-- Build string
+	local new_data = ""
+	for l, line in pairs( localfile_data ) do
+		if line ~= nil then
+			new_data = new_data .. line .. "\n"
+		end
+	end
+
+	return new_data
 
 end
 

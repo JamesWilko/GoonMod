@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/19/2014 9:35:49 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/3/2014 6:23:30 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -9,10 +9,11 @@ Mutator.OptionsName = "National Guard Response - Cops Only"
 Mutator.OptionsDesc = "Increases the number of regular police units that spawn to an ungodly level"
 Mutator.Incompatibilities = { "SuicidalSpawnRate", "InsaneSpawnRate", "InsaneSpawnRateCops" }
 
-Mutator.HookSpawnGroups = "GroupAITweakDataPostInitEnemySpawnGroups_SuicidalSpawnRateCops"
-Mutator.HookSpawnCategories = "GroupAITweakDataPostInitUnitCategories_SuicidalSpawnRateCops"
-Mutator.HookEnemyData = "EnemyManagerInitEnemyData_SuicidalSpawnRateCops"
-Mutator.HookGroupAIState = "GroupAIStateBesiegeInit_SuicidalSpawnRateCops"
+Mutator.HookSpawnGroups = "GroupAITweakDataPostInitEnemySpawnGroups_" .. Mutator.Id
+Mutator.HookSpawnCategories = "GroupAITweakDataPostInitUnitCategories_" .. Mutator.Id
+Mutator.HookEnemyData = "EnemyManagerInitEnemyData_" .. Mutator.Id
+Mutator.HookGroupAIState = "GroupAIStateBesiegeInit_" .. Mutator.Id
+Mutator.CopDamageMover = "CopDamageSetMoverCollisionState_" .. Mutator.Id
 
 Hooks:Add("GoonBaseRegisterMutators", "GoonBaseRegisterMutators_SuicidalSpawnRateCops", function()
 	GoonBase.Mutators:RegisterMutator( Mutator )
@@ -29,6 +30,9 @@ function Mutator:OnEnabled()
 	Hooks:Add("GroupAIStateBesiegeInit", self.HookGroupAIState, function(ai_state)
 		GroupAIStateBesiege._MAX_SIMULTANEOUS_SPAWNS = 3000
 	end)
+	Hooks:Add("CopDamageSetMoverCollisionState", self.CopDamageMover, function(cop_damage, state)
+		return false
+	end)
 
 end
 
@@ -36,6 +40,7 @@ function Mutator:OnDisabled()
 	Hooks:Remove(self.HookSpawnGroups)
 	Hooks:Remove(self.HookEnemyData)
 	Hooks:Remove(self.HookGroupAIState)
+	Hooks:Remove(self.CopDamageMover)
 end
 
 function Mutator:ModifyTweakData(data, difficulty_index)
@@ -308,15 +313,15 @@ function Mutator:ModifyTweakData(data, difficulty_index)
 	}
 
 	self.besiege.assault.force = {
-		50,
-		80,
-		100
+		200,
+		300,
+		400
 	}
 
 	self.besiege.assault.force_pool = {
-		200,
 		400,
-		800
+		800,
+		1500
 	}
 
 	self.besiege.reenforce.interval = {
@@ -338,60 +343,35 @@ function Mutator:ModifyTweakData(data, difficulty_index)
 		32
 	}
 
-	self._tactics.CS_cop = {
-		"ranged_fire"
+	self.besiege.assault.hostage_hesitation_delay = {
+		0,
+		0,
+		0
 	}
-	self._tactics.CS_cop_stealth = {
-		"flank",
+
+	self.besiege.assault.delay = {
+		20,
+		15,
+		10
 	}
-	self._tactics.CS_swat_rifle = {
-		"smoke_grenade",
-		"charge",
-		"ranged_fire",
-		"deathguard"
+
+	self.besiege.assault.sustain_duration_min = {
+		120,
+		160,
+		240
 	}
-	self._tactics.CS_swat_shotgun = {
-		"charge",
+
+	self.besiege.assault.sustain_duration_max = {
+		240,
+		320,
+		480
 	}
-	self._tactics.CS_swat_heavy = {
-		"charge",
-	}
-	self._tactics.CS_swat_rifle_flank = {
-		"flank",
-		"charge",
-	}
-	self._tactics.CS_swat_shotgun_flank = {
-		"flank",
-		"charge",
-	}
-	self._tactics.CS_swat_heavy_flank = {
-		"flank",
-		"charge",
-	}
-	self._tactics.FBI_suit = {
-		"flank",
-		"ranged_fire",
-	}
-	self._tactics.FBI_suit_stealth = {
-		"flank"
-	}
-	self._tactics.FBI_swat_rifle = {
-		"charge",
-	}
-	self._tactics.FBI_swat_shotgun = {
-		"charge",
-	}
-	self._tactics.FBI_swat_rifle_flank = {
-		"flank",
-		"charge",
-	}
-	self._tactics.FBI_swat_shotgun_flank = {
-		"flank",
-		"charge",
-	}
-	self._tactics.FBI_heavy_flank = {
-		"flank",
-		"charge",
+
+	self.besiege.assault.sustain_duration_balance_mul = {
+		1.3,
+		1.5,
+		1.7,
+		1.9
 	}
 
 end

@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/3/2014 6:23:30 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -33,8 +33,16 @@ Hooks:Add("NarrativeTweakDataInit", "NarrativeTweakDataInit_" .. Mod:ID(), funct
 	end
 
 	if ExtendedInv:HasItem("train_heist_plans") then
+
+		data.jobs.arm_for_prof = deep_clone( data.jobs.arm_for )
+		data.jobs.arm_for_prof.contact = "bain"
+		data.jobs.arm_for_prof.professional = true
+
 		table.insert( data._jobs_index, "arm_for_prof" )
+		table.insert( data.jobs.arm_wrapper.job_wrapper, "arm_for_prof" )
+
 		data:set_job_wrappers()
+
 	end
 
 end)
@@ -47,6 +55,7 @@ Hooks:Add("LevelsTweakDataInit", "LevelsTweakDataInit_" .. Mod:ID(), function(da
 	end
 
 	if ExtendedInv:HasItem("train_heist_plans") then
+
 		data.arm_for_prof = deep_clone( data.arm_for )
 		data.arm_for_prof.bonus_escape = false
 		data.arm_for_prof.static_experience = {
@@ -56,7 +65,9 @@ Hooks:Add("LevelsTweakDataInit", "LevelsTweakDataInit_" .. Mod:ID(), function(da
 			90000,
 			100000
 		}
+		
 		table.insert(data._level_index, "arm_for_prof")
+
 	end
 	
 end)

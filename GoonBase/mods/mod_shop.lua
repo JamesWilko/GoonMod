@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/22/2014 1:45:29 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/3/2014 6:23:30 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -148,6 +148,16 @@ function ModShop:MaskAllowed(mask)
 		return false
 	end
 
+	for k, v in pairs( tweak_data.dlc ) do
+		if v.achievement_id ~= nil and v.content ~= nil and v.content.loot_drops ~= nil then
+			for i, loot in pairs( v.content.loot_drops ) do
+				if loot.item_entry ~= nil and loot.item_entry == mask.name then
+					return managers.achievment.handler:has_achievement(v.achievement_id)
+				end
+			end
+		end
+	end
+
 	local infamy_lock = mask.infamy_lock
 	if infamy_lock ~= nil or gv == "infamy" then
 		local is_unlocked = managers.infamy:owned(infamy_lock)
@@ -206,7 +216,6 @@ Hooks:Add("ModShopAttemptPurchaseWeaponMod", "ModShopAttemptPurchaseWeaponMod_" 
 end)
 
 Hooks:Add("ModShopAttemptPurchaseMask", "ModShopAttemptPurchaseMask_" .. Mod:ID(), function(data)
-	PrintTable(data)
 	ModShop:SetMaskPurchaseData(data)
 	ModShop:ShowPurchaseMenu()
 end)
@@ -392,6 +401,11 @@ function ModShop:PurchaseItem()
 		-- Add to mask inventory
 		if ModShop:IsMaskPart(category) then
 			managers.blackmarket:add_traded_mask_part_to_inventory(item, category)
+		end
+
+		-- Add mask to inventory
+		if ModShop:IsMask(category) then
+			managers.blackmarket:add_to_inventory(ModShop._purchase_data.global_value, "masks", item, true)
 		end
 
 		-- Remove coins

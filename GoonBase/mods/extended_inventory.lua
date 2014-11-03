@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/3/2014 6:23:30 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -29,6 +29,7 @@ Localization.bm_menu_extended_inv = "Special"
 Localization.DefaultReserveText = "IN RESERVE"
 
 ExtendedInv.InitialLoadComplete = false
+ExtendedInv.RegisteredItems = {}
 ExtendedInv.Items = {}
 ExtendedInv.SaveFile = GoonBase.Path .. "inventory.ini"
 
@@ -42,6 +43,10 @@ function ExtendedInv:_MissingItemError(item)
 	Print("[Error] Could not find item '" .. item .. "' in Extended Inventory!")
 end
 
+function ExtendedInv:ItemIsRegistered(id)
+	return ExtendedInv.RegisteredItems[id] == true
+end
+
 function ExtendedInv:RegisterItem(data)
 
 	if not ExtendedInv.InitialLoadComplete then
@@ -49,6 +54,7 @@ function ExtendedInv:RegisterItem(data)
 		ExtendedInv.InitialLoadComplete = true
 	end
 
+	ExtendedInv.RegisteredItems[data.id] = true
 	ExtendedInv.Items[data.id] = ExtendedInv.Items[data.id] or {}
 	for k, v in pairs( data ) do
 		ExtendedInv.Items[data.id][k] = v
@@ -119,7 +125,7 @@ function ExtendedInv.do_populate_extended_inventory(self, data)
 	for i, item_data in pairs( ExtendedInv:GetAllItems() ) do
 
 		local hide = item_data.hide_when_none_in_stock or false
-		if hide == false or (hide == true and item_data.amount > 0) then
+		if ExtendedInv:ItemIsRegistered(i) and (hide == false or (hide == true and item_data.amount > 0)) then
 
 			local item_id = item_data.id
 			local name_id = item_data.name
@@ -147,8 +153,8 @@ function ExtendedInv.do_populate_extended_inventory(self, data)
 	end
 
 	-- Fill empty slots
-	local max_armors = data.override_slots[1] * data.override_slots[2]
-	for i = 1, max_armors do
+	local max_items = data.override_slots[1] * data.override_slots[2]
+	for i = 1, max_items do
 		if not data[i] then
 			new_data = {}
 			new_data.name = "empty"

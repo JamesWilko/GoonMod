@@ -5,6 +5,7 @@ GoonBase\lua\BlackMarketManager.lua
 GoonBase\lua\BlackMarketTweakData.lua
 GoonBase\lua\CharacterTweakData.lua
 GoonBase\lua\ChatManager.lua
+GoonBase\lua\CopDamage.lua
 GoonBase\lua\CopInventory.lua
 GoonBase\lua\CoreMenuInput.lua
 GoonBase\lua\CoreMenuItem.lua
@@ -16,6 +17,8 @@ GoonBase\lua\EnemyManager.lua
 GoonBase\lua\FragGrenade.lua
 GoonBase\lua\GageAssignmentManager.lua
 GoonBase\lua\GameSetup.lua
+GoonBase\lua\GroupAIManager.lua
+GoonBase\lua\GroupAIStateBase.lua
 GoonBase\lua\GroupAIStateBesiege.lua
 GoonBase\lua\GroupAITweakData.lua
 GoonBase\lua\HUDManager.lua

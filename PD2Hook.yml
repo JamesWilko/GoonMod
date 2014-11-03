@@ -10,7 +10,7 @@ KeyBindings:
 PersistScripts:
 
 PostRequireScripts:
-# GOONBASE_HOOKS
+# GOONBASE
   - [lib/managers/localizationmanager, GoonBase/goonbase.lua]
   - [lib/managers/menumanager, GoonBase/goonbase.lua]
   - [lib/managers/chatmanager, GoonBase/goonbase.lua]
@@ -21,6 +21,8 @@ PostRequireScripts:
   - [lib/tweak_data/infamytweakdata, GoonBase/goonbase.lua]
   - [lib/managers/achievmentmanager, GoonBase/goonbase.lua]
   - [lib/managers/jobmanager, GoonBase/goonbase.lua]
+  - [lib/managers/groupaimanager, GoonBase/goonbase.lua]
+  - [lib/managers/group_ai_states/groupaistatebase, GoonBase/goonbase.lua]
   - [lib/managers/group_ai_states/groupaistatebesiege, GoonBase/goonbase.lua]
   - [lib/units/beings/player/states/playerstandard, GoonBase/goonbase.lua]
   - [lib/managers/gageassignmentmanager, GoonBase/goonbase.lua]
@@ -31,6 +33,7 @@ PostRequireScripts:
   - [lib/tweak_data/groupaitweakdata, GoonBase/goonbase.lua]
   - [lib/tweak_data/charactertweakdata, GoonBase/goonbase.lua]
   - [lib/units/enemies/cop/copinventory, GoonBase/goonbase.lua]
+  - [lib/units/enemies/cop/copdamage, GoonBase/goonbase.lua]
   - [lib/managers/mission/elementlasertrigger, GoonBase/goonbase.lua]
   - [lib/units/weapons/weaponflashlight, GoonBase/goonbase.lua]
   - [lib/units/weapons/weaponlaser, GoonBase/goonbase.lua]
