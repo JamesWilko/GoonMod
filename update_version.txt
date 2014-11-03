@@ -1,4 +1,4 @@
-11
-1.18.0
-http://payday.jameswilko.com/archives/9
-manual=true
+10
+1.15.1
+https://github.com/JamesWilko/GoonMod
+manual=false
