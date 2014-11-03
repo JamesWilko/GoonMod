@@ -66,3 +66,8 @@ The MIT License, see the LICENSE.md.
 
 ### Is this compatible with HoxHud/PocoHud?
 Not explicitly, although it may work with them. Any other Lua mods for Payday 2 can cause problems with each other. However if your mods all use the PD2Hook.yml file, you will need to add all the mods to this, and maintain this file yourself.
+
+### How do I make my PD2Hook file work with this and other mods?
+If you are trying to use two or more mods which use the PD2Hook file you will have to manually edit this file to get them to work.
+Simply copy and paste everything between, and including, the '# GOONBASE' and '# END' lines into the file underneath 'PostRequireScripts:'. This will allow you to run GoonMod with other lua mods such as PocoHud.  
+GoonMod will automatically merge its own changes with your current file after the initial installation, so you will only have to set the file up once.  
