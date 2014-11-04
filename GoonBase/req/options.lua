@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/5/2014 12:15:56 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -43,6 +43,20 @@ function Options:GetSaveString()
 
 end
 
+function Options:UsingDefaults()
+	if self._default then
+		return true
+	end
+	return false
+end
+
+Hooks:RegisterHook("OptionsRegisterDefaultOptions")
+function Options:LoadDefaults()
+	self._default = nil
+	Hooks:Call("OptionsRegisterDefaultOptions")
+	self:Save()
+end
+
 function Options:Save(fileName)
 
 	if fileName == nil then
@@ -65,7 +79,8 @@ function Options:Load(fileName)
 	local key
 
 	if file == nil then
-		Print( "Could not open file (" .. fileName .. ")! Does it exist?" )
+		Print( "Could not open file (" .. fileName .. "), using default options..." )
+		self._default = true
 		return
 	end
 

@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/3/2014 6:23:30 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/5/2014 12:15:56 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -89,7 +89,7 @@ GoonBase.HookFiles = {
 	["lib/managers/menu/items/menuitemcustomizecontroller"] = "MenuItemCustomizeController.lua",
 	["lib/network/networkgame"] = "NetworkGame.lua",
 	["lib/managers/criminalsmanager"] = "CriminalsManager.lua",
-
+	
 }
 
 -- Required Global Functions
@@ -154,6 +154,12 @@ if not GoonBase.HasLoadedScripts then
 
 		Hooks:RegisterHook("GoonBasePostLoadMods")
 		Hooks:Call("GoonBasePostLoadMods")
+
+		-- Load default options
+		local Options = GoonBase.Options
+		if Options:UsingDefaults() then
+			Options:LoadDefaults()
+		end
 
 		Hooks:RegisterHook("GoonBasePostLoadedMods")
 		Hooks:Call("GoonBasePostLoadedMods")

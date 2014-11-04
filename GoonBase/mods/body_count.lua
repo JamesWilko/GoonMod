@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/5/2014 12:15:56 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -10,8 +10,9 @@ Mod.Name = "Corpse Delimiter"
 Mod.Desc = "Change the amount of bodies that can appear after enemies are killed"
 Mod.Requirements = {}
 Mod.Incompatibilities = {}
+Mod.EnabledByDefault = true
 
-Hooks:Add("GoonBaseRegisterMods", "GoonBaseRegisterMutators_" .. Mod.id, function()
+Hooks:Add("GoonBaseRegisterMods", "GoonBaseRegisterMutators_" .. Mod:ID(), function()
 	GoonBase.Mods:RegisterMod( Mod )
 end)
 
@@ -26,7 +27,7 @@ local body_count_menu_id = "goonbase_corpse_mod_menu"
 GoonBase.Options.BodyCount = GoonBase.Options.BodyCount or {}
 GoonBase.Options.BodyCount.CustomCorpseLimit = true
 GoonBase.Options.BodyCount.MaxCorpses = 1024
-GoonBase.Options.BodyCount.CurrentMaxCorpses = 256
+GoonBase.Options.BodyCount.CurrentMaxCorpses = 1024
 GoonBase.Options.BodyCount.RemoveShields = false
 GoonBase.Options.BodyCount.ShieldTime = 60
 GoonBase.Options.BodyCount.MaxShieldTime = 600

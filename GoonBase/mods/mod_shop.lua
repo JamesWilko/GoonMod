@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/3/2014 6:23:30 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/5/2014 12:15:56 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -31,6 +31,7 @@ ModShop.CostInfamous = 3
 ModShop.ExclusionList = {
 	["nothing"] = true,
 	["no_color_no_material"] = true,
+	["no_color_full_material"] = true,
 	["plastic"] = true,
 	["character_locked"] = true,
 }
@@ -47,8 +48,14 @@ ModShop.MaskPricing = {
 	["normal"] = 5,
 	["pd2_clan"] = 3,
 	["halloween"] = 8,
-	["infamous"] = 15,
+	["infamous"] = 20,
 	["infamy"] = 10,
+}
+
+ModShop.MaskModAllowanceList = {
+	["normal"] = true,
+	["halloween"] = true,
+	["infamous"] = true,
 }
 
 -- Localization
@@ -122,7 +129,7 @@ Hooks:Add("BlackMarketGUIPostSetup", "BlackMarketGUIPostSetup_" .. Mod:ID(), fun
 end)
 
 Hooks:Add("BlackMarketGUIOnPopulateModsActionList", "BlackMarketGUIOnPopulateModsActionList_" .. Mod:ID(), function(gui, data)
-	if data.global_value == nil or data.global_value == "normal" or managers.dlc:has_dlc(data.global_value) then
+	if data.global_value == nil or data.global_value == "normal" or managers.dlc:is_dlc_unlocked(data.global_value) then
 		table.insert(data, "wm_modshop")
 	end
 end)
@@ -170,7 +177,7 @@ function ModShop:MaskAllowed(mask)
 		return true
 	end
 
-	if not managers.dlc:has_dlc(gv) then
+	if not managers.dlc:is_dlc_unlocked(gv) then
 		return false
 	end
 
@@ -179,12 +186,55 @@ function ModShop:MaskAllowed(mask)
 end
 
 Hooks:Add("BlackMarketGUIOnPopulateMaskModsActionList", "BlackMarketGUIOnPopulateMaskModsActionList_" .. Mod:ID(), function(gui, data)
-	if ModShop.ExclusionList[data.name] ~= true then
-		if data.global_value == nil or data.global_value == "normal" or managers.dlc:has_dlc(data.global_value) then
-			table.insert(data, "mp_modshop")
-		end
+	if ModShop:MaskModAllowed(data) then
+		table.insert(data, "mp_modshop")
 	end
 end)
+
+function ModShop:MaskModAllowed(mod)
+
+	if mod == nil then
+		return false
+	end
+
+	local gv = mod.global_value
+	if gv == nil then
+		return true
+	end
+
+	if ModShop.ExclusionList[mod.name] == true or ModShop.ExclusionList[gv] == true then
+		return false
+	end
+
+	for k, v in pairs( tweak_data.dlc ) do
+		if v.achievement_id ~= nil and v.content ~= nil and v.content.loot_drops ~= nil then
+			for i, loot in pairs( v.content.loot_drops ) do
+				if loot.item_entry ~= nil and loot.item_entry == mod.name then
+					return managers.achievment.handler:has_achievement(v.achievement_id)
+				end
+			end
+		end
+	end
+
+	local infamy_lock = mod.infamy_lock
+	if infamy_lock ~= nil or gv == "infamy" then
+		local is_unlocked = managers.infamy:owned(infamy_lock)
+		if not is_unlocked then
+			return false
+		end
+	end
+
+	if ModShop.MaskModAllowanceList[gv] then
+		return true
+	end
+
+	if not managers.dlc:is_dlc_unlocked(gv) then
+		return false
+	end
+
+	return true
+
+end
 
 Hooks:Add("BlackMarketManagerModifyGetInventoryCategory", "BlackMarketManagerModifyGetInventoryCategory_" .. Mod:ID(), function(blackmarket, category, data)
 
@@ -197,12 +247,15 @@ Hooks:Add("BlackMarketManagerModifyGetInventoryCategory", "BlackMarketManagerMod
 			end
 		end
 
+		local gv = v.dlc or v.global_value or "normal"
 		if not already_in_table and ModShop.ExclusionList[k] ~= true then
-			table.insert(data, {
-				id = k,
-				global_value = v.dlc or v.global_value or "normal",
-				amount = 0
-			})
+			if gv == "normal" or ( gv ~= "normal" and managers.dlc:is_dlc_unlocked(gv) ) then
+				table.insert(data, {
+					id = k,
+					global_value = gv,
+					amount = 0
+				})
+			end
 		end
 		
 	end

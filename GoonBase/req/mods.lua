@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/20/2014 8:26:44 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/5/2014 12:15:56 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -193,6 +193,7 @@ BaseMod.Requirements = {}
 BaseMod.Incompatibilities = {}
 BaseMod.Path = nil
 BaseMod.Priority = 50
+BaseMod.EnabledByDefault = false
 
 function BaseMod:ID()
 	return self.id
@@ -203,6 +204,9 @@ function BaseMod:IsEnabled()
 	local incompatibles = self:IncompatibilitiesAreDisabled()
 	if not requirements or not incompatibles then
 		return false
+	end
+	if Mods.EnabledMods[ self:ID() ] == nil then
+		return self.EnabledByDefault
 	end
 	return Mods.EnabledMods[ self:ID() ]
 end

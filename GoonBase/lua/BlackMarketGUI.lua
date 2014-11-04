@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/3/2014 6:23:30 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/5/2014 12:15:56 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -987,7 +987,7 @@ function BlackMarketGui.populate_choose_mask_mod(self, data)
 		new_data.stream = data.category ~= "colors"
 		new_data.global_value = mods.global_value
 		local is_locked = false
-		if new_data.amount < 1 then
+		if new_data.amount < 1 and mods.id ~= "plastic" and mods.id ~= "no_color_full_material" then
 			is_locked = true
 		end
 		if tweak_data.lootdrop.global_values[new_data.global_value] and tweak_data.lootdrop.global_values[new_data.global_value].dlc and not tweak_data.dlc[new_data.global_value].free and not managers.dlc:has_dlc(new_data.global_value) then
@@ -1083,6 +1083,7 @@ function BlackMarketGui.populate_choose_mask_mod(self, data)
 	if not success then Print("[Error] " .. err) end
 
 end
+
 
 Hooks:RegisterHook("BlackMarketGUIStartPageData")
 function BlackMarketGui._start_page_data(self)
