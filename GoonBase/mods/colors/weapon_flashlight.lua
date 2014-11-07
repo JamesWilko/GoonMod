@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/8/2014 1:05:17 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -157,6 +157,23 @@ Hooks:Add("WeaponFlashLightInit", "WeaponFlashLightInit_CustomLight", function(f
 	end
 
 	flashlight._light:set_color( Light:GetColor() )
+
+end)
+
+Hooks:Add("WeaponFlashLightCheckState", "WeaponFlashLightCheckState_CustomLight", function(flashlight)
+
+	if flashlight._on then
+
+		Hooks:RegisterHook("WeaponFlashLightUpdate")
+		flashlight._old_update = flashlight.update
+		flashlight.update = function(self, unit, t, dt)
+			Hooks:Call( "WeaponFlashLightUpdate", self, unit, t, dt )
+			if flashlight.overkill_update ~= nil then
+				flashlight.overkill_update(self, unit, t, dt)
+			end
+		end
+
+	end
 
 end)
 

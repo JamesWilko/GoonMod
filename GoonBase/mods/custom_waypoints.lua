@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/19/2014 9:35:49 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/8/2014 1:05:17 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -61,12 +61,17 @@ function CustomWaypoints:UpdateBindings()
 	if self._input == nil then
 		self._input = Input:keyboard()
 	end
+	if managers.hud:chat_focus() then
+		return
+	end
 
-	if self._input:pressed(Idstring(CustomWaypoints.CustomKeys.PLACE)) then
+	local place_key = CustomWaypoints.CustomKeys.PLACE
+	if not string.is_nil_or_empty(place_key) and self._input:pressed(Idstring(place_key)) then
 		CustomWaypoints:SetWaypoint()
 	end
 
-	if self._input:pressed(Idstring(CustomWaypoints.CustomKeys.REMOVE)) then
+	local remove_key = CustomWaypoints.CustomKeys.REMOVE
+	if not string.is_nil_or_empty(remove_key) and self._input:pressed(Idstring(remove_key)) then
 		CustomWaypoints:RemoveWaypoint()
 	end
 

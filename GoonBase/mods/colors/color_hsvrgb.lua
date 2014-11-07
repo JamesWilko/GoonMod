@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/8/2014 1:05:17 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -107,9 +107,9 @@ function ColorHSVRGB:SetupLocalization()
 	Localization["Options_ToggleColorHSV_Title"] = "Use HSV"
 	Localization["Options_ToggleColorHSV_Message"] = "Use HSV instead of RGB"
 
-	Localization["Options_" .. id .. "_RH_Title"] = hsv and "Hue" or "Red"
-	Localization["Options_" .. id .. "_GS_Title"] = hsv and "Saturation" or "Green"
-	Localization["Options_" .. id .. "_BV_Title"] = hsv and "Value" or "Blue"
+	Localization["Options_" .. id .. "_RH_Title"] = hsv and "Hue/Red" or "Red/Hue"
+	Localization["Options_" .. id .. "_GS_Title"] = hsv and "Saturation/Green" or "Green/Saturation"
+	Localization["Options_" .. id .. "_BV_Title"] = hsv and "Value/Blue" or "Blue/Value"
 	Localization["Options_" .. id .. "_Example"] = "Color Example"
 
 	Localization["Options_" .. id .. "_RH_Desc"] = string.gsub( "Control the {1} of the colour", "{1}", hsv and "Hue" or "Red" )

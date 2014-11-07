@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/5/2014 12:15:56 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/8/2014 1:05:17 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -34,6 +34,10 @@ ModShop.ExclusionList = {
 	["no_color_full_material"] = true,
 	["plastic"] = true,
 	["character_locked"] = true,
+}
+
+ModShop.DLCAlwaysUnlocked = {
+	["halloween"] = true,
 }
 
 ModShop.MaskAllowanceList = {
@@ -249,7 +253,7 @@ Hooks:Add("BlackMarketManagerModifyGetInventoryCategory", "BlackMarketManagerMod
 
 		local gv = v.dlc or v.global_value or "normal"
 		if not already_in_table and ModShop.ExclusionList[k] ~= true then
-			if gv == "normal" or ( gv ~= "normal" and managers.dlc:is_dlc_unlocked(gv) ) then
+			if gv == "normal" or ( (gv ~= "normal" and managers.dlc:is_dlc_unlocked(gv)) or ModShop.DLCAlwaysUnlocked[gv] == true ) then
 				table.insert(data, {
 					id = k,
 					global_value = gv,
@@ -444,6 +448,8 @@ function ModShop:PurchaseItem()
 		local item = ModShop._purchase_data.name
 		local category = ModShop._purchase_data.category
 		local cost = ModShop._purchase_data.cost
+
+		Print("Purchasing ", item, " from category ", category, " at cost: ", cost, " coins")
 
 		-- Add to weapon inventory
 		if ModShop:IsWeaponMod(category) then

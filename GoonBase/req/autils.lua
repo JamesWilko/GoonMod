@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/3/2014 6:23:30 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/8/2014 1:05:17 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -111,6 +111,10 @@ function string.ToVector3(string)
 		return Vector3( tonumber(x), tonumber(y), tonumber(z) )
 	end
 	return nil
+end
+
+function string.is_nil_or_empty(str)
+	return str == "" or str == nil
 end
 
 -- Custom "Base64" Implementation

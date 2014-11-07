@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/5/2014 12:15:56 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/8/2014 1:05:17 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -21,7 +21,15 @@ if not Mod:IsEnabled() then
 end
 
 -- Body Count Mod
+_G.GoonBase.CorpseDelimiter = _G.GoonBase.CorpseDelimiter or {}
+local CorpseDelimiter = _G.GoonBase.CorpseDelimiter
 local body_count_menu_id = "goonbase_corpse_mod_menu"
+CorpseDelimiter.RemoveAllBodiesKey = "BodyCountModRemoveAll"
+CorpseDelimiter.RemoveAllShieldsKey = "BodyCountModRemoveShields"
+CorpseDelimiter.CustomKeys = {
+	REMOVE_ALL = GoonBase.Options.BodyCount ~= nil and GoonBase.Options.BodyCount.RemoveAllBodiesKey or "",
+	REMOVE_SHIELDS = GoonBase.Options.BodyCount ~= nil and GoonBase.Options.BodyCount.RemoveAllShieldsKey or ""
+}
 
 -- Options
 GoonBase.Options.BodyCount = GoonBase.Options.BodyCount or {}
@@ -31,6 +39,8 @@ GoonBase.Options.BodyCount.CurrentMaxCorpses = 1024
 GoonBase.Options.BodyCount.RemoveShields = false
 GoonBase.Options.BodyCount.ShieldTime = 60
 GoonBase.Options.BodyCount.MaxShieldTime = 600
+GoonBase.Options.BodyCount.RemoveAllBodiesKey = ""
+GoonBase.Options.BodyCount.RemoveAllShieldsKey = ""
 GoonBase.Options:Load()
 
 -- Localization
@@ -45,6 +55,10 @@ Localization.OptionsMenu_CorpseShieldToggle = "Despawn Shields"
 Localization.OptionsMenu_CorpseShieldToggleDesc = "Despawn shields after a short time"
 Localization.OptionsMenu_CorpseShieldTimer = "Shield Despawn Time"
 Localization.OptionsMenu_CorpseShieldTimerDesc = "Despawn shields after {1} seconds"
+Localization.OptionsMenu_RemoveAllCorpses = "Remove All Corpses"
+Localization.OptionsMenu_RemoveAllCorpsesDesc = "Key to clean up all corpses in the level when pressed"
+Localization.OptionsMenu_RemoveAllShields = "Remove All Shields"
+Localization.OptionsMenu_RemoveAllShieldsDesc = "Key to clean up all shields in the level when pressed"
 
 Localization.OptionsMenu_CorpseAmountDesc_Default = Localization.OptionsMenu_CorpseAmountDesc
 Localization.OptionsMenu_CorpseShieldTimerDesc_Default = Localization.OptionsMenu_CorpseShieldTimerDesc
@@ -124,7 +138,7 @@ Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_BodyCoun
 		callback = "toggle_corpse",
 		value = GoonBase.Options.BodyCount.CustomCorpseLimit,
 		menu_id = body_count_menu_id,
-		priority = 4
+		priority = 50
 	})
 
 	-- Corpse Amount Slider
@@ -139,7 +153,7 @@ Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_BodyCoun
 		step = 1,
 		show_value = true,
 		menu_id = body_count_menu_id,
-		priority = 3
+		priority = 49
 	})
 
 	-- Despawn Shields
@@ -150,7 +164,7 @@ Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_BodyCoun
 		callback = "toggle_shield_timer",
 		value = GoonBase.Options.BodyCount.RemoveShields,
 		menu_id = body_count_menu_id,
-		priority = 2
+		priority = 48
 	})
 
 	-- Shield Timer Slider
@@ -165,14 +179,108 @@ Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_BodyCoun
 		step = 1,
 		show_value = true,
 		menu_id = body_count_menu_id,
-		priority = 1
+		priority = 47
 	})
 
+	-- Remove bindings
+	GoonBase.MenuHelper:AddDivider({
+		id = "keybind_corpse_menu_divider",
+		menu_id = body_count_menu_id,
+		size = 16,
+		priority = 30,
+	})
+
+	GoonBase.MenuHelper:AddKeybinding({
+		id = "keybind_corpse_remove_all",
+		title = managers.localization:text("OptionsMenu_RemoveAllCorpses"),
+		desc = managers.localization:text("OptionsMenu_RemoveAllCorpsesDesc"),
+		connection_name = CorpseDelimiter.RemoveAllBodiesKey,
+		button = CorpseDelimiter.CustomKeys.REMOVE_ALL,
+		binding = CorpseDelimiter.CustomKeys.REMOVE_ALL,
+		menu_id = body_count_menu_id,
+		priority = 20
+	})
+
+	GoonBase.MenuHelper:AddKeybinding({
+		id = "keybind_corpse_remove_shields",
+		title = managers.localization:text("OptionsMenu_RemoveAllShields"),
+		desc = managers.localization:text("OptionsMenu_RemoveAllShieldsDesc"),
+		connection_name = CorpseDelimiter.RemoveAllShieldsKey,
+		button = CorpseDelimiter.CustomKeys.REMOVE_SHIELDS,
+		binding = CorpseDelimiter.CustomKeys.REMOVE_SHIELDS,
+		menu_id = body_count_menu_id,
+		priority = 19
+	})
 
 end)
 
 Hooks:Add("MenuManagerBuildCustomMenus", "MenuManagerBuildCustomMenus_BodyCount", function(menu_manager, mainmenu_nodes)
 	mainmenu_nodes[body_count_menu_id] = GoonBase.MenuHelper:BuildMenu( body_count_menu_id )
 end)
+
+-- Custom keybinds
+Hooks:Add("CustomizeControllerOnKeySet", "CustomizeControllerOnKeySet_" .. Mod:ID(), function(item)
+
+	local psuccess, perror = pcall(function()
+	
+	if item._name == CorpseDelimiter.RemoveAllBodiesKey then
+		CorpseDelimiter.CustomKeys.REMOVE_ALL = item._input_name_list[1]
+		CorpseDelimiter:SaveBindings()
+	end
+
+	if item._name == CorpseDelimiter.RemoveAllShieldsKey then
+		CorpseDelimiter.CustomKeys.REMOVE_SHIELDS = item._input_name_list[1]
+		CorpseDelimiter:SaveBindings()
+	end
+
+	end)
+	if not psuccess then
+		Print("[Error] " .. perror)
+	end
+
+end)
+
+function CorpseDelimiter:SaveBindings()
+	GoonBase.Options.BodyCount.RemoveAllBodiesKey = CorpseDelimiter.CustomKeys.REMOVE_ALL
+	GoonBase.Options.BodyCount.RemoveAllShieldsKey = CorpseDelimiter.CustomKeys.REMOVE_SHIELDS
+	GoonBase.Options:Save()
+end
+
+Hooks:Add("GameSetupUpdate", "GameSetupUpdate_" .. Mod:ID(), function(t, dt)
+	CorpseDelimiter:UpdateBindings()
+end)
+
+function CorpseDelimiter:UpdateBindings()
+
+	if self._input == nil then
+		self._input = Input:keyboard()
+	end
+	if managers.hud:chat_focus() then
+		return
+	end
+
+	local remove_all_key = CorpseDelimiter.CustomKeys.REMOVE_ALL
+	if not string.is_nil_or_empty(remove_all_key) and self._input:pressed(Idstring(remove_all_key)) then
+		managers.enemy:dispose_all_corpses()
+	end
+
+	local remove_shields_key = CorpseDelimiter.CustomKeys.REMOVE_SHIELDS
+	if not string.is_nil_or_empty(remove_shields_key) and self._input:pressed(Idstring(remove_shields_key)) then
+		CorpseDelimiter:RemoveAllShields()
+	end
+
+end
+
+function CorpseDelimiter:RemoveAllShields()
+
+	local enemy_data = managers.enemy._enemy_data
+	local corpses = enemy_data.corpses
+	for u_key, u_data in pairs(corpses) do
+		if u_data.unit:inventory() ~= nil then
+			u_data.unit:inventory():destroy_all_items()
+		end
+	end
+
+end
 
 -- END OF FILE
