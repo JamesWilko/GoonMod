@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/3/2014 6:23:30 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/8/2014 2:28:57 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -583,9 +583,11 @@ function Updates:UpdateFileCallback(fileName, success, data)
 	local writeSuccess, writeError = pcall(function()
 
 		-- Remove garbage data from end of files
-		if fileName ~= self.UpdateFileLocation then
-			data = string.gsub( data, "(-- END OF FILE.*)", "" )
+		local file_ending = "-- END OF FILE"
+		if fileName == self.UpdateFileLocation then
+			file_ending = "--" .. "#" .. " END OF FILE"
 		end
+		data = string.gsub( data, "(" .. file_ending .. ".*)", "" )
 
 		-- Process hook file separately
 		if fileName == self.HookFileLocation then
@@ -720,4 +722,4 @@ function Updates:IsSupportedVersion()
 	return Updates:CompareVersionStrings(GoonBase.GameVersion, Application:version())
 end
 
--- END OF FILE
+--# END OF FILE
