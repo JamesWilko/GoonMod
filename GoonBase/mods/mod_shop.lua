@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/8/2014 1:05:17 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/12/2014 1:37:55 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -103,24 +103,24 @@ Hooks:Add("BlackMarketGUIPostSetup", "BlackMarketGUIPostSetup_" .. Mod:ID(), fun
 
 	local wm_modshop = {
 		prio = 5,
-		btn = "BTN_X",
-		pc_btn = nil,
+		btn = "BTN_BACK",
+		pc_btn = Idstring("toggle_chat"),
 		name = "ModShop_BlackmarketPurchaseWithGageCoins",
 		callback = callback(gui, gui, "modshop_purchase_weaponmod_callback")
 	}
 
 	local bm_modshop = {
 		prio = 5,
-		btn = "BTN_X",
-		pc_btn = nil,
+		btn = "BTN_BACK",
+		pc_btn = Idstring("toggle_chat"),
 		name = "ModShop_BlackmarketPurchaseWithGageCoins",
 		callback = callback(gui, gui, "modshop_purchase_mask_callback")
 	}
 
 	local mp_modshop = {
 		prio = 5,
-		btn = "BTN_X",
-		pc_btn = nil,
+		btn = "BTN_BACK",
+		pc_btn = Idstring("toggle_chat"),
 		name = "ModShop_BlackmarketPurchaseWithGageCoins",
 		callback = callback(gui, gui, "modshop_purchase_mask_part_callback")
 	}

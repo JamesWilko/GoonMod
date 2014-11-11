@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/8/2014 1:05:17 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/12/2014 1:37:55 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -11,19 +11,31 @@ function _G.CloneClass(class)
 	end
 end
 
+function _G.PrintStr( str )
+
+	str = tostring(str) .. "\n"
+	io.stderr:write( str )
+
+	local file = io.open( GoonBase.LogFile, "a+" )
+	io.output( file )
+	io.write( str )
+	io.close( file )
+
+end
+
 function _G.PrintTable (tbl, cmp)
 	cmp = cmp or {}
 	if type(tbl) == "table" then
 		for k, v in pairs (tbl) do
 			if type(v) == "table" and not cmp[v] then
 				cmp[v] = true
-				Print( string.format("[\"%s\"] -> table", tostring(k)) );
+				PrintStr( string.format("[\"%s\"] -> table", tostring(k)) );
 				PrintTable (v, cmp)
 			else
-				Print( string.format("\"%s\" -> %s", tostring(k), tostring(v)) )
+				PrintStr( string.format("\"%s\" -> %s", tostring(k), tostring(v)) )
 			end
 		end
-	else Print(tbl) end
+	else PrintStr(tbl) end
 end
 
 function _G.SaveTable(tbl, file)
@@ -83,7 +95,6 @@ function _G.GetCrosshairRay(penetrate, from, to, slotMask)
     local mvecTo = Vector3()
 
     mvector3.set( mvecTo, player:camera():forward() )
-    mvector3.multiply(mvecTo, 20000)
     mvector3.add(to, from)
 
     local colRay = World:raycast("ray", from, to, "slot_mask", managers.slot:get_mask(slotMask))

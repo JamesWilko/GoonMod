@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/12/2014 1:37:55 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -209,32 +209,32 @@ Hooks:Add("BlackMarketGUIPostSetup", "BlackMarketGUIPostSetup_InjectTradeButton"
 
 	local w_trade = {
 		prio = 5,
-		btn = "BTN_X",
-		pc_btn = nil,
+		btn = "BTN_STICK_L",
+		pc_btn = Idstring("menu_toggle_ready"),
 		name = "Trading_InventorySendToPlayer",
 		callback = callback(gui, gui, "trade_weapon_callback")
 	}
 
 	local m_trade = {
 		prio = 5,
-		btn = "BTN_X",
-		pc_btn = nil,
+		btn = "BTN_STICK_L",
+		pc_btn = Idstring("menu_toggle_ready"),
 		name = "Trading_InventorySendToPlayer",
 		callback = callback(gui, gui, "trade_mask_callback")
 	}
 
 	local wm_trade = {
 		prio = 5,
-		btn = "BTN_X",
-		pc_btn = nil,
+		btn = "BTN_STICK_L",
+		pc_btn = Idstring("menu_toggle_ready"),
 		name = "Trading_InventorySendToPlayer",
 		callback = callback(gui, gui, "trade_weaponmod_callback")
 	}
 
 	local mp_trade = {
 		prio = 5,
-		btn = "BTN_X",
-		pc_btn = nil,
+		btn = "BTN_STICK_L",
+		pc_btn = Idstring("menu_toggle_ready"),
 		name = "Trading_InventorySendToPlayer",
 		callback = callback(gui, gui, "trade_mask_part_callback")
 	}
@@ -244,6 +244,37 @@ Hooks:Add("BlackMarketGUIPostSetup", "BlackMarketGUIPostSetup_InjectTradeButton"
 	gui._btns["m_trade"] = BlackMarketGuiButtonItem:new(gui._buttons, m_trade, btn_x)
 	gui._btns["wm_trade"] = BlackMarketGuiButtonItem:new(gui._buttons, wm_trade, btn_x)
 	gui._btns["mp_trade"] = BlackMarketGuiButtonItem:new(gui._buttons, mp_trade, btn_x)
+
+end)
+
+Hooks:Add("MenuUpdate", "MenuUpdate_" .. Mod:ID(), function(t, dt)
+
+	-- This is a mess, but it gets custom keybinds for menu items working
+	if managers.menu:get_controller():get_input_pressed("run") then
+
+		if not managers.menu_component then return end
+
+		local blackmarket_gui = managers.menu_component._blackmarket_gui
+		if not blackmarket_gui then return end
+		if not blackmarket_gui._selected_slot then return end
+		if not blackmarket_gui._selected_slot._data then return end
+		
+		local data = blackmarket_gui._selected_slot._data
+		local category = data.category
+		if category == Trading.Categories.PrimaryWeapon or category == Trading.Categories.SecondaryWeapon then
+			blackmarket_gui:trade_weapon_callback( data )
+		end
+		if category == Trading.Categories.WeaponMod then
+			blackmarket_gui:trade_weaponmod_callback( data )
+		end
+		if category == Trading.Categories.Mask then
+			blackmarket_gui:trade_mask_callback( data )
+		end
+		if category == Trading.Categories.MaskColour or category == Trading.Categories.MaskPattern or category == Trading.Categories.MaskMaterial then
+			blackmarket_gui:trade_mask_part_callback( data )
+		end
+
+	end
 
 end)
 

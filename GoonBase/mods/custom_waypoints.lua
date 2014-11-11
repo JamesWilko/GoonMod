@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/8/2014 1:05:17 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/12/2014 1:37:55 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -195,13 +195,13 @@ function CustomWaypoints:SetWaypoint()
 	local psuccess, perror = pcall(function()
 		
 		local pos = GetPlayerAimPos( managers.player:player_unit() )
-		CustomWaypoints:_AddWaypoint( "localplayer", pos, GoonBase.Network:LocalPeerID() )
-
-		if pos == nil then
+		if not pos then
 			return
 		end
-		pos = Vector3.ToString( pos )
 
+		CustomWaypoints:_AddWaypoint( "localplayer", pos, GoonBase.Network:LocalPeerID() )
+
+		pos = Vector3.ToString( pos )
 		GoonBase.Network:SendToPeers( CustomWaypoints.Network.PlaceWaypoint, pos )
 
 	end)

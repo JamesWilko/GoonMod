@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/8/2014 2:28:57 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/12/2014 1:37:55 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -66,8 +66,9 @@ Localization.Updates_UpdatingTitle = "Updating GoonMod"
 Localization.Updates_UpdatingMessage = "Updating GoonMod. Please do not close your game during this time, doing so may corrupt your mod installation."
 
 Localization.Updates_ManualTitle = "Manual Update Required"
-Localization.Updates_ManualMessage = "A manual update to GoonMod is required. You can find the download link and update notes available below."
+Localization.Updates_ManualMessage = "A manual update to GoonMod is required. You can find the download link, payday 2 folder shortcut, and update notes available below."
 Localization.Updates_ManualAccept = "View Update"
+Localization.Updates_ManualPaydayFolder = "Open Payday 2 Folder"
 Localization.Updates_ManualLater = "Update Later"
 
 Localization.Updates_NoUpdateTitle = "No Update Required"
@@ -316,7 +317,12 @@ function Updates:ManualUpdateWindow()
 		callback = Updates.ManualUpdateCallback,
 		is_cancel_button = true
 	}
-	menuOptions[2] = {
+	menuOptions[1] = {
+		text = managers.localization:text("Updates_ManualPaydayFolder"),
+		callback = Updates.ManualOpenPaydayFolder,
+		is_cancel_button = true
+	}
+	menuOptions[3] = {
 		text = managers.localization:text("Updates_ManualLater"),
 		is_cancel_button = true
 	}
@@ -392,6 +398,12 @@ end
 
 function Updates.ManualUpdateCallback()
 	Updates:ShowPatchNotes()
+end
+
+function Updates.ManualOpenPaydayFolder()
+	if SystemInfo:platform() == Idstring("WIN32") then
+		os.execute( "explorer " .. Application:base_path() )
+	end
 end
 
 function Updates:ShowNoUpdates()
@@ -723,3 +735,5 @@ function Updates:IsSupportedVersion()
 end
 
 --# END OF FILE
+
+-- END OF FILE
