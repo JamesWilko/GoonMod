@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/12/2014 1:37:55 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/12/2014 2:57:39 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -133,10 +133,43 @@ Hooks:Add("BlackMarketGUIPostSetup", "BlackMarketGUIPostSetup_" .. Mod:ID(), fun
 end)
 
 Hooks:Add("BlackMarketGUIOnPopulateModsActionList", "BlackMarketGUIOnPopulateModsActionList_" .. Mod:ID(), function(gui, data)
-	if data.global_value == nil or data.global_value == "normal" or managers.dlc:is_dlc_unlocked(data.global_value) then
+	if ModShop:WeaponModAllowed(data) then
 		table.insert(data, "wm_modshop")
 	end
 end)
+
+function ModShop:WeaponModAllowed(mod)
+
+	if mod == nil then
+		return false
+	end
+
+	if mod.free_of_charge then
+		return false
+	end
+
+	for k, v in pairs( tweak_data.dlc ) do
+		if v.achievement_id ~= nil and v.content ~= nil and v.content.loot_drops ~= nil then
+			for i, loot in pairs( v.content.loot_drops ) do
+				if loot.item_entry ~= nil and loot.item_entry == mod.name then
+					return managers.achievment.handler:has_achievement(v.achievement_id)
+				end
+			end
+		end
+	end
+
+	local gv = mod.global_value
+	if gv == nil or gv == "normal" then
+		return true
+	end
+
+	if not managers.dlc:is_dlc_unlocked(gv) then
+		return false
+	end
+
+	return true
+
+end
 
 Hooks:Add("BlackMarketGUIOnPopulateBuyMasksActionList", "BlackMarketGUIOnPopulateBuyMasksActionList_" .. Mod:ID(), function(gui, data)
 	if ModShop:MaskAllowed(data) then
@@ -253,13 +286,19 @@ Hooks:Add("BlackMarketManagerModifyGetInventoryCategory", "BlackMarketManagerMod
 
 		local gv = v.dlc or v.global_value or "normal"
 		if not already_in_table and ModShop.ExclusionList[k] ~= true then
-			if gv == "normal" or ( (gv ~= "normal" and managers.dlc:is_dlc_unlocked(gv)) or ModShop.DLCAlwaysUnlocked[gv] == true ) then
+			
+			if v.infamous then
+				gv = "infamous"
+			end
+
+			if gv == "normal" or gv == "infamous" or ( (gv ~= "normal" and managers.dlc:is_dlc_unlocked(gv)) or ModShop.DLCAlwaysUnlocked[gv] == true ) then
 				table.insert(data, {
 					id = k,
 					global_value = gv,
 					amount = 0
 				})
 			end
+
 		end
 		
 	end
