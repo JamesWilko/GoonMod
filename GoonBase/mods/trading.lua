@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/12/2014 1:37:55 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/15/2014 2:22:58 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -252,26 +252,34 @@ Hooks:Add("MenuUpdate", "MenuUpdate_" .. Mod:ID(), function(t, dt)
 	-- This is a mess, but it gets custom keybinds for menu items working
 	if managers.menu:get_controller():get_input_pressed("run") then
 
-		if not managers.menu_component then return end
+		local psuccess, perror = pcall(function()
+			
+			if not managers.menu_component then return end
 
-		local blackmarket_gui = managers.menu_component._blackmarket_gui
-		if not blackmarket_gui then return end
-		if not blackmarket_gui._selected_slot then return end
-		if not blackmarket_gui._selected_slot._data then return end
-		
-		local data = blackmarket_gui._selected_slot._data
-		local category = data.category
-		if category == Trading.Categories.PrimaryWeapon or category == Trading.Categories.SecondaryWeapon then
-			blackmarket_gui:trade_weapon_callback( data )
-		end
-		if category == Trading.Categories.WeaponMod then
-			blackmarket_gui:trade_weaponmod_callback( data )
-		end
-		if category == Trading.Categories.Mask then
-			blackmarket_gui:trade_mask_callback( data )
-		end
-		if category == Trading.Categories.MaskColour or category == Trading.Categories.MaskPattern or category == Trading.Categories.MaskMaterial then
-			blackmarket_gui:trade_mask_part_callback( data )
+			local blackmarket_gui = managers.menu_component._blackmarket_gui
+			if not blackmarket_gui then return end
+			if not blackmarket_gui._selected_slot then return end
+			if not blackmarket_gui._selected_slot._data then return end
+			
+			local data = blackmarket_gui._selected_slot._data
+			if data == nil then return end
+			local category = data.category
+			if category == Trading.Categories.PrimaryWeapon or category == Trading.Categories.SecondaryWeapon then
+				blackmarket_gui:trade_weapon_callback( data )
+			end
+			if category == Trading.Categories.WeaponMod then
+				blackmarket_gui:trade_weaponmod_callback( data )
+			end
+			if category == Trading.Categories.Mask then
+				blackmarket_gui:trade_mask_callback( data )
+			end
+			if category == Trading.Categories.MaskColour or category == Trading.Categories.MaskPattern or category == Trading.Categories.MaskMaterial then
+				blackmarket_gui:trade_mask_part_callback( data )
+			end
+
+		end)
+		if not psuccess then
+			Print("[Error] " .. perror)
 		end
 
 	end
@@ -840,6 +848,9 @@ end)
 Hooks:Add("TradingAttemptTradeMask", "TradingAttemptTradeMask_ShowMenu", function(mask)
 
 	local data = managers.blackmarket:get_mask_slot_data(mask)
+	if data == nil then
+		return
+	end
 	data.category = "masks"
 	data.slot = mask.slot
 
