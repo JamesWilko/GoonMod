@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/20/2014 8:26:44 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/15/2014 12:39:22 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -292,6 +292,9 @@ function BlackMarketManager:add_traded_mask_part_to_inventory(part_id, category)
 		return
 	end
 	local part_global_value = part_data.global_value or part_data.dlc or "normal"
+	if part_data.infamous then
+		part_global_value = "infamous"
+	end
 
 	-- Add it to inventory
 	self:add_to_inventory(part_global_value, category, part_id, false)
