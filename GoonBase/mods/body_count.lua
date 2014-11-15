@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/8/2014 1:05:17 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/15/2014 8:59:21 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -32,16 +32,17 @@ CorpseDelimiter.CustomKeys = {
 }
 
 -- Options
-GoonBase.Options.BodyCount = GoonBase.Options.BodyCount or {}
-GoonBase.Options.BodyCount.CustomCorpseLimit = true
-GoonBase.Options.BodyCount.MaxCorpses = 1024
-GoonBase.Options.BodyCount.CurrentMaxCorpses = 1024
-GoonBase.Options.BodyCount.RemoveShields = false
-GoonBase.Options.BodyCount.ShieldTime = 60
-GoonBase.Options.BodyCount.MaxShieldTime = 600
-GoonBase.Options.BodyCount.RemoveAllBodiesKey = ""
-GoonBase.Options.BodyCount.RemoveAllShieldsKey = ""
-GoonBase.Options:Load()
+if GoonBase.Options.BodyCount == nil then
+	GoonBase.Options.BodyCount = {}
+	GoonBase.Options.BodyCount.CustomCorpseLimit = true
+	GoonBase.Options.BodyCount.MaxCorpses = 1024
+	GoonBase.Options.BodyCount.CurrentMaxCorpses = 1024
+	GoonBase.Options.BodyCount.RemoveShields = false
+	GoonBase.Options.BodyCount.ShieldTime = 60
+	GoonBase.Options.BodyCount.MaxShieldTime = 600
+	GoonBase.Options.BodyCount.RemoveAllBodiesKey = ""
+	GoonBase.Options.BodyCount.RemoveAllShieldsKey = ""
+end
 
 -- Localization
 local Localization = GoonBase.Localization

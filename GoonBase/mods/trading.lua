@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/15/2014 2:22:58 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/15/2014 8:59:21 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -250,7 +250,7 @@ end)
 Hooks:Add("MenuUpdate", "MenuUpdate_" .. Mod:ID(), function(t, dt)
 
 	-- This is a mess, but it gets custom keybinds for menu items working
-	if managers.menu:get_controller():get_input_pressed("run") then
+	if not managers.menu:is_pc_controller() and managers.menu:get_controller():get_input_pressed("run") then
 
 		local psuccess, perror = pcall(function()
 			

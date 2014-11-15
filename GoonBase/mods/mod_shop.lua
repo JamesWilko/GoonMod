@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/12/2014 2:57:39 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/15/2014 8:59:21 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -484,26 +484,37 @@ function ModShop:PurchaseItem()
 
 	local psuccess, perror = pcall(function()
 		
-		local item = ModShop._purchase_data.name
-		local category = ModShop._purchase_data.category
-		local cost = ModShop._purchase_data.cost
+		local purchase_data = ModShop._purchase_data
+		local item = purchase_data.name
+		local category = purchase_data.category
+		local cost = purchase_data.cost
+		local global_value = purchase_data.global_value
 
 		Print("Purchasing ", item, " from category ", category, " at cost: ", cost, " coins")
 
 		-- Add to weapon inventory
 		if ModShop:IsWeaponMod(category) then
-			managers.blackmarket:add_to_inventory(ModShop._purchase_data.global_value, "weapon_mods", item, true)
-			managers.menu:back(true)
+			managers.blackmarket:add_to_inventory(global_value, "weapon_mods", item, true)
+			ModShop:ReloadBlackMarketAfterPurchase()
 		end
 
 		-- Add to mask inventory
 		if ModShop:IsMaskPart(category) then
+			
 			managers.blackmarket:add_traded_mask_part_to_inventory(item, category)
+
+			-- Temporary measure to reload mask mods inventory
+			local blackmarket_gui = managers.menu_component._blackmarket_gui
+			if blackmarket_gui then
+				blackmarket_gui:_abort_customized_mask_callback()
+			end
+
 		end
 
 		-- Add mask to inventory
 		if ModShop:IsMask(category) then
-			managers.blackmarket:add_to_inventory(ModShop._purchase_data.global_value, "masks", item, true)
+			managers.blackmarket:add_to_inventory(global_value, "masks", item, true)
+			ModShop:ReloadBlackMarketAfterPurchase()
 		end
 
 		-- Remove coins
@@ -514,6 +525,13 @@ function ModShop:PurchaseItem()
 		Print("[Error] " .. perror)
 	end
 
+end
+
+function ModShop:ReloadBlackMarketAfterPurchase()
+	local blackmarket_gui = managers.menu_component._blackmarket_gui
+	if blackmarket_gui then
+		blackmarket_gui:reload()
+	end
 end
 
 function ModShop:IsWeaponMod(category)
