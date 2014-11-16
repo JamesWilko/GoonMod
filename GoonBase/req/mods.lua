@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/5/2014 12:15:56 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/16/2014 9:49:42 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -192,7 +192,7 @@ BaseMod.HideInOptionsMenu = false
 BaseMod.Requirements = {}
 BaseMod.Incompatibilities = {}
 BaseMod.Path = nil
-BaseMod.Priority = 50
+BaseMod.Priority = 0
 BaseMod.EnabledByDefault = false
 
 function BaseMod:ID()
@@ -290,7 +290,7 @@ function BaseMod:SetupMenu()
 		value = self:IsEnabled(),
 		disabled_color = Color( 0.8, 0.3, 0.3, 0.3 ),
 		menu_id = Mods.MenuID,
-		priority = self.Priority or 50
+		priority = self.Priority or 0
 	})
 
 end

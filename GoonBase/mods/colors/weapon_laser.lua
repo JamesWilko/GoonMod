@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/16/2014 9:49:42 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -25,6 +25,13 @@ GoonBase.WeaponLaser = GoonBase.WeaponLaser or {}
 local Laser = GoonBase.WeaponLaser
 Laser.MenuId = "goonbase_weapon_laser_menu"
 Laser.Color = nil
+Laser.UniquePlayerColours = {
+	[1] = Color("29ce31"), -- MrGreen
+	[2] = Color("00eae8"), -- MrBlue
+	[3] = Color("f99d1c"), -- MrBrown
+	[4] = Color("ebe818"), -- MrOrange
+	[5] = Color("ebe818"), -- MrAI
+}
 
 -- Localization
 local Localization = GoonBase.Localization
@@ -36,6 +43,11 @@ Localization.Options_WeaponLaserRainbowTitle = "Enable Rainbow Laser"
 Localization.Options_WeaponLaserRainbowDesc = "Enable rainbow instead of the set Hue"
 Localization.Options_WeaponLaserRainbowSpeedTitle = "Rainbow Speed"
 Localization.Options_WeaponLaserRainbowSpeedDesc = "Set the speed of the rainbow effect"
+Localization.Options_TeammateLaserOption = "Teammate Lasers"
+Localization.Options_TeammateLaserOptionDesc = "Set how teammate lasers should appear"
+Localization.Options_TeammateLaser_Same = "Use My Colour"
+Localization.Options_TeammateLaser_Theirs = "Use Their Colour"
+Localization.Options_TeammateLaser_Unique = "Unique per Person"
 
 -- Options
 if GoonBase.Options.WeaponLaser == nil then
@@ -47,6 +59,7 @@ if GoonBase.Options.WeaponLaser == nil then
 	GoonBase.Options.WeaponLaser.HSV = false
 	GoonBase.Options.WeaponLaser.Rainbow = false
 	GoonBase.Options.WeaponLaser.RainbowSpeed = 10
+	GoonBase.Options.WeaponLaser.TeammateLasers = 1
 end
 
 -- Functions
@@ -58,7 +71,7 @@ function Laser:IsRainbow()
 	return GoonBase.Options.WeaponLaser.Rainbow
 end
 
-function Laser:GetColor(alpha)
+function Laser:GetColor( alpha )
 	if Laser.Color == nil then
 		Laser.Color = ColorHSVRGB:new()
 		Laser.Color:SetOptionsTable( "WeaponLaser" )
@@ -66,12 +79,106 @@ function Laser:GetColor(alpha)
 	return Laser.Color:GetColor( alpha ) or Color( alpha or 1, 1, 0, 0 )
 end
 
+function Laser:IsNPCPlayerUnitLaser( laser )
+
+	local criminals_manager = managers.criminals
+	if not criminals_manager then
+		return
+	end
+
+	for id, data in pairs(criminals_manager._characters) do
+		if data.unit ~= nil and data.name ~= criminals_manager:local_character_name() then
+
+			local wep_base = data.unit:inventory():equipped_unit():base()
+			if not wep_base then
+				return
+			end
+
+			if wep_base._factory_id ~= nil and wep_base._blueprint ~= nil then
+
+				local gadgets = managers.weapon_factory:get_parts_from_weapon_by_type_or_perk("gadget", wep_base._factory_id, wep_base._blueprint)
+				if gadgets then
+					local gadget
+					for _, i in ipairs(gadgets) do
+
+						gadget = wep_base._parts[i]
+						gadget = gadget.unit:base()
+
+						if gadget == laser then
+							return true
+						end
+
+					end
+				end
+
+			end
+
+		end
+	end
+
+	return false
+
+end
+
+function Laser:GetCriminalNameFromLaserUnit( laser )
+
+	local criminals_manager = managers.criminals
+	if not criminals_manager then
+		return
+	end
+
+	for id, data in pairs(criminals_manager._characters) do
+		if data.unit ~= nil and data.name ~= criminals_manager:local_character_name() then
+
+			local wep_base = data.unit:inventory():equipped_unit():base()
+			if not wep_base then
+				return
+			end
+
+			if wep_base._factory_id ~= nil and wep_base._blueprint ~= nil then
+
+				local gadgets = managers.weapon_factory:get_parts_from_weapon_by_type_or_perk("gadget", wep_base._factory_id, wep_base._blueprint)
+				if gadgets then
+					local gadget
+					for _, i in ipairs(gadgets) do
+
+						gadget = wep_base._parts[i]
+						gadget = gadget.unit:base()
+
+						if gadget == laser then
+							return data.name
+						end
+
+					end
+				end
+
+			end
+
+		end
+	end
+
+	return nil
+
+end
+
+function Laser:UsingSameColour()
+	return GoonBase.Options.WeaponLaser.TeammateLasers == 1
+end
+
+function Laser:UsingUniqueColour()
+	return GoonBase.Options.WeaponLaser.TeammateLasers == 2
+end
+
+function Laser:UsingPlayerColour()
+	return GoonBase.Options.WeaponLaser.TeammateLasers == 3
+end
+
 -- Menu
-Hooks:Add("MenuManagerSetupCustomMenus", "MenuManagerSetupCustomMenus_WeaponLaser", function(menu_manager, menu_nodes)
+Hooks:Add("MenuManagerSetupCustomMenus", "MenuManagerSetupCustomMenus_" .. Mod:ID(), function(menu_manager, menu_nodes)
 	GoonBase.MenuHelper:NewMenu( Laser.MenuId )
 end)
 
-Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_WeaponLaser", function(menu_manager, menu_nodes)
+Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_" .. Mod:ID(), function(menu_manager, menu_nodes)
 
 	-- Submenu Button
 	GoonBase.MenuHelper:AddButton({
@@ -80,7 +187,6 @@ Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_WeaponLa
 		desc = "Options_WeaponLaserDesc",
 		next_node = Laser.MenuId,
 		menu_id = "goonbase_options_menu",
-		priority = 100
 	})
 
 	-- Enabled Toggle
@@ -96,13 +202,13 @@ Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_WeaponLa
 		callback = "toggle_custom_weapon_laser_color",
 		value = GoonBase.Options.WeaponLaser.Enabled,
 		menu_id = Laser.MenuId,
-		priority = 11
+		priority = 50
 	})
 
 	-- RGB/HSV Colour
 	Laser.Color = ColorHSVRGB:new()
 	Laser.Color:SetID( "weapon_laser" )
-	Laser.Color:SetPriority( 5 )
+	Laser.Color:SetPriority( 30 )
 	Laser.Color:SetOptionsTable( "WeaponLaser" )
 	Laser.Color:SetupMenu( Laser.MenuId )
 
@@ -117,6 +223,11 @@ Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_WeaponLa
 		GoonBase.Options:Save()
 	end
 
+	MenuCallbackHandler.weapon_laser_set_teammate = function(this, item)
+		GoonBase.Options.WeaponLaser.TeammateLasers = tonumber(item:value())
+		GoonBase.Options:Save()
+	end
+
 	GoonBase.MenuHelper:AddToggle({
 		id = "toggle_weapon_laser_rainbow",
 		title = "Options_WeaponLaserRainbowTitle",
@@ -124,11 +235,11 @@ Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_WeaponLa
 		callback = "toggle_weapon_laser_rainbow",
 		value = GoonBase.Options.WeaponLaser.Rainbow,
 		menu_id = Laser.MenuId,
-		priority = 2
+		priority = 25
 	})
 
 	GoonBase.MenuHelper:AddSlider({
-		id = "weapon_light_rainbow_speed",
+		id = "weapon_laser_rainbow_speed",
 		title = "Options_WeaponLaserRainbowSpeedTitle",
 		desc = "Options_WeaponLaserRainbowSpeedDesc",
 		callback = "weapon_laser_rainbow_speed",
@@ -138,51 +249,107 @@ Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_WeaponLa
 		step = 1,
 		show_value = true,
 		menu_id = Laser.MenuId,
-		priority = 1,
+		priority = 24,
+	})
+
+	GoonBase.MenuHelper:AddDivider({
+		id = "weapon_laser_divider",
+		menu_id = Laser.MenuId,
+		size = 16,
+		priority = 21,
+	})
+
+	GoonBase.MenuHelper:AddMultipleChoice({
+		id = "weapon_laser_teammate_choice",
+		title = "Options_TeammateLaserOption",
+		desc = "Options_TeammateLaserOptionDesc",
+		callback = "weapon_laser_set_teammate",
+		menu_id = Laser.MenuId,
+		priority = 20,
+		items = {
+			[1] = "Options_TeammateLaser_Same",
+			[2] = "Options_TeammateLaser_Unique",
+			-- [3] = "Options_TeammateLaser_Theirs",
+		},
+		value = GoonBase.Options.WeaponLaser.TeammateLasers,
 	})
 
 end)
 
-Hooks:Add("MenuManagerBuildCustomMenus", "MenuManagerBuildCustomMenus_WeaponLaser", function(menu_manager, mainmenu_nodes)
+Hooks:Add("MenuManagerBuildCustomMenus", "MenuManagerBuildCustomMenus_" .. Mod:ID(), function(menu_manager, mainmenu_nodes)
 	local menu_id = Laser.MenuId
 	mainmenu_nodes[menu_id] = GoonBase.MenuHelper:BuildMenu( menu_id )
 end)
 
 -- Hooks
-Hooks:Add("WeaponLaserInit", "WeaponLaserUpdate_CustomLaser", function(laser, unit)
-
-	if not Laser:IsEnabled() then
-		return
-	end
-
-	if laser._is_npc then
-		return
-	end
-
-	laser:set_color( Laser:GetColor() )
-
+Hooks:Add("WeaponLaserInit", "WeaponLaserInit_" .. Mod:ID(), function(laser, unit)
+	Laser:UpdateLaser(laser, unit, 0, 0)
 end)
 
-Hooks:Add("WeaponLaserUpdate", "WeaponLaserUpdate_Rainbow", function(laser, unit, t, dt)
+Hooks:Add("WeaponLaserUpdate", "WeaponLaserUpdate_Rainbow_" .. Mod:ID(), function(laser, unit, t, dt)
+	Laser:UpdateLaser(laser, unit, t, dt)
+end)
 
-	if not Laser:IsEnabled() then
-		return
+function Laser:UpdateLaser( laser, unit, t, dt )
+
+	local psuccess, perror = pcall(function()
+
+		if not Laser:IsEnabled() then
+			return
+		end
+
+		if laser._is_npc then
+
+			if not Laser:IsNPCPlayerUnitLaser( laser ) then
+				return
+			end
+
+			if Laser:UsingSameColour() then
+				Laser:SetColourOfLaser( laser, unit, t, dt )
+			end
+
+			if Laser:UsingUniqueColour() then
+				local name = Laser:GetCriminalNameFromLaserUnit( laser )
+				local id = managers.criminals:character_color_id_by_name( name )
+				if id == 1 then id = id + 1 end
+				local col = Laser.UniquePlayerColours[ id or 5 ]
+				Laser:SetColourOfLaser( laser, unit, t, dt, col )
+			end
+
+			if Laser:UsingPlayerColour() then
+				Laser:SetColourOfLaser( laser, unit, t, dt )
+			end
+
+			return
+
+		end
+
+		Laser:SetColourOfLaser( laser, unit, t, dt )
+
+	end)
+	if not psuccess then
+		Print("[Error] " .. perror)
 	end
 
-	if laser._is_npc then
+end
+
+function Laser:SetColourOfLaser( laser, unit, t, dt, colour_override )
+
+	if colour_override ~= nil then
+		laser:set_color( colour_override:with_alpha(0.4) )
 		return
 	end
 
 	if not Laser:IsRainbow() then
-		laser:set_color( Laser:GetColor() )
+		laser:set_color( Laser:GetColor(0.4) )
 	end
 
 	if Laser:IsRainbow() then
 		Laser:GetColor()
 		local r, g, b = Laser.Color:ToRGB( math.sin(GoonBase.Options.WeaponLaser.RainbowSpeed * t), GoonBase.Options.WeaponLaser.G, GoonBase.Options.WeaponLaser.B )
-		laser:set_color( Color(r, g, b) )
+		laser:set_color( Color(r, g, b):with_alpha(0.4) )
 	end
 
-end)
+end
 
 -- END OF FILE

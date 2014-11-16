@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/8/2014 1:05:17 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/16/2014 9:49:42 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -13,7 +13,6 @@ end
 
 Hooks:RegisterHook("WeaponFlashLightCheckState")
 function WeaponFlashLight._check_state(self)
-	self._unit:set_extension_update_enabled( Idstring("base"), self._on )
 	self.orig._check_state(self)
 	Hooks:Call( "WeaponFlashLightCheckState", self )
 end
@@ -24,7 +23,7 @@ function WeaponFlashLight:overkill_update(unit, t, dt)
 	t = Application:time()
 	self._light_speed = self._light_speed or 1
 	self._light_speed = math.step(self._light_speed, 1, dt * (math.random(4) + 2))
-	self._light:set_rotation(self._light:rotation() * Rotation(dt * -50 * self._light_speed, 0))
+	-- self._light:set_rotation(self._light:rotation() * Rotation(dt * -50 * self._light_speed, 0))
 	self:update_flicker(t, dt)
 	self:update_laughter(t, dt)
 	if not self._kittens_timer then

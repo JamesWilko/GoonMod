@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/8/2014 1:05:17 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/16/2014 9:49:42 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -80,7 +80,6 @@ Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_WeaponLi
 		desc = "Options_WeaponLightDesc",
 		next_node = Light.MenuId,
 		menu_id = "goonbase_options_menu",
-		priority = 100
 	})
 
 	-- Enabled Toggle
@@ -163,6 +162,8 @@ end)
 Hooks:Add("WeaponFlashLightCheckState", "WeaponFlashLightCheckState_CustomLight", function(flashlight)
 
 	if flashlight._on then
+
+		flashlight._unit:set_extension_update_enabled( Idstring("base"), flashlight._on )
 
 		Hooks:RegisterHook("WeaponFlashLightUpdate")
 		flashlight._old_update = flashlight.update

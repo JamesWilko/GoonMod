@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/16/2014 9:49:42 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -80,7 +80,6 @@ Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_WorldLas
 		desc = "Options_WorldLaserDesc",
 		next_node = Lasers.MenuId,
 		menu_id = "goonbase_options_menu",
-		priority = 100
 	})
 
 	-- Enabled Toggle

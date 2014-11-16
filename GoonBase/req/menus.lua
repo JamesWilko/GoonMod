@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/16/2014 9:49:42 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -184,7 +184,7 @@ function Menu:AddMultipleChoice( multi_data )
 	local data = {
 		type = "MenuItemMultiChoice"
 	}
-	for k, v in pairs( multi_data.items or {} ) do
+	for k, v in ipairs( multi_data.items or {} ) do
 		table.insert( data, { _meta = "option", text_id = v, value = k } )
 	end
 	
@@ -199,6 +199,7 @@ function Menu:AddMultipleChoice( multi_data )
 	local menu = self:GetMenu( multi_data.menu_id )
 	local item = menu:create_item(data, params)
 	item._priority = multi_data.priority or 0
+	item:set_value( multi_data.value or 1 )
 
 	menu._items_list = menu._items_list or {}
 	table.insert( menu._items_list, item )
@@ -243,13 +244,31 @@ function Menu:BuildMenu( menu_id )
 	-- Check items exist for this menu
 	if menu._items_list ~= nil then
 
+		local priority_items = {}
+		local nonpriority_items = {}
+		for k, v in pairs( menu._items_list ) do
+			if v._priority ~= nil and v._priority > 0 then
+				table.insert( priority_items, v )
+			else
+				table.insert( nonpriority_items, v )
+			end
+		end
+
 		-- Sort table by priority, higher priority first
-		table.sort( menu._items_list, function(a, b)
-		    return a._priority > b._priority
+		table.sort( priority_items, function(a, b)
+			return a._priority > b._priority
+		end)
+
+		-- Sort non-priority items alphabetically
+		table.sort( nonpriority_items, function(a, b)
+			return managers.localization:text(a._parameters.text_id or "") < managers.localization:text(b._parameters.text_id or "")
 		end)
 
 		-- Add items to menu
-		for k, item in pairs( menu._items_list ) do
+		for k, item in pairs( priority_items ) do
+			menu:add_item( item )
+		end
+		for k, item in pairs( nonpriority_items ) do
 			menu:add_item( item )
 		end
 

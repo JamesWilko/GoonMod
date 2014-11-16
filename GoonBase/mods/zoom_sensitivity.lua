@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/19/2014 12:01:24 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/16/2014 9:49:42 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -44,8 +44,7 @@ Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_" .. Mod
 			desc = "OptionsMenu_ZoomSensitivityMessage",
 			callback = "toggle_zoom_sensitivity",
 			value = GoonBase.Options.IronsightSensitivity.Enabled,
-			menu_id = "goonbase_options_menu",
-			priority = -1
+			menu_id = "goonbase_options_menu"
 		})
 
 	end)

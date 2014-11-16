@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/16/2014 9:49:42 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -27,6 +27,17 @@ Hooks:RegisterHook("WeaponLaserPostSetColorByTheme")
 function WeaponLaser.set_color_by_theme(self, theme)
 	self.orig.set_color_by_theme(self, theme)
 	Hooks:Call("WeaponLaserPostSetColorByTheme", self, theme)
+end
+
+Hooks:RegisterHook("WeaponLaserSetOn")
+Hooks:RegisterHook("WeaponLaserSetOff")
+function WeaponLaser._check_state(self)
+	self.orig._check_state(self)
+	if self._on then
+		Hooks:Call("WeaponLaserSetOn", self)
+	else
+		Hooks:Call("WeaponLaserSetOff", self)
+	end
 end
 
 -- END OF FILE

@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/15/2014 8:59:21 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/16/2014 9:49:42 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -160,7 +160,6 @@ Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_Trading"
 		desc = "Trading_OptionsMenuMessage",
 		next_node = Trading.MenuId,
 		menu_id = "goonbase_options_menu",
-		priority = 100
 	})
 
 	MenuCallbackHandler.toggle_trading_enabled = function(this, item)
@@ -175,7 +174,6 @@ Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_Trading"
 		callback = "toggle_trading_enabled",
 		value = GoonBase.Options.Trading.Enabled,
 		menu_id = Trading.MenuId,
-		priority = 50
 	})
 
 end)

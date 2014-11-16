@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/16/2014 9:49:42 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -7,7 +7,7 @@ local Mutator = class(BaseMutator)
 Mutator.Id = "AllCloakerSpawns"
 Mutator.OptionsName = "Night of a Million Cloakers"
 Mutator.OptionsDesc = "Replace all spawning units with Cloakers"
-Mutator.Incompatibilities = { "AllTazerSpawns", "AllBulldozerSpawns", "AllShieldSpawns" }
+Mutator.Incompatibilities = { "AllTaserSpawns", "AllBulldozerSpawns", "AllShieldSpawns" }
 
 Mutator.HookTaskData = "GroupAITweakDataPostInitTaskData_AllCloakersMutator"
 Mutator.HookUnitCategories = "GroupAITweakDataPostInitUnitCategories_AllCloakersMutator"

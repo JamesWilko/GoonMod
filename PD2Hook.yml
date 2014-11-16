@@ -43,6 +43,8 @@ PostRequireScripts:
   - [lib/tweak_data/weapontweakdata, GoonBase/goonbase.lua]
   - [lib/managers/menu/menunodegui, GoonBase/goonbase.lua]
   - [lib/managers/menu/items/menuitemcustomizecontroller, GoonBase/goonbase.lua]
+  - [lib/units/weapons/newraycastweaponbase, GoonBase/goonbase.lua]
+  - [core/lib/managers/menu/items/coremenuitemslider, GoonBase/goonbase.lua]
 # END
 
 # -- END OF FILE

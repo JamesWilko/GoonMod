@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/16/2014 9:49:42 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -64,6 +64,47 @@ function Laser:GetColor(alpha)
 		Laser.Color:SetOptionsTable( "EnemyLaser" )
 	end
 	return Laser.Color:GetColor( alpha ) or Color( alpha or 1, 1, 0, 0 )
+end
+
+function Laser:IsNPCPlayerUnitLaser( laser )
+
+	local criminals_manager = managers.criminals
+	if not criminals_manager then
+		return
+	end
+
+	for id, data in pairs(criminals_manager._characters) do
+		if data.unit ~= nil and data.name ~= criminals_manager:local_character_name() then
+
+			local wep_base = data.unit:inventory():equipped_unit():base()
+			if not wep_base then
+				return
+			end
+
+			if wep_base._factory_id ~= nil and wep_base._blueprint ~= nil then
+
+				local gadgets = managers.weapon_factory:get_parts_from_weapon_by_type_or_perk("gadget", wep_base._factory_id, wep_base._blueprint)
+				if gadgets then
+					local gadget
+					for _, i in ipairs(gadgets) do
+
+						gadget = wep_base._parts[i]
+						gadget = gadget.unit:base()
+
+						if gadget == laser then
+							return true
+						end
+
+					end
+				end
+
+			end
+
+		end
+	end
+
+	return false
+
 end
 
 -- Menu
@@ -154,7 +195,7 @@ Hooks:Add("WeaponLaserPostSetColorByTheme", "WeaponLaserPostSetColorByTheme_Cust
 		return
 	end
 
-	if not laser._is_npc then
+	if not laser._is_npc or Laser:IsNPCPlayerUnitLaser( laser ) then
 		return
 	end
 
@@ -168,7 +209,7 @@ Hooks:Add("WeaponLaserUpdate", "WeaponLaserUpdate_EnemyRainbow", function(laser,
 		return
 	end
 
-	if not laser._is_npc then
+	if not laser._is_npc or Laser:IsNPCPlayerUnitLaser( laser ) then
 		return
 	end
 

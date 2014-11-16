@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/8/2014 1:05:17 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/16/2014 9:49:42 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -135,33 +135,21 @@ function ColorHSVRGB:SetupMenu( menu_id )
 	self._menu_id = menu_id
 
 	MenuCallbackHandler["set_rh_" .. id] = function(this, item)
-
 		self._r = item:value()
 		GoonBase.Options[self.options_table].R = self._r
 		GoonBase.Options:Save()
-
-		self:RefreshMenu()
-
 	end
 
 	MenuCallbackHandler["set_gs_" .. id] = function(this, item)
-
 		self._g = item:value()
 		GoonBase.Options[self.options_table].G = self._g
 		GoonBase.Options:Save()
-
-		self:RefreshMenu()
-
 	end
 
 	MenuCallbackHandler["set_bv_" .. id] = function(this, item)
-
 		self._b = item:value()
 		GoonBase.Options[self.options_table].B = self._b
 		GoonBase.Options:Save()
-
-		self:RefreshMenu()
-
 	end
 
 	MenuCallbackHandler["toggle_hsv_" .. id] = function(this, item)
@@ -172,7 +160,6 @@ function ColorHSVRGB:SetupMenu( menu_id )
 		GoonBase.Options:Save()
 
 		self:SetupLocalization()
-		self:RefreshMenu()
 
 	end
 
@@ -227,25 +214,6 @@ function ColorHSVRGB:SetupMenu( menu_id )
 		menu_id = menu_id,
 		priority = self._priority,
 	})
-
-end
-
-function ColorHSVRGB:RefreshMenu()
-
-	if self._menu_id ~= nil then
-
-		local menu = GoonBase.MenuHelper:GetMenu( self._menu_id )
-
-		for k, v in pairs( menu["_items"] ) do
-
-			if v._parameters.name == "slider_example_" .. self:ID() then
-				v._parameters.disabled_color = self:GetColor()
-			end
-			v:dirty()
-
-		end
-
-	end
 
 end
 
