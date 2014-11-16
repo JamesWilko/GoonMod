@@ -4,7 +4,7 @@
 ----------
 
 local Mutator = class(BaseMutator)
-Mutator.Id = "AllTaserSpawns"
+Mutator.Id = "AllTazerSpawns"
 Mutator.OptionsName = "Danger, Danger! High Voltage!"
 Mutator.OptionsDesc = "Replace all spawning units with Tasers"
 Mutator.Incompatibilities = { "AllCloakerSpawns", "AllBulldozerSpawns", "AllShieldSpawns" }
