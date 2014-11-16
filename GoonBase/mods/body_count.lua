@@ -262,7 +262,9 @@ function CorpseDelimiter:UpdateBindings()
 
 	local remove_all_key = CorpseDelimiter.CustomKeys.REMOVE_ALL
 	if not string.is_nil_or_empty(remove_all_key) and self._input:pressed(Idstring(remove_all_key)) then
-		managers.enemy:dispose_all_corpses()
+		if not managers.groupai:state():whisper_mode() then
+			managers.enemy:dispose_all_corpses()
+		end
 	end
 
 	local remove_shields_key = CorpseDelimiter.CustomKeys.REMOVE_SHIELDS
