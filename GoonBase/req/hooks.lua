@@ -26,8 +26,8 @@ end
 function Hooks:Remove( id )
 
 	for k, v in pairs(self) do
-		if k[id] ~= nil then
-			k[id] = nil
+		if type(v) == "table" and v[id] ~= nil then
+			v[id] = nil
 		end
 	end
 
