@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/5/2014 12:15:56 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/17/2014 10:23:52 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -18,6 +18,9 @@ local massive_font_size = tweak_data.menu.pd2_massive_font_size
 local large_font_size = tweak_data.menu.pd2_large_font_size
 local medium_font_size = tweak_data.menu.pd2_medium_font_size
 local small_font_size = tweak_data.menu.pd2_small_font_size
+
+local Localization = GoonBase.Localization
+Localization.bm_menu_amount_locked = "NONE IN STOCK"
 
 function BlackMarketGui.init(self, ws, fullscreen_ws, node)
 
@@ -988,6 +991,9 @@ function BlackMarketGui.populate_choose_mask_mod(self, data)
 		new_data.global_value = mods.global_value
 		local is_locked = false
 		if new_data.amount < 1 and mods.id ~= "plastic" and mods.id ~= "no_color_full_material" then
+			new_data.unlocked = -math.abs(new_data.unlocked)
+			new_data.lock_texture = true
+			new_data.dlc_locked = "bm_menu_amount_locked"
 			is_locked = true
 		end
 		if tweak_data.lootdrop.global_values[new_data.global_value] and tweak_data.lootdrop.global_values[new_data.global_value].dlc and not tweak_data.dlc[new_data.global_value].free and not managers.dlc:has_dlc(new_data.global_value) then
