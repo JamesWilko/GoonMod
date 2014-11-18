@@ -1,17 +1,18 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/18/2014 10:52:05 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
 _G.GoonBase.Hooks = _G.GoonBase.Hooks or {}
 _G.Hooks = GoonBase.Hooks
+Hooks.registered_hooks = {}
 
 function Hooks:RegisterHook( key )
-	self[key] = self[key] or {}
+	self.registered_hooks[key] = self.registered_hooks[key] or {}
 end
 
 function Hooks:Register( key )
-	self:RegisterHook( key )
+	self:registered_hooks( key )
 end
 
 function Hooks:AddHook( key, id, func )
@@ -19,13 +20,13 @@ function Hooks:AddHook( key, id, func )
 end
 
 function Hooks:Add( key, id, func )
-	self[key] = self[key] or {}
-	self[key][id] = func
+	self.registered_hooks[key] = self.registered_hooks[key] or {}
+	self.registered_hooks[key][id] = func
 end
 
-function Hooks:Remove( id )
+function Hooks:Unregister( id )
 
-	for k, v in pairs(self) do
+	for k, v in pairs(self.registered_hooks) do
 		if k[id] ~= nil then
 			k[id] = nil
 		end
@@ -33,10 +34,20 @@ function Hooks:Remove( id )
 
 end
 
+function Hooks:Remove( id )
+
+	for k, v in pairs(self.registered_hooks) do
+		if type(v) == "table" and v[id] ~= nil then
+			v[id] = nil
+		end
+	end
+	
+end
+
 function Hooks:Call( key, ... )
 
-	if self[key] ~= nil then
-		for k, v in pairs(self[key]) do
+	if self.registered_hooks[key] ~= nil then
+		for k, v in pairs(self.registered_hooks[key]) do
 			if v ~= nil and type(v) == "function" then
 				v( ... )
 			end
@@ -47,8 +58,8 @@ end
 
 function Hooks:ReturnCall( key, ... )
 
-	if self[key] ~= nil then
-		for k, v in pairs(self[key]) do
+	if self.registered_hooks[key] ~= nil then
+		for k, v in pairs(self.registered_hooks[key]) do
 			if v ~= nil and type(v) == "function" then
 
 				local r = v( ... )
@@ -64,8 +75,8 @@ end
 
 function Hooks:PCall( key, ... )
 
-	if self[key] ~= nil then
-		for k, v in pairs(self[key]) do
+	if self.registered_hooks[key] ~= nil then
+		for k, v in pairs(self.registered_hooks[key]) do
 			if v ~= nil and type(v) == "function" then
 				local args = ...
 				local success, err = pcall( function() v( args ) end )
