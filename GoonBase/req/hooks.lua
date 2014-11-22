@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/18/2014 10:52:05 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/22/2014 12:56:27 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -12,7 +12,7 @@ function Hooks:RegisterHook( key )
 end
 
 function Hooks:Register( key )
-	self:registered_hooks( key )
+	self:RegisterHook( key )
 end
 
 function Hooks:AddHook( key, id, func )
@@ -22,6 +22,10 @@ end
 function Hooks:Add( key, id, func )
 	self.registered_hooks[key] = self.registered_hooks[key] or {}
 	self.registered_hooks[key][id] = func
+end
+
+function Hooks:UnregisterHook( id )
+	self:Unregister( key )
 end
 
 function Hooks:Unregister( id )

@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/16/2014 9:49:42 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/22/2014 12:56:27 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -89,26 +89,30 @@ function Laser:IsNPCPlayerUnitLaser( laser )
 	for id, data in pairs(criminals_manager._characters) do
 		if data.unit ~= nil and data.name ~= criminals_manager:local_character_name() then
 
-			local wep_base = data.unit:inventory():equipped_unit():base()
-			if not wep_base then
-				return
-			end
+			if data.unit:inventory() and data.unit:inventory():equipped_unit() then 
 
-			if wep_base._factory_id ~= nil and wep_base._blueprint ~= nil then
+				local wep_base = data.unit:inventory():equipped_unit():base()
+				if wep_base then
 
-				local gadgets = managers.weapon_factory:get_parts_from_weapon_by_type_or_perk("gadget", wep_base._factory_id, wep_base._blueprint)
-				if gadgets then
-					local gadget
-					for _, i in ipairs(gadgets) do
+					if wep_base._factory_id ~= nil and wep_base._blueprint ~= nil then
 
-						gadget = wep_base._parts[i]
-						gadget = gadget.unit:base()
+						local gadgets = managers.weapon_factory:get_parts_from_weapon_by_type_or_perk("gadget", wep_base._factory_id, wep_base._blueprint)
+						if gadgets then
+							local gadget
+							for _, i in ipairs(gadgets) do
 
-						if gadget == laser then
-							return true
+								gadget = wep_base._parts[i]
+								gadget = gadget.unit:base()
+
+								if gadget == laser then
+									return true
+								end
+
+							end
 						end
 
 					end
+
 				end
 
 			end

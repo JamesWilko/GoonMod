@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/16/2014 9:49:42 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/22/2014 12:56:27 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -8,7 +8,7 @@ if not RequiredScript then return end
 if not _G.GoonBase then
 	_G.GoonBase = {}
 	GoonBase.Version = 15
-	GoonBase.GameVersion = "1.20.0"
+	GoonBase.GameVersion = "1.21.1"
 	GoonBase.LogFile = "GoonBase.log"
 	GoonBase.Path = "GoonBase/"
 	GoonBase.LuaPath = "GoonBase/lua/"
