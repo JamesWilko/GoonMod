@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/22/2014 12:56:27 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/23/2014 2:39:17 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -74,7 +74,7 @@ function Laser:IsNPCPlayerUnitLaser( laser )
 	end
 
 	for id, data in pairs(criminals_manager._characters) do
-		if data.unit ~= nil and data.name ~= criminals_manager:local_character_name() then
+		if data.unit ~= nil and alive(data.unit) and data.name ~= criminals_manager:local_character_name() then
 
 			if data.unit:inventory() and data.unit:inventory():equipped_unit() then 
 

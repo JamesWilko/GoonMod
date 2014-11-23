@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/22/2014 12:56:27 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/23/2014 2:39:17 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -107,9 +107,28 @@ function _G.Print( ... )
 	io.stderr:write( str )
 
 	local file = io.open( GoonBase.LogFile, "a+" )
-	io.output( file )
-	io.write( str )
-	io.close( file )
+	if file ~= nil then
+
+		io.output( file )
+
+		if GoonBase._print_cache ~= nil then
+			for k, v in ipairs(GoonBase._print_cache) do
+				io.write( v )
+			end
+			GoonBase._print_cache = {}
+		end
+		io.write( str )
+
+		io.close( file )
+
+	else
+
+		if GoonBase._print_cache == nil then
+			GoonBase._print_cache = {}
+		end
+		table.insert( GoonBase._print_cache, str )
+
+	end
 
 end
 

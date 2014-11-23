@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/22/2014 12:56:27 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/23/2014 2:39:17 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -79,7 +79,7 @@ function Laser:GetColor( alpha )
 	return Laser.Color:GetColor( alpha ) or Color( alpha or 1, 1, 0, 0 )
 end
 
-function Laser:IsNPCPlayerUnitLaser( laser )
+function Laser:GetCriminalNameFromLaserUnit( laser )
 
 	local criminals_manager = managers.criminals
 	if not criminals_manager then
@@ -87,7 +87,7 @@ function Laser:IsNPCPlayerUnitLaser( laser )
 	end
 
 	for id, data in pairs(criminals_manager._characters) do
-		if data.unit ~= nil and data.name ~= criminals_manager:local_character_name() then
+		if data.unit ~= nil and alive(data.unit) and data.name ~= criminals_manager:local_character_name() then
 
 			if data.unit:inventory() and data.unit:inventory():equipped_unit() then 
 
@@ -105,7 +105,7 @@ function Laser:IsNPCPlayerUnitLaser( laser )
 								gadget = gadget.unit:base()
 
 								if gadget == laser then
-									return true
+									return data.name
 								end
 
 							end
@@ -113,47 +113,6 @@ function Laser:IsNPCPlayerUnitLaser( laser )
 
 					end
 
-				end
-
-			end
-
-		end
-	end
-
-	return false
-
-end
-
-function Laser:GetCriminalNameFromLaserUnit( laser )
-
-	local criminals_manager = managers.criminals
-	if not criminals_manager then
-		return
-	end
-
-	for id, data in pairs(criminals_manager._characters) do
-		if data.unit ~= nil and data.name ~= criminals_manager:local_character_name() then
-
-			local wep_base = data.unit:inventory():equipped_unit():base()
-			if not wep_base then
-				return
-			end
-
-			if wep_base._factory_id ~= nil and wep_base._blueprint ~= nil then
-
-				local gadgets = managers.weapon_factory:get_parts_from_weapon_by_type_or_perk("gadget", wep_base._factory_id, wep_base._blueprint)
-				if gadgets then
-					local gadget
-					for _, i in ipairs(gadgets) do
-
-						gadget = wep_base._parts[i]
-						gadget = gadget.unit:base()
-
-						if gadget == laser then
-							return data.name
-						end
-
-					end
 				end
 
 			end
@@ -304,7 +263,8 @@ function Laser:UpdateLaser( laser, unit, t, dt )
 
 		if laser._is_npc then
 
-			if not Laser:IsNPCPlayerUnitLaser( laser ) then
+			local criminal_name = Laser:GetCriminalNameFromLaserUnit( laser )
+			if criminal_name == nil then
 				return
 			end
 
@@ -313,8 +273,7 @@ function Laser:UpdateLaser( laser, unit, t, dt )
 			end
 
 			if Laser:UsingUniqueColour() then
-				local name = Laser:GetCriminalNameFromLaserUnit( laser )
-				local id = managers.criminals:character_color_id_by_name( name )
+				local id = managers.criminals:character_color_id_by_name( criminal_name )
 				if id == 1 then id = id + 1 end
 				local col = Laser.UniquePlayerColours[ id or 5 ]
 				Laser:SetColourOfLaser( laser, unit, t, dt, col )
