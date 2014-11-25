@@ -17,6 +17,7 @@ GoonBase\lua\EnemyManager.lua
 GoonBase\lua\FragGrenade.lua
 GoonBase\lua\GageAssignmentManager.lua
 GoonBase\lua\GameSetup.lua
+GoonBase\lua\GameStateMachine.lua
 GoonBase\lua\GroupAIManager.lua
 GoonBase\lua\GroupAIStateBase.lua
 GoonBase\lua\GroupAIStateBesiege.lua

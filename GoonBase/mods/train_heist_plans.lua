@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/3/2014 6:23:30 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/26/2014 12:35:33 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -7,7 +7,7 @@
 local Mod = class( BaseMod )
 Mod.id = "TrainHeistPlans"
 Mod.Name = "Separate Train Heist"
-Mod.Desc = "The train heist from the Armoured Transport DLC is available as a separate heist"
+Mod.Desc = "The train heist from the Armoured Transport DLC is available as a separate heist.\nWARNING: Will cause problems with people who do not have the mod."
 Mod.Requirements = { "ExtendedInventory" }
 Mod.Incompatibilities = {}
 
@@ -23,7 +23,7 @@ local Localization = GoonBase.Localization
 Localization.TrainHeist_PlansInv = "Train Intel"
 Localization.TrainHeist_PlansInvDesc = [[Details of a train transporting an experimental turret. This unlocks the Train Transport heist in Crime.net while you have intel in reserve.
 
-Found in an Armoured Transport.]]
+Found in an Armoured Transport. Will be consumed upon successful completion of the heist.]]
 
 Hooks:Add("NarrativeTweakDataInit", "NarrativeTweakDataInit_" .. Mod:ID(), function(data)
 
@@ -72,7 +72,7 @@ Hooks:Add("LevelsTweakDataInit", "LevelsTweakDataInit_" .. Mod:ID(), function(da
 	
 end)
 
-Hooks:Add("ExtendedInventoryInitialized", "ExtendedInventoryInitialized_TrainHeistPlans", function()
+Hooks:Add("ExtendedInventoryInitialized", "ExtendedInventoryInitialized_" .. Mod:ID(), function()
 	
 	local ExtendedInv = _G.GoonBase.ExtendedInventory
 	if ExtendedInv == nil then
@@ -89,7 +89,7 @@ Hooks:Add("ExtendedInventoryInitialized", "ExtendedInventoryInitialized_TrainHei
 
 end)
 
-Hooks:Add("JobManagerOnSetNextInteruptStage", "JobManagerOnSetNextInteruptStage_TrainHeistPlans", function(job_manager, interupt)
+Hooks:Add("JobManagerOnSetNextInteruptStage", "JobManagerOnSetNextInteruptStage_" .. Mod:ID(), function(job_manager, interupt)
 
 	if interupt == "arm_for" then
 		
@@ -98,6 +98,22 @@ Hooks:Add("JobManagerOnSetNextInteruptStage", "JobManagerOnSetNextInteruptStage_
 		local ExtendedInv = _G.GoonBase.ExtendedInventory
 		if ExtendedInv ~= nil then
 			ExtendedInv:AddItem("train_heist_plans", 1)
+		end
+
+	end
+
+end)
+
+Hooks:Add("GameStateMachineChangeStateByName", "GameStateMachineChangeStateByName_" .. Mod:ID(), function(gsm, state_name, params)
+
+	if state_name == "victoryscreen" then
+
+		local level_id = Global.game_settings.level_id
+		if level_id == "arm_for" or level_id == "arm_for_prof" then
+			local ExtendedInv = _G.GoonBase.ExtendedInventory
+			if ExtendedInv ~= nil then
+				ExtendedInv:TakeItem("train_heist_plans", 1)
+			end
 		end
 
 	end

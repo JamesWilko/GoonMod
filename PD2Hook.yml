@@ -45,6 +45,7 @@ PostRequireScripts:
   - [lib/managers/menu/items/menuitemcustomizecontroller, GoonBase/goonbase.lua]
   - [lib/units/weapons/newraycastweaponbase, GoonBase/goonbase.lua]
   - [core/lib/managers/menu/items/coremenuitemslider, GoonBase/goonbase.lua]
+  - [lib/utils/game_state_machine/gamestatemachine, GoonBase/goonbase.lua]
 # END
 
 # -- END OF FILE

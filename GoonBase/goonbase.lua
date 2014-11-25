@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/25/2014 8:11:59 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 11/26/2014 12:35:33 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -93,6 +93,7 @@ GoonBase.HookFiles = {
 	-- ["lib/units/beings/player/playerinventory"] = "PlayerInventory.lua",
 	-- ["lib/units/cameras/fpcameraplayerbase"] = "FPCameraPlayerBase.lua",
 	["core/lib/managers/menu/items/coremenuitemslider"] = "CoreMenuItemSlider.lua",
+	["lib/utils/game_state_machine/gamestatemachine"] = "GameStateMachine.lua",
 
 }
 
