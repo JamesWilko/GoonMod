@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/23/2014 2:39:17 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 12/5/2014 10:37:44 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -32,6 +32,12 @@ Laser.UniquePlayerColours = {
 	[4] = Color("ebe818"), -- MrOrange
 	[5] = Color("ebe818"), -- MrAI
 }
+Laser.OtherColours = {}
+
+-- Networking
+Laser.Network = Laser.Network or {}
+local Network = Laser.Network
+Network.SendLaserColour = "CustomLaserColour"
 
 -- Localization
 local Localization = GoonBase.Localization
@@ -81,6 +87,18 @@ end
 
 function Laser:GetCriminalNameFromLaserUnit( laser )
 
+	if not self._laser_units_lookup then
+		self._laser_units_lookup = {}
+	end
+
+	local laser_key = nil
+	if laser._unit then
+		laser_key = laser._unit:key()
+	end
+	if laser_key and self._laser_units_lookup[laser_key] ~= nil then
+		return self._laser_units_lookup[laser_key]
+	end
+
 	local criminals_manager = managers.criminals
 	if not criminals_manager then
 		return
@@ -105,6 +123,9 @@ function Laser:GetCriminalNameFromLaserUnit( laser )
 								gadget = gadget.unit:base()
 
 								if gadget == laser then
+									if laser_key then
+										self._laser_units_lookup[laser_key] = data.name
+									end
 									return data.name
 								end
 
@@ -120,6 +141,9 @@ function Laser:GetCriminalNameFromLaserUnit( laser )
 		end
 	end
 
+	if laser_key then
+		self._laser_units_lookup[laser_key] = false
+	end
 	return nil
 
 end
@@ -232,7 +256,7 @@ Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_" .. Mod
 		items = {
 			[1] = "Options_TeammateLaser_Same",
 			[2] = "Options_TeammateLaser_Unique",
-			-- [3] = "Options_TeammateLaser_Theirs",
+			[3] = "Options_TeammateLaser_Theirs",
 		},
 		value = GoonBase.Options.WeaponLaser.TeammateLasers,
 	})
@@ -264,7 +288,7 @@ function Laser:UpdateLaser( laser, unit, t, dt )
 		if laser._is_npc then
 
 			local criminal_name = Laser:GetCriminalNameFromLaserUnit( laser )
-			if criminal_name == nil then
+			if not criminal_name then
 				return
 			end
 
@@ -280,7 +304,8 @@ function Laser:UpdateLaser( laser, unit, t, dt )
 			end
 
 			if Laser:UsingPlayerColour() then
-				Laser:SetColourOfLaser( laser, unit, t, dt )
+				local col = Laser.OtherColours[criminal_name]
+				Laser:SetColourOfLaser( laser, unit, t, dt, col )
 			end
 
 			return
@@ -298,8 +323,13 @@ end
 
 function Laser:SetColourOfLaser( laser, unit, t, dt, colour_override )
 
-	if colour_override ~= nil then
-		laser:set_color( colour_override:with_alpha(0.4) )
+	if colour_override ~= nil and colour_override ~= "rainbow" then
+		local psuccess, perror = pcall(function()
+			laser:set_color( colour_override:with_alpha(0.4) )
+		end)
+		if not psuccess then
+			Print("[Error] " .. perror)
+		end
 		return
 	end
 
@@ -307,12 +337,59 @@ function Laser:SetColourOfLaser( laser, unit, t, dt, colour_override )
 		laser:set_color( Laser:GetColor(0.4) )
 	end
 
-	if Laser:IsRainbow() then
+	if Laser:IsRainbow() or colour_override == "rainbow" then
 		Laser:GetColor()
 		local r, g, b = Laser.Color:ToRGB( math.sin(GoonBase.Options.WeaponLaser.RainbowSpeed * t), GoonBase.Options.WeaponLaser.G, GoonBase.Options.WeaponLaser.B )
 		laser:set_color( Color(r, g, b):with_alpha(0.4) )
 	end
 
 end
+
+-- Networked Colour
+Hooks:Add("WeaponLaserSetOn", "WeaponLaserSetOn_" .. Mod:ID(), function(laser)
+
+	if laser._is_npc then
+		return
+	end
+
+	local criminals_manager = managers.criminals
+	if not criminals_manager then
+		return
+	end
+
+	local local_name = criminals_manager:local_character_name()
+	local laser_name = Laser:GetCriminalNameFromLaserUnit( laser )
+	if laser_name == nil or local_name == laser_name then
+		local col_str = GoonBase.Network:PrepareNetworkedColourString( Laser:GetColor() )
+		if Laser:IsRainbow() then
+			col_str = "rainbow"
+		end
+		GoonBase.Network:SendToPeers( Network.SendLaserColour, col_str )
+	end
+
+end)
+
+Hooks:Add("NetworkReceivedData", "NetworkReceivedData_" .. Mod:ID(), function(sender, message, data)
+
+	if message == Network.SendLaserColour then
+
+		local criminals_manager = managers.criminals
+		if not criminals_manager then
+			return
+		end
+
+		local char = criminals_manager:character_name_by_peer_id(sender)
+		local col = data
+		if data ~= "rainbow" then
+			col = GoonBase.Network:NetworkedColourStringToColour(data)
+		end
+
+		if char then
+			Laser.OtherColours[char] = col
+		end
+
+	end
+
+end)
 
 -- END OF FILE

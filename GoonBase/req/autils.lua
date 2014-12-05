@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/12/2014 1:37:55 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 12/5/2014 10:37:44 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -217,6 +217,11 @@ function Base64:Decode(data)
 
 	return data
 
+end
+
+function math.round_with_precision(num, idp)
+	local mult = 10 ^ (idp or 0)
+	return math.floor(num * mult + 0.5) / mult
 end
 
 -- END OF FILE

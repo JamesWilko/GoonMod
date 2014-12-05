@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/23/2014 2:39:17 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 12/5/2014 10:37:44 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -68,6 +68,18 @@ end
 
 function Laser:IsNPCPlayerUnitLaser( laser )
 
+	if not self._laser_units_lookup then
+		self._laser_units_lookup = {}
+	end
+
+	local laser_key = nil
+	if laser._unit then
+		laser_key = laser._unit:key()
+	end
+	if laser_key and self._laser_units_lookup[laser_key] ~= nil then
+		return self._laser_units_lookup[laser_key]
+	end
+
 	local criminals_manager = managers.criminals
 	if not criminals_manager then
 		return
@@ -92,6 +104,9 @@ function Laser:IsNPCPlayerUnitLaser( laser )
 								gadget = gadget.unit:base()
 
 								if gadget == laser then
+									if laser_key then
+										self._laser_units_lookup[laser_key] = true
+									end
 									return true
 								end
 
@@ -107,6 +122,9 @@ function Laser:IsNPCPlayerUnitLaser( laser )
 		end
 	end
 
+	if laser_key then
+		self._laser_units_lookup[laser_key] = false
+	end
 	return false
 
 end

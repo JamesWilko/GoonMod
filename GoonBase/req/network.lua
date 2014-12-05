@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 12/5/2014 10:37:44 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -199,6 +199,35 @@ function GNetwork:ProcessExceptPeer(sender, message, color, icon)
 	if not excepted then
 		Hooks:Call("NetworkReceivedData", sender, splitData[3], splitData[4])
 	end
+
+end
+
+-- Extensions
+
+GNetwork._networked_colour_string = "r:{1}|g:{2}|b:{3}|a:{4}"
+function GNetwork:PrepareNetworkedColourString(col)
+	local dataString = GNetwork._networked_colour_string
+	dataString = dataString:gsub("{1}", math.round_with_precision(col.r, 4))
+	dataString = dataString:gsub("{2}", math.round_with_precision(col.g, 4))
+	dataString = dataString:gsub("{3}", math.round_with_precision(col.b, 4))
+	dataString = dataString:gsub("{4}", math.round_with_precision(col.a, 4))
+	return dataString
+end
+
+function GNetwork:NetworkedColourStringToColour(str)
+
+	local data = string.split( str, "[|]" )
+	if #data < 4 then
+		return nil
+	end
+	
+	local split_str = "[:]"
+	local r = tonumber(string.split(data[1], split_str)[2])
+	local g = tonumber(string.split(data[2], split_str)[2])
+	local b = tonumber(string.split(data[3], split_str)[2])
+	local a = tonumber(string.split(data[4], split_str)[2])
+
+	return Color(a, r, g, b)
 
 end
 

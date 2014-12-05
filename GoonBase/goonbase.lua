@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/26/2014 12:35:33 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 12/5/2014 10:37:44 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -8,7 +8,7 @@ if not RequiredScript then return end
 if not _G.GoonBase then
 	_G.GoonBase = {}
 	GoonBase.Version = 16
-	GoonBase.GameVersion = "1.21.1"
+	GoonBase.GameVersion = "1.22.0"
 	GoonBase.LogFile = "GoonBase.log"
 	GoonBase.Path = "GoonBase/"
 	GoonBase.LuaPath = "GoonBase/lua/"
@@ -89,11 +89,13 @@ GoonBase.HookFiles = {
 	["lib/managers/menu/items/menuitemcustomizecontroller"] = "MenuItemCustomizeController.lua",
 	["lib/network/networkgame"] = "NetworkGame.lua",
 	["lib/managers/criminalsmanager"] = "CriminalsManager.lua",
-	-- ["lib/units/weapons/newraycastweaponbase"] = "NewRaycastWeaponBase.lua",
+	["lib/units/weapons/newraycastweaponbase"] = "NewRaycastWeaponBase.lua",
 	-- ["lib/units/beings/player/playerinventory"] = "PlayerInventory.lua",
 	-- ["lib/units/cameras/fpcameraplayerbase"] = "FPCameraPlayerBase.lua",
 	["core/lib/managers/menu/items/coremenuitemslider"] = "CoreMenuItemSlider.lua",
 	["lib/utils/game_state_machine/gamestatemachine"] = "GameStateMachine.lua",
+	["lib/units/contourext"] = "ContourExt.lua",
+	["lib/units/interactions/interactionext"] = "InteractionExt.lua",
 
 }
 

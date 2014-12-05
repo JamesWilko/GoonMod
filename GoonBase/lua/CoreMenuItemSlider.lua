@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/16/2014 9:49:42 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 12/5/2014 10:37:44 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -19,14 +19,9 @@ function ItemSlider.set_value(self, value)
 	self:dirty()
 end
 
-local function round(num, idp)
-	local mult = 10 ^ (idp or 0)
-	return math.floor(num * mult + 0.5) / mult
-end
-
 function ItemSlider.reload(self, row_item, node)
 	local r = self.orig.reload(self, row_item, node)
-	local value = self:show_value() and string.format("%.2f", round(self:value(), 2)) or string.format("%.0f", self:percentage()) .. "%"
+	local value = self:show_value() and string.format("%.2f", math.round_with_precision(self:value(), 2)) or string.format("%.0f", self:percentage()) .. "%"
 	row_item.gui_slider_text:set_text(value)
 	return r
 end

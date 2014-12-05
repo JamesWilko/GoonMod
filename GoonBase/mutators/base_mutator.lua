@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 12/5/2014 10:37:44 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -26,7 +26,7 @@ end
 function BaseMutator:Setup()
 	self:SetupLocalization()
 	if self:IsEnabled() then
-		self:OnEnabled()
+		self:_OnEnabled()
 	end
 end
 
@@ -116,7 +116,7 @@ function BaseMutator:IncompatibilitiesLocalizedDesc(incompatibilities)
 
 end
 
-function BaseMutator:VerifyIncompatibilities()
+function BaseMutator:VerifyIncompatibilities(skip_menu_verify)
 
 	local should_disable = false
 	local incompatible_mutators = {}
@@ -128,8 +128,12 @@ function BaseMutator:VerifyIncompatibilities()
 		end
 	end
 
-	self:MenuSetEnabled( not should_disable )
-	self:IncompatibilitiesLocalizedDesc( #incompatible_mutators > 0 and incompatible_mutators or nil )
+	if not skip_menu_verify then
+		self:MenuSetEnabled( not should_disable )
+		self:IncompatibilitiesLocalizedDesc( #incompatible_mutators > 0 and incompatible_mutators or nil )
+	end
+
+	return not should_disable
 
 end
 
@@ -153,9 +157,9 @@ function BaseMutator:OnToggled(enabled)
 	GoonBase.Options:Save()
 
 	if enabled then
-		self:OnEnabled()
+		self:_OnEnabled()
 	else
-		self:OnDisabled()
+		self:_OnDisabled()
 	end
 
 end
@@ -171,7 +175,7 @@ function BaseMutator:IsEnabled()
 	end
 
 	if Global.game_settings ~= nil then
-		if Global.game_settings.permission == "public" then
+		if GoonBase.Network:IsMultiplayer() and Global.game_settings.permission == "public" then
 			return false
 		end
 	end
@@ -190,8 +194,22 @@ function BaseMutator:ShouldBeEnabled()
 
 end
 
+function BaseMutator:ForceEnable()
+	return self:_OnEnabled()
+end
+
+function BaseMutator:_OnEnabled()
+	Mutators.ActiveMutators[self:ID()] = true
+	self:OnEnabled()
+end
+
 function BaseMutator:OnEnabled()
 	Print("Base Mutator Enabled")
+end
+
+function BaseMutator:_OnDisabled()
+	Mutators.ActiveMutators[self:ID()] = nil
+	self:OnDisabled()
 end
 
 function BaseMutator:OnDisabled()
