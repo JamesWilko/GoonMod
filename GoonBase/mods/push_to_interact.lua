@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 12/6/2014 5:33:10 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 12/7/2014 1:16:12 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -59,7 +59,7 @@ Hooks:Add("PlayerStandardCheckActionInteract", "PlayerStandardCheckActionInterac
 	elseif input.btn_interact_release then
 
 		local dt = t - ply._last_interact_press_t
-		local always_use = GoonBase.Options.PushToInteract.GraceTime < 0.001
+		local always_use = (GoonBase.Options.PushToInteract.GraceTime or 0.2) < 0.001
 		if always_use or dt >= (GoonBase.Options.PushToInteract.GraceTime or 0.2) then
 			return false
 		end
