@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 12/5/2014 10:37:44 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 12/6/2014 12:06:38 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -199,7 +199,6 @@ function BaseMutator:ForceEnable()
 end
 
 function BaseMutator:_OnEnabled()
-	Mutators.ActiveMutators[self:ID()] = true
 	self:OnEnabled()
 end
 
@@ -208,7 +207,6 @@ function BaseMutator:OnEnabled()
 end
 
 function BaseMutator:_OnDisabled()
-	Mutators.ActiveMutators[self:ID()] = nil
 	self:OnDisabled()
 end
 

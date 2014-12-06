@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/19/2014 9:35:49 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 12/6/2014 12:06:38 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -24,6 +24,7 @@ _G.GoonBase.Mutators = _G.GoonBase.Mutators or {}
 local Mutators = _G.GoonBase.Mutators
 Mutators.MenuID = "goonbase_mutators_menu"
 Mutators.LoadedMutators = Mutators.LoadedMutators or {}
+Mutators.ActiveMutators = Mutators.ActiveMutators or {}
 
 -- Paths
 Mutators.MutatorsPath = "/"
@@ -65,7 +66,9 @@ Mutators will also disabled ALL achievements while they are active. If you are a
 Localization.Mutators_HelpAccept = "Close"
 
 -- Options
-GoonBase.Options.Mutators = GoonBase.Options.Mutators or {}
+if GoonBase.Options.Mutators == nil then
+	GoonBase.Options.Mutators = {}
+end
 
 -- Add mutators menu
 Hooks:Add("MenuManagerSetupCustomMenus", "MenuManagerSetupCustomMenus_MutatorsMenu", function(menu_manager, menu_nodes)
@@ -84,14 +87,14 @@ Hooks:Add("MenuManagerSetupCustomMenus", "MenuManagerSetupCustomMenus_MutatorsMe
 		desc = "Mutators_HelpButtonDesc",
 		callback = "open_mutators_menu_help",
 		menu_id = Mutators.MenuID,
-		priority = 1000,
+		priority = 1003,
 	})
 
 	GoonBase.MenuHelper:AddDivider({
 		id = "goonbase_mutators_menu_help_divider",
 		menu_id = Mutators.MenuID,
-		size = 16,
-		priority = 999,
+		size = 8,
+		priority = 1002,
 	})
 
 	-- Add mutators to menu
@@ -138,7 +141,7 @@ end
 function Mutators:LoadMutators()
 	
 	for k, v in pairs( self.MutatorsList ) do
-		dofile( GoonBase.Path .. self.MutatorsPath .. v )		
+		SafeDoFile( GoonBase.Path .. self.MutatorsPath .. v )		
 	end
 
 end
