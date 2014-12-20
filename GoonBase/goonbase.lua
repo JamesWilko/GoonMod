@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 12/6/2014 12:06:38 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 12/21/2014 1:04:58 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -7,8 +7,8 @@ if not RequiredScript then return end
 
 if not _G.GoonBase then
 	_G.GoonBase = {}
-	GoonBase.Version = 18
-	GoonBase.GameVersion = "1.22.1"
+	GoonBase.Version = 19
+	GoonBase.GameVersion = "1.23.2"
 	GoonBase.LogFile = "GoonBase.log"
 	GoonBase.Path = "GoonBase/"
 	GoonBase.LuaPath = "GoonBase/lua/"
@@ -67,6 +67,8 @@ GoonBase.HookFiles = {
 	["lib/managers/group_ai_states/groupaistatebase"] = "GroupAIStateBase.lua",
 	["lib/managers/group_ai_states/groupaistatebesiege"] = "GroupAIStateBesiege.lua",
 	["lib/units/beings/player/states/playerstandard"] = "PlayerStandard.lua",
+	["lib/units/beings/player/playerdamage"] = "PlayerDamage.lua",
+	["lib/managers/playermanager"] = "PlayerManager.lua",
 	["lib/managers/gageassignmentmanager"] = "GageAssignmentManager.lua",
 	["lib/managers/achievmentmanager"] = "AchievementManager.lua",
 	["lib/tweak_data/infamytweakdata"] = "InfamyTweakData.lua",
@@ -90,12 +92,17 @@ GoonBase.HookFiles = {
 	["lib/network/networkgame"] = "NetworkGame.lua",
 	["lib/managers/criminalsmanager"] = "CriminalsManager.lua",
 	["lib/units/weapons/newraycastweaponbase"] = "NewRaycastWeaponBase.lua",
+	["lib/units/weapons/npcraycastweaponbase"] = "NPCRaycastWeaponBase.lua",
 	-- ["lib/units/beings/player/playerinventory"] = "PlayerInventory.lua",
 	-- ["lib/units/cameras/fpcameraplayerbase"] = "FPCameraPlayerBase.lua",
 	["core/lib/managers/menu/items/coremenuitemslider"] = "CoreMenuItemSlider.lua",
 	["lib/utils/game_state_machine/gamestatemachine"] = "GameStateMachine.lua",
 	["lib/units/contourext"] = "ContourExt.lua",
 	["lib/units/interactions/interactionext"] = "InteractionExt.lua",
+	["lib/units/enemies/spooc/actions/lower_body/actionspooc"] = "ActionSpooc.lua",
+	["lib/managers/menu/menucomponentmanager"] = "MenuComponentManager.lua",
+	["lib/managers/menu/missionbriefinggui"] = "MissionBriefingGUI.lua",
+	["lib/network/matchmaking/networkmatchmakingsteam"] = "NetworkMatchMakingSteam.lua",
 
 }
 
@@ -126,6 +133,7 @@ function _G.Print( ... )
 
 	else
 
+		io.stderr:write( "[Error] Could not write to file, caching print string: '" .. str .. "'" )
 		if GoonBase._print_cache == nil then
 			GoonBase._print_cache = {}
 		end

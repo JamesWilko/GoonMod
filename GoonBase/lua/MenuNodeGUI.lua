@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 12/21/2014 1:04:58 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 

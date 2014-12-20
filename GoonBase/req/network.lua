@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 12/5/2014 10:37:44 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 12/21/2014 1:04:58 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -74,6 +74,18 @@ function GNetwork:GetNameFromPeerID(id)
 
 	return "No Name"
 	
+end
+
+function GNetwork:GetPeers()
+	return managers.network:session():peers()
+end
+
+function GNetwork:GetNumberOfPeers()
+	local i = 0
+	for k, v in pairs( managers.network:session():peers() ) do
+		i = i + 1
+	end
+	return i
 end
 
 function GNetwork:SendToPeers(type, data)

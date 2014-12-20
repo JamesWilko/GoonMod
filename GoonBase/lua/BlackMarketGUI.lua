@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/17/2014 10:23:52 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 12/21/2014 1:04:58 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -1144,7 +1144,7 @@ function BlackMarketGui._start_page_data(self)
 			name = "bm_menu_characters",
 			category = "characters",
 			on_create_func_name = "populate_characters",
-			override_slots = {3, 2},
+			override_slots = {4, 2},
 			identifier = self.identifiers.character
 		})
 	end

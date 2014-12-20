@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/19/2014 12:01:24 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 12/21/2014 1:04:58 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -82,6 +82,80 @@ function MenuManager._goonbase_process_pause_menu( menu_manager )
 		Print("[Error] " .. perror)
 	end
 
+end
+
+-- Start game delaying
+Hooks:RegisterHook("MenuCallbackHandlerPreStartTheGame")
+function MenuCallbackHandler.start_the_game(self)
+
+	if not self._start_the_game then
+		self._start_the_game = function()
+			self.orig.start_the_game()
+		end
+	end
+
+	local r = Hooks:ReturnCall("MenuCallbackHandlerPreStartTheGame", self)
+	if r then
+		self._delayed_start_game = true
+		return nil
+	end
+
+	self.orig.start_the_game(self)
+end
+
+function MenuCallbackHandler:_process_start_game_delay( t, dt )
+
+	if self._delayed_start_game and #self._start_delays == 0 then
+		self._delayed_start_game = false
+		if self._start_the_game then
+			self:_start_the_game()
+		end
+	end
+
+end
+
+function MenuCallbackHandler:delay_game_start( id )
+
+	self._delayed_start_game = true
+
+	if not self._start_delays then
+		self._start_delays = {}
+	end
+	table.insert( self._start_delays, id ) 
+
+end
+
+function MenuCallbackHandler:release_game_start_delay( id )
+
+	for i = #self._start_delays, 0, -1 do
+		if self._start_delays[i] == id then
+			table.remove( self._start_delays, i )
+		end
+	end
+
+end
+
+Hooks:Add("MenuUpdate", "MenuUpdate_MenuManager", function(t, dt)
+	MenuCallbackHandler._process_start_game_delay(MenuCallbackHandler, t, dt)
+end)
+
+-- Lobby permissions
+Hooks:RegisterHook("MenuCallbackHandlerPreChoseLobbyPermission")
+function MenuCallbackHandler.choice_lobby_permission(self, item)
+	local r = Hooks:ReturnCall("MenuCallbackHandlerPreChoseLobbyPermission", self, item)
+	if r then
+		return
+	end
+	self.orig.choice_lobby_permission(self, item)
+end
+
+Hooks:RegisterHook("MenuCallbackHandlerPreCrimeNetChoseLobbyPermission")
+function MenuCallbackHandler.choice_crimenet_lobby_permission(self, item)
+	local r = Hooks:ReturnCall("MenuCallbackHandlerPreCrimeNetChoseLobbyPermission", self, item)
+	if r then
+		return
+	end
+	self.orig.choice_crimenet_lobby_permission(self, item)
 end
 
 -- END OF FILE

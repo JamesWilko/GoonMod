@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 12/6/2014 12:06:38 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 12/21/2014 1:04:58 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -13,7 +13,10 @@ BaseMutator.OptionsDesc = "The base mutator"
 BaseMutator.MenuPrefix = "toggle_mutator_"
 BaseMutator.MenuSuffix = ""
 BaseMutator.HideInOptionsMenu = false
+BaseMutator.AllPlayersRequireMod = false
 BaseMutator.Incompatibilities = {}
+
+BaseMutator._AllPlayersRequirementText = "\nWarning: All players must have GoonMod and Mutators installed for this mutator to work properly!"
 
 function BaseMutator:ID()
 	return self.Id
@@ -21,6 +24,10 @@ end
 
 function BaseMutator:IncompatibleMutators()
 	return self.Incompatibilities
+end
+
+function BaseMutator:DoAllPlayersRequireMod()
+	return self.AllPlayersRequireMod
 end
 
 function BaseMutator:Setup()
@@ -31,10 +38,18 @@ function BaseMutator:Setup()
 end
 
 function BaseMutator:SetupLocalization()
+
 	local Localization = _G.GoonBase.Localization
-	Localization[ self:GetName() ] = self.OptionsName
+
 	self.OptionsDescOrig = self.OptionsDesc
+	if self:DoAllPlayersRequireMod() then
+		self.OptionsDesc = self.OptionsDesc .. self._AllPlayersRequirementText
+	end
+
+	Localization[ self:GetName() ] = self.OptionsName
 	Localization[ self:GetDesc() ] = self.OptionsDesc
+	Localization[ self:GetOriginalDesc() ] = self.OptionsDescOrig
+
 end
 
 function BaseMutator:SetupMenu()
@@ -85,17 +100,25 @@ function BaseMutator:GetDesc()
 	return "mutator_" .. self.Id .. "_desc"
 end
 
+function BaseMutator:GetOriginalDesc()
+	return "mutator_" .. self.Id .. "_desc_orig"
+end
+
 function BaseMutator:GetLocalizedName()
 	return managers.localization:text( self:GetName() )
 end
 
-function BaseMutator:GetLocalizedDesc()
-	return managers.localization:text( self:GetDesc() )
+function BaseMutator:GetLocalizedDesc(ignore_requirement)
+	local desc = managers.localization:text( self:GetOriginalDesc() )
+	if not ignore_requirement and self:DoAllPlayersRequireMod() then
+		desc = desc .. self._AllPlayersRequirementText
+	end
+	return desc
 end
 
 function BaseMutator:IncompatibilitiesLocalizedDesc(incompatibilities)
 
-	local new_str = self.OptionsDescOrig
+	local new_str = self:GetLocalizedDesc()
 
 	if incompatibilities ~= nil then
 
@@ -122,7 +145,7 @@ function BaseMutator:VerifyIncompatibilities(skip_menu_verify)
 	local incompatible_mutators = {}
 
 	for k, v in pairs( self:IncompatibleMutators() ) do
-		if Mutators.LoadedMutators[v] ~= nil and Mutators.LoadedMutators[v]:ShouldBeEnabled() then
+		if ( Mutators.LoadedMutators[v] ~= nil and Mutators.LoadedMutators[v]:ShouldBeEnabled() ) or Mutators.ActiveMutators[v] then
 			should_disable = true
 			table.insert( incompatible_mutators, v )
 		end
@@ -171,6 +194,9 @@ function BaseMutator:IsEnabled()
 	end
 
 	if GoonBase.Network:IsMultiplayer() and not GoonBase.Network:IsHost() then
+		if GoonBase.Options.MultiplayerMutators then
+			return GoonBase.Options.MultiplayerMutators[self.Id] or false
+		end
 		return false
 	end
 
@@ -180,8 +206,27 @@ function BaseMutator:IsEnabled()
 		end
 	end
 
-	return GoonBase.Options.Mutators[self.Id] or false
+	if self:_GetMultiplayerMutatorsCount() > 0 then
+		if GoonBase.Options.MultiplayerMutators and GoonBase.Options.MultiplayerMutators[self.Id] then
+			return GoonBase.Options.MultiplayerMutators[self.Id]
+		end
+	else
+		return GoonBase.Options.Mutators[self.Id] or false
+	end
 
+	return false
+
+end
+
+function BaseMutator:_GetMultiplayerMutatorsCount()
+	if not GoonBase.Options.MultiplayerMutators then
+		return 0
+	end
+	local multiplayerCount = 0
+	for k, v in pairs( GoonBase.Options.MultiplayerMutators ) do
+		multiplayerCount = multiplayerCount + 1
+	end
+	return multiplayerCount
 end
 
 function BaseMutator:ShouldBeEnabled()
@@ -199,7 +244,9 @@ function BaseMutator:ForceEnable()
 end
 
 function BaseMutator:_OnEnabled()
+	Mutators.ActiveMutators[self:ID()] = true
 	self:OnEnabled()
+	self:_UpdateMatchmaking()
 end
 
 function BaseMutator:OnEnabled()
@@ -207,11 +254,23 @@ function BaseMutator:OnEnabled()
 end
 
 function BaseMutator:_OnDisabled()
+	if not Mutators:IsInGame() then
+		Mutators.ActiveMutators[self:ID()] = nil
+	end
 	self:OnDisabled()
+	self:_UpdateMatchmaking()
 end
 
 function BaseMutator:OnDisabled()
 	Print("Base Mutator Disabled")
+end
+
+function BaseMutator:_UpdateMatchmaking()
+	local psuccess, perror = pcall(function()
+		if MenuCallbackHandler then
+			MenuCallbackHandler:update_matchmake_attributes()
+		end
+	end)
 end
 
 -- END OF FILE

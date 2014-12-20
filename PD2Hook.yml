@@ -25,6 +25,8 @@ PostRequireScripts:
   - [lib/managers/group_ai_states/groupaistatebase, GoonBase/goonbase.lua]
   - [lib/managers/group_ai_states/groupaistatebesiege, GoonBase/goonbase.lua]
   - [lib/units/beings/player/states/playerstandard, GoonBase/goonbase.lua]
+  - [lib/units/beings/player/playerdamage, GoonBase/goonbase.lua]
+  - [lib/managers/playermanager, GoonBase/goonbase.lua]
   - [lib/managers/gageassignmentmanager, GoonBase/goonbase.lua]
   - [lib/setups/gamesetup, GoonBase/goonbase.lua]
   - [lib/setups/menusetup, GoonBase/goonbase.lua]
@@ -44,8 +46,15 @@ PostRequireScripts:
   - [lib/managers/menu/menunodegui, GoonBase/goonbase.lua]
   - [lib/managers/menu/items/menuitemcustomizecontroller, GoonBase/goonbase.lua]
   - [lib/units/weapons/newraycastweaponbase, GoonBase/goonbase.lua]
+  - [lib/units/weapons/npcraycastweaponbase, GoonBase/goonbase.lua]
   - [core/lib/managers/menu/items/coremenuitemslider, GoonBase/goonbase.lua]
   - [lib/utils/game_state_machine/gamestatemachine, GoonBase/goonbase.lua]
+  - [lib/units/contourext, GoonBase/goonbase.lua]
+  - [lib/units/interactions/interactionext, GoonBase/goonbase.lua]
+  - [lib/units/enemies/spooc/actions/lower_body/actionspooc, GoonBase/goonbase.lua]
+  - [lib/managers/menu/menucomponentmanager, GoonBase/goonbase.lua]
+  - [lib/managers/menu/missionbriefinggui, GoonBase/goonbase.lua]
+  - [lib/network/matchmaking/networkmatchmakingsteam, GoonBase/goonbase.lua]
 # END
 
 # -- END OF FILE

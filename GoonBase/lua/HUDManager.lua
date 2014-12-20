@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 12/21/2014 1:04:58 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -21,6 +21,21 @@ Hooks:RegisterHook("HUDManagerSetMugshotDowned")
 function HUDManager.set_mugshot_downed(this, id)
 	this.orig.set_mugshot_downed(this, id)
 	Hooks:PCall("HUDManagerSetMugshotDowned", this, id)
+end
+
+Hooks:RegisterHook("HUDManagerPreAddWaypoint")
+function HUDManager.add_waypoint(self, id, data)
+	local r = Hooks:ReturnCall("HUDManagerPreAddWaypoint", self, id, data)
+	if r then
+		return
+	end
+	self.orig.add_waypoint(self, id, data)
+end
+
+Hooks:RegisterHook("HUDManagerPreAddNameLabel")
+function HUDManager._add_name_label(self, data)
+	Hooks:Call("HUDManagerPreAddNameLabel", self, data)
+	self.orig._add_name_label(self, data)
 end
 
 -- END OF FILE

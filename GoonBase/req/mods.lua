@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/16/2014 9:49:42 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 12/21/2014 1:04:58 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -112,7 +112,7 @@ function Mods:LoadMods()
 
 	if GoonBase.SupportedVersion then
 		for k, v in pairs( GoonBase.ModFiles ) do
-			dofile( GoonBase.Path .. v )
+			SafeDoFile( GoonBase.Path .. v )
 		end
 	end
 
