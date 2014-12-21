@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 12/21/2014 1:04:58 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 12/21/2014 4:45:41 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -22,7 +22,7 @@ function Mutator:OnEnabled()
 
 		Hooks:PostHook(NewRaycastWeaponBase, self._WeaponFirehkIDPost, function(weapon, from_pos, direction, dmg_mul, shoot_player, spread_mul, autohit_mul, suppr_mul, target_unit)
 			local roll = math.rand(1)
-			local chance = 0.05
+			local chance = 0.12
 			local gun = weapon.parent_weapon and weapon.parent_weapon:base() or weapon
 			if roll < chance then
 				gun:set_ammo_remaining_in_clip(0)

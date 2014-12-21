@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 12/21/2014 1:04:58 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 12/21/2014 4:45:41 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -29,13 +29,13 @@ function HUDManager.add_waypoint(self, id, data)
 	if r then
 		return
 	end
-	self.orig.add_waypoint(self, id, data)
+	return self.orig.add_waypoint(self, id, data)
 end
 
 Hooks:RegisterHook("HUDManagerPreAddNameLabel")
 function HUDManager._add_name_label(self, data)
 	Hooks:Call("HUDManagerPreAddNameLabel", self, data)
-	self.orig._add_name_label(self, data)
+	return self.orig._add_name_label(self, data)
 end
 
 -- END OF FILE

@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 12/21/2014 1:04:58 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 12/21/2014 4:45:41 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -26,7 +26,6 @@ Mutators.MenuID = "goonbase_mutators_menu"
 Mutators.MatchmakingData = "gb_mutators"
 Mutators.LoadedMutators = Mutators.LoadedMutators or {}
 Mutators.ActiveMutators = Mutators.ActiveMutators or {}
-Mutators.MultiplayerMutators = Mutators.MultiplayerMutators or {}
 Mutators.ClientMutatorCheck = Mutators.ClientMutatorCheck or {}
 Mutators.NetworkTimeoutTime = 3
 
@@ -112,7 +111,6 @@ Localization.MissingMutators_Cancel = "Cancel"
 -- Options
 if GoonBase.Options.Mutators == nil then
 	GoonBase.Options.Mutators = {}
-	GoonBase.Options.MultiplayerMutators = {}
 	GoonBase.Options.Mutators.RandomizerMode = 1
 end
 
@@ -228,10 +226,29 @@ function Mutators:RegisterMutator(mutator)
 	self.LoadedMutators[ mutator:ID() ] = mutator
 end
 
+function Mutators:SetupMutatorsLocalization()
+	for k, v in pairs( Mutators.LoadedMutators ) do
+		v:SetupLocalization()
+	end
+end
+
 function Mutators:SetupMutators()
 
-	for k, v in pairs( Mutators.LoadedMutators ) do
-		v:Setup()
+	if Global.game_settings and Global.game_settings.active_mutators then
+
+		for k, v in pairs( Global.game_settings.active_mutators ) do
+			if v and Mutators.LoadedMutators[k] then
+				Mutators.LoadedMutators[k]:Setup()
+			end
+		end
+
+		return
+	else
+
+		for k, v in pairs( Mutators.LoadedMutators ) do
+			v:Setup()
+		end
+
 	end
 
 end
@@ -330,7 +347,6 @@ function Mutators:AddRandomizedMutations()
 		end
 
 		local random_mutations = {}
-		GoonBase.Options.MultiplayerMutators = {}
 
 		for i = 1, Mutators:GetNumberOfRandomMutations(), 1 do
 
@@ -355,13 +371,10 @@ function Mutators:AddRandomizedMutations()
 				local mutation = Mutators.LoadedMutators[mutation_id]
 				if mutation:VerifyIncompatibilities(true) then
 					mutation:ForceEnable()
-					GoonBase.Options.MultiplayerMutators[mutation_id] = true
 				end
 			end
 
 		end
-
-		GoonBase.Options:Save()
 
 	end
 
@@ -373,6 +386,24 @@ function Mutators:GetNumberOfActiveMutators()
 		i = i + 1
 	end
 	return i
+end
+
+function Mutators:GetNumberOfMutatorsToBeActive()
+
+	local i = 0
+
+	for k, v in pairs( Mutators.LoadedMutators ) do
+		if v:ShouldBeEnabled() then
+			i = i + 1
+		end
+	end
+
+	if self:IsRandomizerEnabled() then
+		i = i + self:GetNumberOfRandomMutations()
+	end
+
+	return i
+
 end
 
 function Mutators:PrintActiveMutators()
@@ -409,18 +440,15 @@ Hooks:Add("GoonBasePostLoadedMods", "GoonBasePostLoadedMods_Mutators", function(
 	Hooks:Call("GoonBaseRegisterMutators")
 
 	Print("[Mutators] Setting up mutators")
+	Mutators:SetupMutatorsLocalization()
 	Mutators:SetupMutators()
-
-	Mutators:PrintActiveMutators()
-	GoonBase.Options.MultiplayerMutators = {}
-	GoonBase.Options:Save()
 
 end)
 
 -- Permission locking
 Hooks:Add("PostCreateCrimenetContractGUI", "PostCreateCrimenetContractGUI_Mutators", function( menu, node, gui )
 
-	if Mutators:GetNumberOfActiveMutators() < 1 then
+	if Mutators:GetNumberOfMutatorsToBeActive() < 1 then
 		return
 	end
 	if not gui._node then
@@ -451,7 +479,7 @@ end )
 
 function Mutators:ForcePrivateGamesForMutators( item )
 
-	if item:value() == "public" and Mutators:GetNumberOfActiveMutators() > 0 then
+	if item:value() == "public" and Mutators:GetNumberOfMutatorsToBeActive() > 0 then
 		item:set_value( "friends_only" )
 		if Mutators:IsInGame() then
 			Mutators:ShowPublicGamesWarningIngame()
@@ -495,8 +523,24 @@ end
 -- Network Mutators
 Hooks:Add( "MenuCallbackHandlerPreStartTheGame", "MenuCallbackHandlerPreStartTheGame_Mutators", function( callback_handler )
 
+	Mutators.ActiveMutators = {}
+	for k, v in pairs( Mutators.LoadedMutators ) do
+		if v and v:ShouldBeEnabled() then
+			Mutators.ActiveMutators[k] = true
+		end
+	end
+
 	if not GoonBase.Network:IsMultiplayer() or ( GoonBase.Network:IsMultiplayer() and GoonBase.Network:IsHost() ) then
 		Mutators:AddRandomizedMutations()
+	end
+
+	if Global.game_settings then
+
+		Global.game_settings.active_mutators = {}
+		for k, v in pairs( Mutators.ActiveMutators ) do
+			Global.game_settings.active_mutators[k] = v
+		end
+
 	end
 
 	if Mutators:CheckNetworkMutators(callback_handler) then
@@ -522,7 +566,7 @@ Hooks:Add( "MenuCallbackHandlerPreStartTheGame", "MenuCallbackHandlerPreStartThe
 end )
 
 function Mutators:CheckNetworkMutators( callback_handler )
-	if Global.game_settings and not Global.game_settings.single_player and Mutators:GetNumberOfActiveMutators() > 0 then
+	if Global.game_settings and not Global.game_settings.single_player then
 		if GoonBase.Network:IsMultiplayer() and GoonBase.Network:IsHost() and GoonBase.Network:GetNumberOfPeers() > 0 then
 			return true
 		end
@@ -577,26 +621,27 @@ Hooks:Add("NetworkMatchmakingJoinOKServer", "NetworkMatchmakingJoinOKServer_" ..
 	local lobby = Steam:lobby(room_id)
 	local mutator_key = lobby:key_value( Mutators.MatchmakingData )
 	if mutator_key == "value_missing" or mutator_key == "value_pending" then
-		Mutators.MultiplayerMutators = {}
-		GoonBase.Options.MultiplayerMutators = {}
+		if Global.game_settings and Global.game_settings.active_mutators then
+			Global.game_settings.active_mutators = {}
+		end
 		return
+	end
+
+	if Global.game_settings then
+		Global.game_settings.active_mutators = {}
 	end
 
 	local mutators_data = string.split( mutator_key, "[/]" )
 	for k, v in pairs( mutators_data ) do
 		if not string.is_nil_or_empty(v) then
-			
-			Mutators.MultiplayerMutators[v] = true
-			GoonBase.Options.MultiplayerMutators[v] = true
-
+			Global.game_settings.active_mutators[v] = true
 		end
 	end
-	GoonBase.Options:Save()
 
 	Hooks:PreHook( ClientNetworkSession, "on_join_request_cancelled", "NetworkSessionOnJoinRequestCancelled_" .. Mod:ID(), function()
-		Mutators.MultiplayerMutators = {}
-		GoonBase.Options.MultiplayerMutators = {}
-		GoonBase.Options:Save()
+		if Global.game_settings then
+			Global.game_settings.active_mutators = {}
+		end
 	end )
 
 end)
@@ -635,9 +680,9 @@ function Mutators:ClearClientsNetworkedMutators()
 end
 
 function Mutators:ClearNetworkedMutators()
-	Mutators.MultiplayerMutators = {}
-	GoonBase.Options.MultiplayerMutators = {}
-	GoonBase.Options:Save()
+	if Global.game_settings then
+		Global.game_settings.active_mutators = {}
+	end
 end
 
 function Mutators:SendNetworkedMutatorToClients( mutator_id, enabled )
@@ -649,9 +694,12 @@ function Mutators:SendNetworkedMutatorToClients( mutator_id, enabled )
 end
 
 function Mutators:SetNetworkedMutator( mutator_id, enable )
-	Mutators.MultiplayerMutators[mutator_id] = enable
-	GoonBase.Options.MultiplayerMutators[mutator_id] = enable
-	GoonBase.Options:Save()
+	if Global.game_settings then
+		if not Global.game_settings.active_mutators then
+			Global.game_settings.active_mutators = {}
+		end
+		Global.game_settings.active_mutators[mutator_id] = enable
+	end
 end
 
 function Mutators:CheckIfClientsHaveMutator( mutator_id )

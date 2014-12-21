@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 12/21/2014 1:04:58 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 12/21/2014 4:45:41 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -716,7 +716,9 @@ function BlackMarketGui.populate_mods(self, data)
 		new_data.free_of_charge = tweak_data.blackmarket.weapon_mods[mod_name] and tweak_data.blackmarket.weapon_mods[mod_name].is_a_unlockable
 		new_data.unlock_tracker = achievement_tracker[new_data.name] or false
 		if tweak_data.lootdrop.global_values[mod_global_value] and tweak_data.lootdrop.global_values[mod_global_value].dlc and not tweak_data.dlc[mod_global_value].free and not managers.dlc:has_dlc(mod_global_value) then
-			new_data.unlocked = -math.abs(new_data.unlocked)
+			if type(new_data.unlocked) == "number" then
+				new_data.unlocked = -math.abs(new_data.unlocked)
+			end
 			new_data.unlocked = new_data.unlocked ~= 0 and new_data.unlocked or false
 			new_data.lock_texture = self:get_lock_icon(new_data)
 			new_data.dlc_locked = tweak_data.lootdrop.global_values[new_data.global_value].unlock_id or "bm_menu_dlc_locked"
@@ -991,13 +993,17 @@ function BlackMarketGui.populate_choose_mask_mod(self, data)
 		new_data.global_value = mods.global_value
 		local is_locked = false
 		if new_data.amount < 1 and mods.id ~= "plastic" and mods.id ~= "no_color_full_material" then
-			new_data.unlocked = -math.abs(new_data.unlocked)
+			if type(new_data.unlocked) == "number" then
+				new_data.unlocked = -math.abs(new_data.unlocked)
+			end
 			new_data.lock_texture = true
 			new_data.dlc_locked = "bm_menu_amount_locked"
 			is_locked = true
 		end
 		if tweak_data.lootdrop.global_values[new_data.global_value] and tweak_data.lootdrop.global_values[new_data.global_value].dlc and not tweak_data.dlc[new_data.global_value].free and not managers.dlc:has_dlc(new_data.global_value) then
-			new_data.unlocked = -math.abs(new_data.unlocked)
+			if type(new_data.unlocked) == "number" then
+				new_data.unlocked = -math.abs(new_data.unlocked)
+			end
 			new_data.lock_texture = self:get_lock_icon(new_data)
 			new_data.dlc_locked = tweak_data.lootdrop.global_values[new_data.global_value].unlock_id or "bm_menu_dlc_locked"
 			is_locked = true
@@ -1308,7 +1314,9 @@ function BlackMarketGui.populate_buy_mask(self, data)
 		end
 
 		if tweak_data.lootdrop.global_values[new_data.global_value] and tweak_data.lootdrop.global_values[new_data.global_value].dlc and not tweak_data.dlc[new_data.global_value].free and not managers.dlc:has_dlc(new_data.global_value) then
-			new_data.unlocked = -math.abs(new_data.unlocked)
+			if type(new_data.unlocked) == "number" then
+				new_data.unlocked = -math.abs(new_data.unlocked)
+			end
 			new_data.lock_texture = self:get_lock_icon(new_data)
 			new_data.dlc_locked = tweak_data.lootdrop.global_values[new_data.global_value].unlock_id or "bm_menu_dlc_locked"
 		end
@@ -1318,7 +1326,9 @@ function BlackMarketGui.populate_buy_mask(self, data)
 			local infamy_lock = tweak_data.blackmarket.masks[new_data.name].infamy_lock
 			local is_unlocked = managers.infamy:owned(infamy_lock)
 			if not is_unlocked then
-				new_data.unlocked = -math.abs(new_data.unlocked)
+				if type(new_data.unlocked) == "number" then
+					new_data.unlocked = -math.abs(new_data.unlocked)
+				end
 				new_data.lock_texture = "guis/textures/pd2/lock_infamy"
 				new_data.infamy_lock = infamy_lock
 			end

@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 12/21/2014 1:04:58 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 12/21/2014 4:45:41 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -31,7 +31,6 @@ function BaseMutator:DoAllPlayersRequireMod()
 end
 
 function BaseMutator:Setup()
-	self:SetupLocalization()
 	if self:IsEnabled() then
 		self:_OnEnabled()
 	end
@@ -189,14 +188,7 @@ end
 
 function BaseMutator:IsEnabled()
 	
-	if GoonBase.Options.Mutators == nil then
-		return false
-	end
-
 	if GoonBase.Network:IsMultiplayer() and not GoonBase.Network:IsHost() then
-		if GoonBase.Options.MultiplayerMutators then
-			return GoonBase.Options.MultiplayerMutators[self.Id] or false
-		end
 		return false
 	end
 
@@ -204,29 +196,13 @@ function BaseMutator:IsEnabled()
 		if GoonBase.Network:IsMultiplayer() and Global.game_settings.permission == "public" then
 			return false
 		end
-	end
-
-	if self:_GetMultiplayerMutatorsCount() > 0 then
-		if GoonBase.Options.MultiplayerMutators and GoonBase.Options.MultiplayerMutators[self.Id] then
-			return GoonBase.Options.MultiplayerMutators[self.Id]
+		if Global.game_settings.active_mutators then
+			return Global.game_settings.active_mutators[self.Id] or false
 		end
-	else
-		return GoonBase.Options.Mutators[self.Id] or false
 	end
 
 	return false
 
-end
-
-function BaseMutator:_GetMultiplayerMutatorsCount()
-	if not GoonBase.Options.MultiplayerMutators then
-		return 0
-	end
-	local multiplayerCount = 0
-	for k, v in pairs( GoonBase.Options.MultiplayerMutators ) do
-		multiplayerCount = multiplayerCount + 1
-	end
-	return multiplayerCount
 end
 
 function BaseMutator:ShouldBeEnabled()
