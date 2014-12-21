@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 12/21/2014 4:45:41 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 12/22/2014 12:01:58 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -612,7 +612,9 @@ Hooks:Add("NetworkMatchmakingSetAttributes", "NetworkMatchmakingSetAttributes_" 
 	for k, v in pairs( Mutators.ActiveMutators ) do
 		mutator_data = mutator_data .. k .. "/"
 	end
-	matchmaking._lobby_attributes[ Mutators.MatchmakingData ] = mutator_data
+	if matchmaking and matchmaking._lobby_attributes then
+		matchmaking._lobby_attributes[ Mutators.MatchmakingData ] = mutator_data
+	end
 
 end)
 
