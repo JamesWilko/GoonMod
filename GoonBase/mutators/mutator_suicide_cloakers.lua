@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 12/21/2014 1:04:58 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 12/21/2014 10:52:01 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -50,10 +50,14 @@ function Mutator:Detonate(spooc)
 	})
 	managers.explosion:play_sound_and_effects(pos, math.UP, range, explosion_params)
 
-	local grenade_type = "launcher_frag"
-	local unit_name = Idstring(tweak_data.blackmarket.grenades[grenade_type].unit)
-	local unit = World:spawn_unit(unit_name, pos, Rotation(math.random(0, 360), math.UP))
-	unit:base():_detonate()
+	if GoonBase.Network:IsMultiplayer() and GoonBase.Network:IsHost() then
+		
+		local grenade_type = "launcher_frag"
+		local unit_name = Idstring(tweak_data.blackmarket.grenades[grenade_type].unit)
+		local unit = World:spawn_unit(unit_name, pos, Rotation(math.random(0, 360), math.UP))
+		unit:base():_detonate()
+
+	end
 
 end
 
