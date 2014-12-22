@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 12/5/2014 10:37:44 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 12/23/2014 2:05:54 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -265,7 +265,10 @@ end)
 
 Hooks:Add("MenuManagerBuildCustomMenus", "MenuManagerBuildCustomMenus_" .. Mod:ID(), function(menu_manager, mainmenu_nodes)
 	local menu_id = Laser.MenuId
-	mainmenu_nodes[menu_id] = GoonBase.MenuHelper:BuildMenu( menu_id )
+	local data = {
+		area_bg = "half"
+	}
+	mainmenu_nodes[menu_id] = GoonBase.MenuHelper:BuildMenu( menu_id, data )
 end)
 
 -- Hooks

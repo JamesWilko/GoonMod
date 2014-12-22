@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 12/21/2014 1:04:58 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 12/23/2014 2:05:54 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -9,7 +9,9 @@ Hooks:RegisterHook("NetworkMatchmakingSetAttributes")
 function NetworkMatchMakingSTEAM.set_attributes(self, settings)
 	self.orig.set_attributes(self, settings)
 	Hooks:Call("NetworkMatchmakingSetAttributes", self, settings)
-	self.lobby_handler:set_lobby_data( self._lobby_attributes )
+	if self.lobby_handler then
+		self.lobby_handler:set_lobby_data( self._lobby_attributes )
+	end
 end
 
 Hooks:RegisterHook("NetworkMatchmakingJoinOKServer")

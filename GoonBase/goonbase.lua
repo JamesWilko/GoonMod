@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 12/22/2014 12:01:58 AM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 12/23/2014 2:05:54 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -35,6 +35,7 @@ GoonBase.ModFiles = {
 	"mods/colors/weapon_laser.lua",
 	"mods/colors/world_laser_colors.lua",
 	"mods/body_count.lua",
+	"mods/colour_grading.lua",
 	"mods/custom_waypoints.lua",
 	"mods/extended_inventory.lua",
 	"mods/gage_coins.lua",

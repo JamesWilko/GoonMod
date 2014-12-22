@@ -58,6 +58,7 @@ GoonBase\mods\colors\weapon_flashlight.lua
 GoonBase\mods\colors\weapon_laser.lua
 GoonBase\mods\colors\world_laser_colors.lua
 GoonBase\mods\body_count.lua
+GoonBase\mods\colour_grading.lua
 GoonBase\mods\custom_waypoints.lua
 GoonBase\mods\extended_inventory.lua
 GoonBase\mods\gage_coins.lua

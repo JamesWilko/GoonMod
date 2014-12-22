@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/16/2014 9:49:42 PM
+-- Payday 2 GoonMod, Public Release Beta 1, built on 12/23/2014 2:05:54 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -232,7 +232,7 @@ function Menu:AddKeybinding( button_data )
 end
 
 
-function Menu:BuildMenu( menu_id )
+function Menu:BuildMenu( menu_id, data )
 
 	-- Check menu exists
 	local menu = self.menus[menu_id]
@@ -277,6 +277,31 @@ function Menu:BuildMenu( menu_id )
 			if item._type == "slider" or item._parameters.type == "CoreMenuItemSlider.ItemSlider" then
 				item.dirty_callback = nil
 			end
+		end
+
+		-- Back callback
+		if data then
+			
+			if data.back_callback then
+
+				if not menu._parameters.back_callback then
+					menu._parameters.back_callback = {}
+				end
+
+				if type(data.back_callback) == "table" then
+					for k, v in pairs( data.back_callback ) do
+						table.insert( menu._parameters.back_callback, v )
+					end
+				else
+					table.insert( menu._parameters.back_callback, data.back_callback )
+				end
+
+			end
+
+			if data.area_bg then
+				menu._parameters.area_bg = data.area_bg
+			end
+
 		end
 
 	end
