@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/30/2014 6:10:13 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -22,5 +22,4 @@ function GroupAITweakData._init_enemy_spawn_groups(self, difficulty_index)
 	self.orig._init_enemy_spawn_groups(self, difficulty_index)
 	Hooks:Call( "GroupAITweakDataPostInitEnemySpawnGroups", self, difficulty_index )
 end
-
 -- END OF FILE

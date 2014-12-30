@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/26/2014 12:35:33 AM
+-- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/30/2014 6:10:13 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -10,5 +10,4 @@ function GameStateMachine.change_state_by_name(self, state_name, params)
 	Hooks:Call("GameStateMachineChangeStateByName", self, state_name, params)
 	self.orig.change_state_by_name(self, state_name, params)
 end
-
 -- END OF FILE

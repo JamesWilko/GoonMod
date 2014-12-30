@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 12/21/2014 1:04:58 AM
+-- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/30/2014 6:10:13 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -12,5 +12,4 @@ function MissionBriefingGui.init(self, saferect_ws, fullrect_ws, node)
 	self.orig.init(self, saferect_ws, fullrect_ws, node)
 	Hooks:Call( "MissionBriefingGUIPostInit", self, saferect_ws, fullrect_ws, node )
 end
-
 -- END OF FILE

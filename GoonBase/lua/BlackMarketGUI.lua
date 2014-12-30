@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 12/21/2014 4:45:41 PM
+-- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/30/2014 6:10:13 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -317,6 +317,206 @@ function BlackMarketGui.populate_weapon_category(self, category, data)
 			data[i] = new_data
 		end
 
+	end
+
+end
+
+Hooks:RegisterHook("BlackMarketGUIOnPopulateMeleeWeapons")
+Hooks:RegisterHook("BlackMarketGUIOnPopulateMeleeWeaponActionList")
+function BlackMarketGui.populate_melee_weapons(self, data)
+
+	Hooks:Call("BlackMarketGUIOnPopulateMeleeWeapons", self, data)
+
+	local new_data = {}
+	local sort_data = {}
+	local xd, yd, x_td, y_td, x_sn, y_sn, x_gv, y_gv
+	local m_tweak_data = tweak_data.blackmarket.melee_weapons
+	local l_tweak_data = tweak_data.lootdrop.global_values
+	local global_value
+
+	for id, d in pairs(Global.blackmarket_manager.melee_weapons) do
+		global_value = tweak_data.blackmarket.melee_weapons[id].dlc or tweak_data.blackmarket.melee_weapons[id].global_value or "normal"
+		if d.unlocked or d.equipped or not tweak_data:get_raw_value("lootdrop", "global_values", global_value, "hide_unavailable") then
+			table.insert(sort_data, {id, d})
+		end
+	end
+
+	table.sort(sort_data, function(x, y)
+
+		xd = x[2]
+		yd = y[2]
+		x_td = m_tweak_data[x[1]]
+		y_td = m_tweak_data[y[1]]
+
+		if not xd.is_favorite ~= not yd.is_favorite then
+			return xd.is_favorite
+		end
+		if xd.unlocked ~= yd.unlocked then
+			return xd.unlocked
+		end
+		if x_td.instant ~= y_td.instant then
+			return x_td.instant
+		end
+		if xd.skill_based ~= yd.skill_based then
+			return xd.skill_based
+		end
+		if x_td.free ~= y_td.free then
+			return x_td.free
+		end
+
+		x_gv = x_td.global_value or x_td.dlc or "normal"
+		y_gv = y_td.global_value or y_td.dlc or "normal"
+		x_sn = l_tweak_data[x_gv]
+		y_sn = l_tweak_data[y_gv]
+		x_sn = x_sn and x_sn.sort_number or 1
+		y_sn = y_sn and y_sn.sort_number or 1
+
+		if x_sn ~= y_sn then
+			return x_sn < y_sn
+		end
+		if xd.level ~= yd.level then
+			return xd.level < yd.level
+		end
+
+		return x[1] < y[1]
+
+	end)
+
+	local max_items = math.ceil(#sort_data / (data.override_slots[1] or 3)) * (data.override_slots[1] or 3)
+	local index = 0
+	local guis_catalog, m_tweak_data, melee_weapon_id
+
+	for i = 1, max_items do
+		data[i] = nil
+	end
+
+	for i, melee_weapon_data in ipairs(sort_data) do
+
+		melee_weapon_id = melee_weapon_data[1]
+		m_tweak_data = tweak_data.blackmarket.melee_weapons[melee_weapon_data[1]] or {}
+		guis_catalog = "guis/"
+
+		local bundle_folder = m_tweak_data.texture_bundle_folder
+		if bundle_folder then
+			guis_catalog = guis_catalog .. "dlcs/" .. tostring(bundle_folder) .. "/"
+		end
+
+		new_data = {}
+		new_data.name = melee_weapon_id
+		new_data.name_localized = managers.localization:text(tweak_data.blackmarket.melee_weapons[new_data.name].name_id)
+		new_data.category = "melee_weapons"
+		new_data.slot = i
+		new_data.unlocked = melee_weapon_data[2].unlocked
+		new_data.equipped = melee_weapon_data[2].equipped
+		new_data.level = melee_weapon_data[2].level
+		new_data.stream = true
+		new_data.global_value = m_tweak_data.dlc or "normal"
+		new_data.skill_based = melee_weapon_data[2].skill_based
+		new_data.skill_name = "bm_menu_skill_locked_" .. new_data.name
+
+		if m_tweak_data and m_tweak_data.locks then
+
+			local dlc = m_tweak_data.locks.dlc
+			local achievement = m_tweak_data.locks.achievement
+			local saved_job_value = m_tweak_data.locks.saved_job_value
+			local level = m_tweak_data.locks.level
+			new_data.dlc_based = true
+			new_data.lock_texture = self:get_lock_icon(new_data, "guis/textures/pd2/lock_community")
+			if achievement and managers.achievment:get_info(achievement) and not managers.achievment:get_info(achievement).awarded then
+				new_data.dlc_locked = "menu_bm_achievement_locked_" .. tostring(achievement)
+			elseif dlc and not managers.dlc:is_dlc_unlocked(dlc) then
+				new_data.dlc_locked = tweak_data.lootdrop.global_values[dlc] and tweak_data.lootdrop.global_values[dlc].unlock_id or "bm_menu_dlc_locked"
+			else
+				new_data.dlc_locked = tweak_data.lootdrop.global_values[new_data.global_value].unlock_id or "bm_menu_dlc_locked"
+			end
+
+		else
+			new_data.lock_texture = self:get_lock_icon(new_data)
+			new_data.dlc_locked = tweak_data.lootdrop.global_values[new_data.global_value].unlock_id or "bm_menu_dlc_locked"
+		end
+
+		new_data.bitmap_texture = guis_catalog .. "textures/pd2/blackmarket/icons/melee_weapons/" .. tostring(new_data.name)
+
+		if melee_weapon_id == "weapon" then
+			new_data.extra_bitmaps = {}
+			new_data.extra_bitmaps_shape = {}
+			local primary = managers.blackmarket:equipped_primary()
+			local primary_id = primary.weapon_id
+			guis_catalog = "guis/"
+			local bundle_folder = tweak_data.weapon[primary_id] and tweak_data.weapon[primary_id].texture_bundle_folder
+			if bundle_folder then
+				guis_catalog = guis_catalog .. "dlcs/" .. tostring(bundle_folder) .. "/"
+			end
+			table.insert(new_data.extra_bitmaps, guis_catalog .. "textures/pd2/blackmarket/icons/weapons/" .. tostring(primary_id))
+			table.insert(new_data.extra_bitmaps_shape, {
+				x = 0,
+				y = -0.1,
+				w = 0.75,
+				h = 0.75
+			})
+			local secondary = managers.blackmarket:equipped_secondary()
+			local secondary_id = secondary.weapon_id
+			guis_catalog = "guis/"
+			local bundle_folder = tweak_data.weapon[secondary_id] and tweak_data.weapon[secondary_id].texture_bundle_folder
+			if bundle_folder then
+				guis_catalog = guis_catalog .. "dlcs/" .. tostring(bundle_folder) .. "/"
+			end
+			table.insert(new_data.extra_bitmaps, guis_catalog .. "textures/pd2/blackmarket/icons/weapons/" .. tostring(secondary_id))
+			table.insert(new_data.extra_bitmaps_shape, {
+				x = 0,
+				y = 0.1,
+				w = 0.75,
+				h = 0.75
+			})
+		end
+
+		if managers.blackmarket:got_new_drop("normal", "melee_weapons", melee_weapon_id) then
+			new_data.mini_icons = new_data.mini_icons or {}
+			table.insert(new_data.mini_icons, {
+				name = "new_drop",
+				texture = "guis/textures/pd2/blackmarket/inv_newdrop",
+				right = 0,
+				top = 0,
+				layer = 1,
+				w = 16,
+				h = 16,
+				stream = false
+			})
+			new_data.new_drop_data = {
+				"normal",
+				"melee_weapons",
+				melee_weapon_id
+			}
+		end
+
+		if new_data.unlocked then
+			new_data.comparision_data = managers.blackmarket:get_melee_weapon_stats(melee_weapon_id)
+		end
+		if new_data.unlocked and not new_data.equipped then
+			table.insert(new_data, "lo_mw_equip")
+		end
+		if new_data.unlocked and data.allow_preview and m_tweak_data.unit then
+			table.insert(new_data, "lo_mw_preview")
+		end
+
+		Hooks:Call("BlackMarketGUIOnPopulateMeleeWeaponActionList", self, new_data)
+
+		data[i] = new_data
+		index = i
+
+	end
+
+	for i = 1, max_items do
+		if not data[i] then
+			new_data = {}
+			new_data.name = "empty"
+			new_data.name_localized = ""
+			new_data.category = "melee_weapons"
+			new_data.slot = i
+			new_data.unlocked = true
+			new_data.equipped = false
+			data[i] = new_data
+		end
 	end
 
 end
@@ -1134,7 +1334,7 @@ function BlackMarketGui._start_page_data(self)
 		name = "bm_menu_deployables",
 		category = "deployables",
 		on_create_func_name = "populate_deployables",
-		override_slots = {3, 2},
+		override_slots = {4, 2},
 		identifier = Idstring("deployable")
 	})
 	table.insert(data, {
@@ -1395,4 +1595,27 @@ function BlackMarketGui.populate_buy_mask(self, data)
 
 end
 
+Hooks:RegisterHook("BlackMarketGUIChooseMaskPartCallback")
+function BlackMarketGui.choose_mask_part_callback(self, data)
+	local r = Hooks:ReturnCall("BlackMarketGUIChooseMaskPartCallback", self, data)
+	if r then
+		return
+	end
+	return self.orig.choose_mask_part_callback(self, data)
+end
+
+Hooks:RegisterHook("BlackMarketGUIMouseReleased")
+function BlackMarketGui.mouse_released(self, o, button, x, y)
+	if not self._enabled then
+		return
+	end
+	self.orig.mouse_released(self, o, button, x, y)
+	Hooks:Call("BlackMarketGUIMouseReleased", self, o, button, x, y)
+end
+
+Hooks:RegisterHook("BlackMarketGUIOnPreviewWeapon")
+function BlackMarketGui._preview_weapon(self, data)
+	self.orig._preview_weapon(self, data)
+	Hooks:Call("BlackMarketGUIOnPreviewWeapon", self, data)
+end
 -- END OF FILE

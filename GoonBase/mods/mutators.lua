@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 12/22/2014 12:01:58 AM
+-- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/30/2014 6:10:13 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -48,11 +48,13 @@ Mutators.MutatorsList = {
 	"mutators/mutator_all_shields.lua",
 	"mutators/mutator_all_tazers.lua",
 	"mutators/mutator_exploding_bullets.lua",
+	"mutators/mutator_floating_bodies.lua",
 	"mutators/mutator_insane_spawnrate.lua",
 	"mutators/mutator_insane_spawnrate_cops.lua",
 	"mutators/mutator_instagib.lua",
 	"mutators/mutator_jamming_weapons.lua",
 	"mutators/mutator_lightning_speed.lua",
+	"mutators/mutator_realism_mode.lua",
 	"mutators/mutator_shielddozers.lua",
 	"mutators/mutator_suicidal_spawnrate.lua",
 	"mutators/mutator_suicidal_spawnrate_cops.lua",
@@ -894,5 +896,4 @@ Hooks:Add("MissionBriefingGUIPreInit", "MissionBriefingGUIPreInit_" .. Mod:ID(),
 	end
 
 end)
-
 -- END OF FILE

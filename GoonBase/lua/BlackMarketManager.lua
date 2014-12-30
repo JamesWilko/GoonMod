@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 11/15/2014 12:39:22 PM
+-- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/30/2014 6:10:13 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -395,5 +395,4 @@ function BlackMarketManager:remove_mask_mod_from_inventory(mod_id, category)
 	local global_value = data.global_value or data.dlc or "normal"
 	managers.blackmarket:remove_item(global_value, category, mod_id)
 end
-
 -- END OF FILE

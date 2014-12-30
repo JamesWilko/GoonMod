@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/30/2014 6:10:13 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -31,5 +31,4 @@ Localization.Hostage_TradeScammed = "The police aren't willing to give you any s
 Localization.Hostage_TradeAngry = "The police are slightly more willing to negotiate."
 Localization.Hostage_TradeLessAngry = "The police are more willing to negotiate."
 Localization.Hostage_TradeAllowed = "The police are willing to negotiate again."
-
 -- END OF FILE

@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/30/2014 6:10:13 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -16,5 +16,4 @@ function ChatManager._receive_message(this, channel_id, name, message, color, ic
 	Hooks:Call( "ChatManagerOnReceiveMessage", channel_id, name, message, color, icon )
 	this.orig._receive_message(this, channel_id, name, message, color, icon)
 end
-
 -- END OF FILE

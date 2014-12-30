@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 12/21/2014 1:04:58 AM
+-- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/30/2014 6:10:13 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -113,5 +113,4 @@ function MenuNodeGui._key_press(self, o, key, input_id, item, no_add)
 	self:_end_customize_controller(o, item)
 
 end
-
 -- END OF FILE

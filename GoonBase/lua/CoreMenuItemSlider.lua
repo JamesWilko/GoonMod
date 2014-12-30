@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 12/5/2014 10:37:44 PM
+-- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/30/2014 6:10:13 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -25,5 +25,4 @@ function ItemSlider.reload(self, row_item, node)
 	row_item.gui_slider_text:set_text(value)
 	return r
 end
-
 -- END OF FILE

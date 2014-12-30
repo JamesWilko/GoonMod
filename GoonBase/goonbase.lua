@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 12/23/2014 2:05:54 AM
+-- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/30/2014 6:10:13 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -36,6 +36,7 @@ GoonBase.ModFiles = {
 	"mods/colors/world_laser_colors.lua",
 	"mods/body_count.lua",
 	"mods/colour_grading.lua",
+	"mods/custom_grenades.lua",
 	"mods/custom_waypoints.lua",
 	"mods/extended_inventory.lua",
 	"mods/gage_coins.lua",
@@ -45,6 +46,8 @@ GoonBase.ModFiles = {
 	"mods/push_to_interact.lua",
 	"mods/trading.lua",
 	"mods/train_heist_plans.lua",
+	"mods/weapon_customization.lua",
+	"mods/weapon_customization_menus.lua",
 	"mods/weapon_remember_gadget.lua",
 	"mods/zoom_sensitivity.lua",
 }
@@ -90,12 +93,12 @@ GoonBase.HookFiles = {
 	["lib/tweak_data/narrativetweakdata"] = "NarrativeTweakData.lua",
 	["lib/managers/menu/menunodegui"] = "MenuNodeGUI.lua",
 	["lib/managers/menu/items/menuitemcustomizecontroller"] = "MenuItemCustomizeController.lua",
-	["lib/network/networkgame"] = "NetworkGame.lua",
+	-- ["lib/network/networkgame"] = "NetworkGame.lua",
 	["lib/managers/criminalsmanager"] = "CriminalsManager.lua",
 	["lib/units/weapons/newraycastweaponbase"] = "NewRaycastWeaponBase.lua",
 	["lib/units/weapons/npcraycastweaponbase"] = "NPCRaycastWeaponBase.lua",
 	-- ["lib/units/beings/player/playerinventory"] = "PlayerInventory.lua",
-	-- ["lib/units/cameras/fpcameraplayerbase"] = "FPCameraPlayerBase.lua",
+	["lib/units/cameras/fpcameraplayerbase"] = "FPCameraPlayerBase.lua",
 	["core/lib/managers/menu/items/coremenuitemslider"] = "CoreMenuItemSlider.lua",
 	["lib/utils/game_state_machine/gamestatemachine"] = "GameStateMachine.lua",
 	["lib/units/contourext"] = "ContourExt.lua",
@@ -104,6 +107,10 @@ GoonBase.HookFiles = {
 	["lib/managers/menu/menucomponentmanager"] = "MenuComponentManager.lua",
 	["lib/managers/menu/missionbriefinggui"] = "MissionBriefingGUI.lua",
 	["lib/network/matchmaking/networkmatchmakingsteam"] = "NetworkMatchMakingSteam.lua",
+	-- ["lib/units/maskext"] = "MaskExt.lua",
+	["lib/managers/menu/menuscenemanager"] = "MenuSceneManager.lua",
+
+	["lib/units/enemies/cop/actions/full_body/copactionhurt"] = "CopActionHurt.lua",
 
 }
 
@@ -174,34 +181,39 @@ local unsupported = true
 -- Load Require and Mod Scripts
 if not GoonBase.HasLoadedScripts then
 
-	-- Load required files
-	for k, v in pairs( GoonBase.RequireScripts ) do
-		SafeDoFile( GoonBase.Path .. v )
-	end
+	-- Check required classes exist now
+	if class and Application and string.split then
 
-	-- Check if version is supported
-	if GoonBase.Updates ~= nil then
-		GoonBase.SupportedVersion = GoonBase.Updates:IsSupportedVersion()
-	end
+		GoonBase.HasLoadedScripts = true
 
-	-- Run hooks
-	if Hooks ~= nil then
-
-		Hooks:RegisterHook("GoonBasePostLoadMods")
-		Hooks:Call("GoonBasePostLoadMods")
-
-		-- Load default options
-		local Options = GoonBase.Options
-		if Options:UsingDefaults() then
-			Options:LoadDefaults()
+		-- Load required files
+		for k, v in pairs( GoonBase.RequireScripts ) do
+			SafeDoFile( GoonBase.Path .. v )
 		end
 
-		Hooks:RegisterHook("GoonBasePostLoadedMods")
-		Hooks:Call("GoonBasePostLoadedMods")
-		
-	end
+		-- Check if version is supported
+		if GoonBase.Updates ~= nil then
+			GoonBase.SupportedVersion = GoonBase.Updates:IsSupportedVersion()
+		end
 
-	GoonBase.HasLoadedScripts = true
+		-- Run hooks
+		if Hooks ~= nil then
+
+			Hooks:RegisterHook("GoonBasePostLoadMods")
+			Hooks:Call("GoonBasePostLoadMods")
+
+			-- Load default options
+			local Options = GoonBase.Options
+			if Options:UsingDefaults() then
+				Options:LoadDefaults()
+			end
+
+			Hooks:RegisterHook("GoonBasePostLoadedMods")
+			Hooks:Call("GoonBasePostLoadedMods")
+			
+		end
+
+	end
 
 end
 
@@ -226,5 +238,4 @@ if RequiredScript then
 	end
 
 end
-
 -- END OF FILE

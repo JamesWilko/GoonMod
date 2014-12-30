@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 12/23/2014 2:05:54 AM
+-- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/30/2014 6:10:13 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -195,5 +195,4 @@ end)
 Hooks:Add("MenuManagerOnOpenMenu", "MenuManagerOnOpenMenu_" .. Mod:ID(), function( menu_manager, menu, position )
 	ColourGrading:UpdateColourGrading()
 end)
-
 -- END OF FILE

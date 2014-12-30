@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 10/18/2014 6:25:56 PM
+-- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/30/2014 6:10:13 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -52,5 +52,4 @@ Hooks:RegisterHook("CopInventoryUpdate")
 function CopInventory.update(self, unit, t, dt)
 	Hooks:Call("CopInventoryUpdate", self, unit, t, dt)
 end
-
 -- END OF FILE

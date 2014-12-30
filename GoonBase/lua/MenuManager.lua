@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 1, built on 12/21/2014 1:04:58 AM
+-- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/30/2014 6:10:13 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -16,6 +16,10 @@ Hooks:RegisterHook( "MenuManagerOnOpenMenu" )
 function MenuManager.open_menu(this, menu_name, position)
 	this.orig.open_menu(this, menu_name, position)
 	Hooks:Call( "MenuManagerOnOpenMenu", this, menu_name, position )
+end
+
+function MenuManager.open_node(self, node_name, parameter_list)
+	self.orig.open_node(self, node_name, parameter_list)
 end
 
 Hooks:RegisterHook( "MenuManagerSetMouseSensitivity" )
@@ -157,5 +161,4 @@ function MenuCallbackHandler.choice_crimenet_lobby_permission(self, item)
 	end
 	self.orig.choice_crimenet_lobby_permission(self, item)
 end
-
 -- END OF FILE
