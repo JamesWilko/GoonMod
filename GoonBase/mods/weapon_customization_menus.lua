@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/30/2014 6:10:13 PM
+-- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/31/2014 1:23:24 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -172,7 +172,7 @@ function WeaponCustomization._open_weapon_customization_preview_node(self, data)
 		local tbl = {
 			id = v,
 			modifying = false,
-			["materials"] = "plastic",
+			["materials"] = "no_material",
 			["textures"] = "no_color_no_material",
 			["colors"] = "white_solid",
 		}
@@ -180,7 +180,7 @@ function WeaponCustomization._open_weapon_customization_preview_node(self, data)
 	end
 
 	managers.blackmarket._selected_weapon_parts = {
-		["materials"] = "plastic",
+		["materials"] = "no_material",
 		["textures"] = "no_color_no_material",
 		["colors"] = "white_solid",
 	}
@@ -262,13 +262,6 @@ Hooks:Add("BlackMarketGUIChooseMaskPartCallback", "BlackMarketGUIChooseMaskPartC
 		-- Save current weapon customization
 		WeaponCustomization:SaveCurrentWeaponCustomization()
 
-		-- Send data to customizer
-		-- if num_parts > 0 then
-		-- 	local custom_tbl = managers.blackmarket._selected_weapon_parts
-		-- 	local color_data = tweak_data.blackmarket.colors[ custom_tbl["colors"] ]
-		-- 	WeaponCustomization:UpdateWeapon( custom_tbl["materials"], custom_tbl["textures"], color_data.colors[1], color_data.colors[2], parts_tbl )
-		-- end
-
 	end
 
 end)
@@ -323,9 +316,9 @@ Hooks:Add("BlackMarketGUIUpdateInfoText", "BlackMarketGUIUpdateInfoText_WeaponCu
 
 					local tbl = table_contains( blackmarket._customizing_weapon_parts, v )
 					if tbl and tbl.modifying then
-						updated_texts[2].text = updated_texts[2].text .. "    " .. managers.localization:text(part.name_id) .. "\n"
+						updated_texts[2].text = updated_texts[2].text .. "    " .. managers.localization:text(part.name_id or "bm_wp_m4_lower_reciever") .. "\n"
 					else
-						updated_texts[3].text = updated_texts[3].text .. "    " .. managers.localization:text(part.name_id) .. "\n"
+						updated_texts[3].text = updated_texts[3].text .. "    " .. managers.localization:text(part.name_id or "bm_wp_m4_lower_reciever") .. "\n"
 					end
 
 				end

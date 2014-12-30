@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/30/2014 6:10:13 PM
+-- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/31/2014 1:23:24 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -43,6 +43,8 @@ You will lose all of your modified weapon visuals, but you will not lose the wea
 You may need to restart your game, or load a mission, to fully clear your texture cache.]]
 Localization.WeaponCustomization_ClearDataAccept = "Clear Data"
 Localization.WeaponCustomization_ClearDataCancel = "Cancel"
+
+Localization.bm_mtl_no_material = "No Material"
 
 -- Options
 if GoonBase.Options.WeaponCustomization == nil then
@@ -131,6 +133,26 @@ Hooks:Add("PlayerStandardStartActionEquipWeapon", "PlayerStandardStartActionEqui
 	end
 end)
 
+Hooks:Add("BlackMarketGUIOnPopulateMaskMods", "BlackMarketGUIOnPopulateMaskMods_WeaponCustomization", function(gui, data)
+
+	if data.category == "materials" and not tweak_data.blackmarket.materials.no_material then
+
+		tweak_data.blackmarket.materials.no_material = {}
+		tweak_data.blackmarket.materials.no_material.name_id = "bm_mtl_no_material"
+		tweak_data.blackmarket.materials.no_material.texture = "units/payday2/matcaps/matcap_plastic_df"
+		tweak_data.blackmarket.materials.no_material.value = 0
+
+		local clear_material = deep_clone( data.on_create_data[1] )
+		clear_material.id = "no_material"
+		clear_material.bitmap_texture_override = "plastic"
+		clear_material.free_of_charge = true
+
+		table.insert( data.on_create_data, 1, clear_material )
+
+	end
+
+end)
+
 -- Functions
 function WeaponCustomization:QueueWeaponUpdate( material_id, pattern_id, tint_color_a, tint_color_b, parts_table )
 
@@ -210,12 +232,12 @@ function WeaponCustomization:UpdateWeapon( material_id, pattern_id, tint_color_a
 	end
 
 	-- Defaults
-	material_id = material_id or "plastic"
+	material_id = material_id or "no_material"
 	pattern_id = pattern_id or "no_color_no_material"
-	if material_id ~= "plastic" and pattern_id == "no_color_no_material" then
+	if material_id ~= "no_material" and pattern_id == "no_color_no_material" then
 		pattern_id = "no_color_full_material"
 	end
-	if material_id == "plastic" then
+	if material_id == "no_material" then
 		pattern_id = "no_color_no_material"
 	end
 	tint_color_a = tint_color_a or Color(1, 1, 1)
@@ -342,7 +364,7 @@ function WeaponCustomization:SaveCurrentWeaponCustomization()
 		weapon.visual_blueprint = {}
 		for k, v in ipairs( weapon.blueprint ) do
 			weapon.visual_blueprint[v] = {
-				["materials"] = "plastic",
+				["materials"] = "no_material",
 				["textures"] = "no_color_no_material",
 				["colors"] = "white_solid",
 			}

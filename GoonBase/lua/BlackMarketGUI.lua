@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/30/2014 6:10:13 PM
+-- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/31/2014 1:23:24 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -1192,7 +1192,7 @@ function BlackMarketGui.populate_choose_mask_mod(self, data)
 		new_data.stream = data.category ~= "colors"
 		new_data.global_value = mods.global_value
 		local is_locked = false
-		if new_data.amount < 1 and mods.id ~= "plastic" and mods.id ~= "no_color_full_material" then
+		if new_data.amount < 1 and mods.id ~= "plastic" and mods.id ~= "no_color_full_material" and not mods.free_of_charge then
 			if type(new_data.unlocked) == "number" then
 				new_data.unlocked = -math.abs(new_data.unlocked)
 			end
@@ -1222,6 +1222,9 @@ function BlackMarketGui.populate_choose_mask_mod(self, data)
 			new_data.render_template = Idstring("VertexColorTexturedPatterns")
 		else
 			new_data.bitmap_texture = guis_catalog .. "textures/pd2/blackmarket/icons/" .. tostring(data.category) .. "/" .. new_data.name
+			if mods.bitmap_texture_override then
+				new_data.bitmap_texture = guis_catalog .. "textures/pd2/blackmarket/icons/" .. tostring(data.category) .. "/" .. mods.bitmap_texture_override
+			end
 		end
 
 		if managers.blackmarket:got_new_drop(new_data.global_value or "normal", new_data.category, new_data.name) then
