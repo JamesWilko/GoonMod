@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/31/2014 1:23:24 AM
+-- Payday 2 GoonMod, Weapon Customizer Beta, built on 1/2/2015 2:16:45 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -60,7 +60,6 @@ if GoonBase.Options.WeaponCustomization == nil then
 	GoonBase.Options.WeaponCustomization.HideDiffuse = false
 	GoonBase.Options.WeaponCustomization.HideNormal = false
 end
-
 
 -- Menu
 Hooks:Add("MenuManagerSetupCustomMenus", "MenuManagerSetupCustomMenus_" .. Mod:ID(), function(menu_manager, menu_nodes)
@@ -135,12 +134,30 @@ end)
 
 Hooks:Add("BlackMarketGUIOnPopulateMaskMods", "BlackMarketGUIOnPopulateMaskMods_WeaponCustomization", function(gui, data)
 
-	if data.category == "materials" and not tweak_data.blackmarket.materials.no_material then
+	-- Create "no material" data
+	if not tweak_data.blackmarket.materials.no_material then
 
 		tweak_data.blackmarket.materials.no_material = {}
 		tweak_data.blackmarket.materials.no_material.name_id = "bm_mtl_no_material"
 		tweak_data.blackmarket.materials.no_material.texture = "units/payday2/matcaps/matcap_plastic_df"
 		tweak_data.blackmarket.materials.no_material.value = 0
+
+	end
+
+	-- Inject "no material" material
+	local no_material_index = nil
+	for k, v in ipairs( data.on_create_data ) do
+		if v.id == "no_material" then
+			no_material_index = k
+			break
+		end
+	end
+
+	if no_material_index then
+		table.remove( data.on_create_data, no_material_index )
+	end
+
+	if data.category == "materials" then
 
 		local clear_material = deep_clone( data.on_create_data[1] )
 		clear_material.id = "no_material"

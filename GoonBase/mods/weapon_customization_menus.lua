@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/31/2014 1:23:24 AM
+-- Payday 2 GoonMod, Weapon Customizer Beta, built on 1/2/2015 2:16:45 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -350,8 +350,21 @@ Hooks:Add("BlackMarketGUIMouseReleased", "BlackMarketGUIMouseReleased_WeaponCust
 		return
 	end
 
+	if button == Idstring("0") then
+		WeaponCustomization:LeftMouseReleased(gui, button, x, y)
+	end
+	
+	if button == Idstring("1") then
+		WeaponCustomization:RightMouseReleased(gui, button, x, y)
+	end
+
+
+end)
+
+function WeaponCustomization:LeftMouseReleased(gui, button, x, y)
+
 	for k, v in pairs( gui._info_texts ) do
-		if WeaponCustomization:_IsInObjectRect(x, y, v) then
+		if v:inside(x, y) then
 
 			local line = WeaponCustomization:_GetLineFromObjectRect(x, y, v) - 1
 			local modifying_item = k == 2 and true or false
@@ -362,11 +375,38 @@ Hooks:Add("BlackMarketGUIMouseReleased", "BlackMarketGUIMouseReleased_WeaponCust
 			end
 
 			gui:update_info_text()
+			break
 
 		end
 	end
 
-end)
+end
+
+function WeaponCustomization:RightMouseReleased(gui, button, x, y)
+
+	for k, v in pairs( gui._info_texts ) do
+		if v:inside(x, y) then
+
+			local line = WeaponCustomization:_GetLineFromObjectRect(x, y, v) - 1
+			local modifying_item = k == 2 and true or false
+			local tbl_index = WeaponCustomization:_GetIndexFromLine(line, modifying_item)
+
+			if tbl_index and managers.blackmarket._customizing_weapon_parts[ tbl_index ] then
+				local mod = managers.blackmarket._customizing_weapon_parts[ tbl_index ].modifying
+				for a, b in ipairs( managers.blackmarket._customizing_weapon_parts ) do
+					if a ~= tbl_index then
+						managers.blackmarket._customizing_weapon_parts[a].modifying = not mod
+					end
+				end
+			end
+
+			gui:update_info_text()
+			break
+
+		end
+	end
+
+end
 
 function WeaponCustomization:_IsInObjectRect(x, y, obj)
 	local rx, ry, rw, rh = obj:text_rect()
