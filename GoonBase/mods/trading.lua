@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/30/2014 6:10:13 PM
+-- Payday 2 GoonMod, Weapon Customizer Beta, built on 1/3/2015 12:28:05 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -286,7 +286,7 @@ end)
 
 Hooks:Add("BlackMarketGUIOnPopulateWeaponActionList", "BlackMarketGUIOnPopulateWeaponActionList_" .. Mod:ID(), function(gui, data)
 
-	if GoonBase.Options.Trading.Enabled and not data.last_weapon and not data.equipped then
+	if GoonBase.Options.Trading.Enabled and not data.last_weapon and not data.equipped and GoonBase.Network:IsMultiplayer() then
 		table.insert(data, "w_trade")
 	end
 
@@ -294,7 +294,7 @@ end)
 
 Hooks:Add("BlackMarketGUIOnPopulateMasksActionList", "BlackMarketGUIOnPopulateMasksActionList_" .. Mod:ID(), function(gui, data)
 
-	if GoonBase.Options.Trading.Enabled and not data.equipped then
+	if GoonBase.Options.Trading.Enabled and not data.equipped and GoonBase.Network:IsMultiplayer() then
 		table.insert(data, "m_trade")
 	end
 
@@ -302,7 +302,7 @@ end)
 
 Hooks:Add("BlackMarketGUIOnPopulateModsActionList", "BlackMarketGUIOnPopulateModsActionList_" .. Mod:ID(), function(gui, data)
 
-	if GoonBase.Options.Trading.Enabled then
+	if GoonBase.Options.Trading.Enabled and GoonBase.Network:IsMultiplayer() then
 		if type(data.unlocked) ~= "number" or data.unlocked > 0 then
 			table.insert(data, "wm_trade")
 		end
@@ -312,7 +312,7 @@ end)
 
 Hooks:Add("BlackMarketGUIOnPopulateMaskModsActionList", "BlackMarketGUIOnPopulateMaskModsActionList_" .. Mod:ID(), function(gui, data)
 
-	if GoonBase.Options.Trading.Enabled and not data.equipped and data.amount ~= nil and data.amount > 0 then
+	if GoonBase.Options.Trading.Enabled and not data.equipped and data.amount ~= nil and data.amount > 0 and GoonBase.Network:IsMultiplayer() then
 		table.insert(data, "mp_trade")
 	end
 
