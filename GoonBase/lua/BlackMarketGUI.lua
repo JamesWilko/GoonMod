@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Weapon Customizer Beta, built on 1/2/2015 3:25:53 PM
+-- Payday 2 GoonMod, Weapon Customizer Beta, built on 1/3/2015 12:28:05 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -64,6 +64,7 @@ function BlackMarketGui._setup(self, is_start_page, component_data)
 		Hooks:Call("BlackMarketGUIPreSetup", self, is_start_page, component_data)
 		self.orig._setup(self, is_start_page, component_data)
 		Hooks:Call("BlackMarketGUIPostSetup", self, is_start_page, component_data)
+		self:on_slot_selected( self._selected_slot )
 
 	end)
 	if not psuccess then
