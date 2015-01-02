@@ -1,12 +1,12 @@
 ----------
--- Payday 2 GoonMod, Weapon Customizer Beta, built on 1/2/2015 3:25:53 PM
+-- Payday 2 GoonMod, Weapon Customizer Beta, built on 1/3/2015 12:28:05 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
 -- Mod Definition
 local Mod = class( BaseMod )
 Mod.id = "WeaponCustomization"
-Mod.Name = "Weapon Customization"
+Mod.Name = "[BETA] Weapon Customization"
 Mod.Desc = "Visually customize your weapons using materials, patterns, and colour swatches"
 Mod.Requirements = {}
 Mod.Incompatibilities = {}
@@ -31,6 +31,7 @@ WeaponCustomization._default_part_visual_blueprint =  {
 	["colors"] = "white_solid",
 }
 
+WeaponCustomization._mod_overrides_download_location = "https://github.com/JamesWilko/GoonMod/archive/WeaponCustomizerModOverrides.zip"
 
 -- Load extras
 SafeDoFile( GoonBase.Path .. "mods/weapon_customization_menus.lua" )
@@ -40,11 +41,15 @@ local Localization = GoonBase.Localization
 Localization.Options_WeaponCustomizationName = "Weapon Customization"
 Localization.Options_WeaponCustomizationDesc = "Weapon Customization Options"
 
+Localization.WeaponCustomization_DownloadModOverridesManual = "Download Mod Overrides (Manual Install)"
+Localization.WeaponCustomization_DownloadModOverridesManualDesc = [[Download the required mod overrides to use the Weapon Customization mod, opens in your browser.
+Place the 'GoonModWeaponCustomizer' folder into your mod_overrides and then restart your game.]]
+
 Localization.WeaponCustomization_ClearDataButton = "Clear Weapon Customization Data"
 Localization.WeaponCustomization_ClearDataButtonDesc = "Erase all of your weapon customization data from your Payday 2 save file"
 
 Localization.WeaponCustomization_ClearDataTitle = "Clear Weapon Customization Data"
-Localization.WeaponCustomization_ClearDataMessage = [[This will erase all weapon customization data from your save game
+Localization.WeaponCustomization_ClearDataMessage = [[This will erase all weapon customization data from your save game.
 You will lose all of your modified weapon visuals, but you will not lose the weapons themselves.
 
 You may need to restart your game, or load a mission, to fully clear your texture cache.]]
@@ -84,10 +89,32 @@ Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_" .. Mod
 		menu_id = "goonbase_options_menu",
 	})
 
-	-- Clear Data
+	-- Menu
+	MenuCallbackHandler.wc_download_mod_overrides = function(this, item)
+		if SystemInfo:platform() == Idstring("WIN32") then
+			os.execute( "explorer " .. WeaponCustomization._mod_overrides_download_location )
+		end
+	end
+
 	MenuCallbackHandler.clear_weapon_visual_customizations = function(this, item)
 		WeaponCustomization:ShowClearDataConfirmation()
 	end
+
+	GoonBase.MenuHelper:AddButton({
+		id = "weapon_customization_download_mod_overrides",
+		title = "WeaponCustomization_DownloadModOverridesManual",
+		desc = "WeaponCustomization_DownloadModOverridesManualDesc",
+		callback = "wc_download_mod_overrides",
+		menu_id = WeaponCustomization.MenuId,
+		priority = 100,
+	})
+
+	GoonBase.MenuHelper:AddDivider({
+		id = "weapon_customization_divider1",
+		menu_id = WeaponCustomization.MenuId,
+		size = 16,
+		priority = 99,
+	})
 
 	GoonBase.MenuHelper:AddButton({
 		id = "weapon_customization_clear_data",
@@ -95,6 +122,7 @@ Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_" .. Mod
 		desc = "WeaponCustomization_ClearDataButtonDesc",
 		callback = "clear_weapon_visual_customizations",
 		menu_id = WeaponCustomization.MenuId,
+		priority = 98,
 	})
 
 end)
