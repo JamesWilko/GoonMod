@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Weapon Customizer Beta, built on 1/2/2015 2:16:45 AM
+-- Payday 2 GoonMod, Weapon Customizer Beta, built on 1/2/2015 3:25:53 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -24,6 +24,13 @@ GoonBase.WeaponCustomization = GoonBase.WeaponCustomization or {}
 local WeaponCustomization = GoonBase.WeaponCustomization
 WeaponCustomization.MenuId = "goonbase_weapon_customization_menu"
 WeaponCustomization._update_queue = {}
+
+WeaponCustomization._default_part_visual_blueprint =  {
+	["materials"] = "no_material",
+	["textures"] = "no_color_no_material",
+	["colors"] = "white_solid",
+}
+
 
 -- Load extras
 SafeDoFile( GoonBase.Path .. "mods/weapon_customization_menus.lua" )
@@ -203,6 +210,52 @@ function WeaponCustomization:DequeueUpdate()
 
 end
 
+function WeaponCustomization:UpdateWeaponPartsWithMaskMod( data )
+	WeaponCustomization:UpdateWeaponPartsWithMod( data.category, data.mods.id )
+end
+
+function WeaponCustomization:UpdateWeaponPartsWithMod( category, mod_id, parts_table, disable_saving )
+
+	if managers.blackmarket._customizing_weapon and managers.blackmarket._customizing_weapon_data and managers.blackmarket._selected_weapon_parts then
+
+		-- Set selected part
+		if managers.blackmarket._selected_weapon_parts[ category ] then
+			managers.blackmarket._selected_weapon_parts[ category ] = mod_id
+		end
+
+		-- Get parts to modify
+		if not parts_table then
+			parts_table = {}
+			for k, v in ipairs( managers.blackmarket._customizing_weapon_parts ) do
+				if v.modifying then
+					parts_table[v.id] = v
+				end
+			end
+		end
+
+		-- Modify parts
+		for k, v in pairs( parts_table ) do
+
+			-- Update category mod
+			if v[ category ] then
+				v[ category ] = mod_id
+			end
+
+			-- Update part visuals
+			local color_data = tweak_data.blackmarket.colors[ v["colors"] ]
+			WeaponCustomization:UpdateWeapon( v["materials"], v["textures"], color_data.colors[1], color_data.colors[2], { [v.id] = true } )
+
+		end
+
+		-- Save current weapon customization
+		if not disable_saving then
+			WeaponCustomization:SaveCurrentWeaponCustomization()
+		end
+
+	end
+
+end
+
 function WeaponCustomization:UpdateWeaponUsingOptions()
 
 	local opts = GoonBase.Options.WeaponCustomization
@@ -270,7 +323,7 @@ function WeaponCustomization:UpdateWeapon( material_id, pattern_id, tint_color_a
 	-- Find materials
 	for k, v in pairs( weapon_base._parts ) do
 		if v.unit and ( (parts_table and parts_table[k]) or not parts_table ) then
-
+			
 			local materials = v.unit:get_objects_by_type(Idstring("material"))
 			for _, m in ipairs(materials) do
 				if m:variable_exists(Idstring("tint_color_a")) then
@@ -380,11 +433,7 @@ function WeaponCustomization:SaveCurrentWeaponCustomization()
 	if not weapon.visual_blueprint then
 		weapon.visual_blueprint = {}
 		for k, v in ipairs( weapon.blueprint ) do
-			weapon.visual_blueprint[v] = {
-				["materials"] = "no_material",
-				["textures"] = "no_color_no_material",
-				["colors"] = "white_solid",
-			}
+			weapon.visual_blueprint[v] = clone( WeaponCustomization._default_part_visual_blueprint )
 		end
 	end
 
@@ -398,9 +447,19 @@ function WeaponCustomization:SaveCurrentWeaponCustomization()
 
 	-- Update visual customization
 	for k, v in pairs( parts ) do
-		weapon.visual_blueprint[k]["materials"] = managers.blackmarket._selected_weapon_parts["materials"]
-		weapon.visual_blueprint[k]["textures"] = managers.blackmarket._selected_weapon_parts["textures"]
-		weapon.visual_blueprint[k]["colors"] = managers.blackmarket._selected_weapon_parts["colors"]
+
+		local mat = managers.blackmarket._selected_weapon_parts["materials"]
+		local tex = managers.blackmarket._selected_weapon_parts["textures"]
+		local col = managers.blackmarket._selected_weapon_parts["colors"]
+
+		if not weapon.visual_blueprint[k] then
+			weapon.visual_blueprint[k] = clone( WeaponCustomization._default_part_visual_blueprint )
+		end
+
+		weapon.visual_blueprint[k]["materials"] = mat
+		weapon.visual_blueprint[k]["textures"] = tex
+		weapon.visual_blueprint[k]["colors"] = col
+
 	end
 
 end

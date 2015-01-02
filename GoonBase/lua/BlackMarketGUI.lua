@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/31/2014 1:23:24 AM
+-- Payday 2 GoonMod, Weapon Customizer Beta, built on 1/2/2015 3:25:53 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -1372,7 +1372,7 @@ function BlackMarketGui.update_info_text(self)
 	Hooks:Call("BlackMarketGUIUpdateInfoText", self)
 end
 
-function BlackMarketGui._update_info_text(self, slot_data, updated_texts, data)
+function BlackMarketGui._update_info_text(self, slot_data, updated_texts, data, scale_override)
 
 	local ignore_lock = false
 	local is_renaming_this = false
@@ -1451,6 +1451,16 @@ function BlackMarketGui._update_info_text(self, slot_data, updated_texts, data)
 		if info_text:bottom() > self._info_texts_panel:h() then
 			scale = self._info_texts_panel:h() / info_text:bottom()
 		end
+
+		if scale_override then
+			if type(scale_override) == "number" then
+				scale = scale_override
+			end
+			if type(scale_override) == "table" then
+				scale = scale_override[i]
+			end
+		end
+
 		info_text:set_font_size(small_font_size * scale)
 		_, _, _, th = info_text:text_rect()
 		info_text:set_h(th)
