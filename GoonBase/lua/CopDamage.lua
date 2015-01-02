@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/30/2014 6:10:13 PM
+-- Payday 2 GoonMod, Weapon Customizer Beta, built on 1/3/2015 12:28:05 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -8,7 +8,7 @@ CloneClass( CopDamage )
 Hooks:RegisterHook("CopDamagePostInitialize")
 function CopDamage.init(self, unit)
 	self.orig.init(self, unit)
-	Hooks:Call("CopDamagePostInitialize")
+	Hooks:Call("CopDamagePostInitialize", self, unit)
 end
 
 Hooks:RegisterHook("CopDamageSetMoverCollisionState")
@@ -27,5 +27,17 @@ function CopDamage.damage_explosion(self, attack_data)
 		return
 	end
 	self.orig.damage_explosion(self, attack_data)
+end
+
+Hooks:RegisterHook("CopDamagePostDeath")
+function CopDamage.die(self, variant)
+	self.orig.die(self, variant)
+	Hooks:Call("CopDamagePostDeath", self, variant)
+end
+
+Hooks:RegisterHook("CopDamagePostDamageBullet")
+function CopDamage.damage_bullet(self, attack_data)
+	self.orig.damage_bullet(self, attack_data)
+	Hooks:Call("CopDamagePostDamageBullet", self, attack_data)
 end
 -- END OF FILE

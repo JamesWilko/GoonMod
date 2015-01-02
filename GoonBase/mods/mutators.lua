@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/30/2014 6:10:13 PM
+-- Payday 2 GoonMod, Weapon Customizer Beta, built on 1/3/2015 12:28:05 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -54,6 +54,7 @@ Mutators.MutatorsList = {
 	"mutators/mutator_instagib.lua",
 	"mutators/mutator_jamming_weapons.lua",
 	"mutators/mutator_lightning_speed.lua",
+	"mutators/mutator_no_ammo_pickups.lua",
 	"mutators/mutator_realism_mode.lua",
 	"mutators/mutator_shielddozers.lua",
 	"mutators/mutator_suicidal_spawnrate.lua",
