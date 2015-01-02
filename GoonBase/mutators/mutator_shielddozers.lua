@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/30/2014 6:10:13 PM
+-- Payday 2 GoonMod, Weapon Customizer Beta, built on 1/3/2015 12:28:05 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -12,6 +12,11 @@ Mutator.AllPlayersRequireMod = true
 Mutator.CheckShield = "CopInventoryCheckSpawnShield_" .. Mutator:ID()
 Mutator.UpdateShield = "CopInventoryUpdate_" .. Mutator:ID()
 
+Mutator.ShieldUnits = {
+	[1] = "units/payday2/characters/ene_acc_shield_lights/ene_acc_shield_lights",
+	[2] = "units/payday2/characters/ene_acc_shield_small/shield_small",
+}
+
 Hooks:Add("GoonBaseRegisterMutators", "GoonBaseRegisterMutators_" .. Mutator:ID(), function()
 	GoonBase.Mutators:RegisterMutator( Mutator )
 end)
@@ -21,7 +26,7 @@ function Mutator:OnEnabled()
 	Hooks:Add("CopInventoryCheckSpawnShield", self.CheckShield, function(inventory, weapon_unit)
 	
 		if inventory._unit:base()._tweak_table == "tank" then
-			inventory._shield_unit_name = "units/payday2/characters/ene_acc_shield_lights/ene_acc_shield_lights"
+			inventory._shield_unit_name = self.ShieldUnits[ math.random(1, #self.ShieldUnits) ]
 			inventory._shield_attach_point = Idstring("a_weapon_right_front")
 		end
 
