@@ -588,7 +588,7 @@ end
 -- Temporary Popup
 function WeaponCustomization:Temp_CheckOverridesInstalled()
 
-	local file_name = "assets/mod_overrides/GoonModWeaponCustomizer/units/payday2/weapons/wpn_fps_ass_74_pts/wpn_fps_ass_74_b_standard.material_confi"
+	local file_name = "assets/mod_overrides/GoonModWeaponCustomizer/units/payday2/weapons/wpn_fps_ass_74_pts/wpn_fps_ass_74_b_standard.material_config"
 	file_name = Application:base_path() .. file_name
 
 	local f= io.open(file_name, "r")
