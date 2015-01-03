@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/30/2014 6:10:13 PM
+-- Payday 2 GoonMod, Public Release Beta 2, built on 1/4/2015 2:00:55 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -7,7 +7,7 @@ if not RequiredScript then return end
 
 if not _G.GoonBase then
 	_G.GoonBase = {}
-	GoonBase.Version = 22
+	GoonBase.Version = 23
 	GoonBase.GameVersion = "1.23.3"
 	GoonBase.LogFile = "GoonBase.log"
 	GoonBase.Path = "GoonBase/"
