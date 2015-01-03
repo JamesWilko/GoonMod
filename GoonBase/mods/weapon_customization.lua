@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Weapon Customizer Beta, built on 1/3/2015 12:28:05 AM
+-- Payday 2 GoonMod, Public Release Beta 2, built on 1/4/2015 2:00:55 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -514,7 +514,7 @@ end
 function WeaponCustomization:LoadWeaponCustomizationFromBlueprint( blueprint, unit_override )
 
 	if not blueprint then
-		Print("[Error] Could not load weapon customization, no visual blueprint specified")
+		Print("[Warning] Could not load weapon customization, no visual blueprint specified")
 		return
 	end
 

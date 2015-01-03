@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Weapon Customizer Beta, built on 1/2/2015 3:25:53 PM
+-- Payday 2 GoonMod, Public Release Beta 2, built on 1/4/2015 2:00:55 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -15,18 +15,37 @@ Localization.wc_unavailable_mod = "Unavailable"
 Localization.wc_advanced_options = "Advanced"
 
 Localization.wc_adv_clear_weapon = "Revert to Factory Standard"
+Localization.wc_adv_toggle_preview_spin = "Toggle Rotating Preview"
+Localization.wc_adv_toggle_colour_grading = "Toggle Ingame Colour Grading"
+
 Localization.wc_clear_weapon_title = "Revert Weapon"
 Localization.wc_clear_weapon_message = "This will revert your weapon customization back to factory standard, do you wish to continue?"
 Localization.wc_clear_weapon_accept = "Revert"
 Localization.wc_clear_weapon_cancel = "Cancel"
 
+Localization.wc_mod_overrides_not_installed_title = "Mod Overrides Missing"
+Localization.wc_mod_overrides_not_installed_desc = [[The mod overrides required to make the Weapon Customization mod are missing from your game mod_overrides folder.
+You must install these, or else you will not see your weapon customization.
+
+A link to the download is found below. Extract the inner folder 'GoonModWeaponCustomizer' to your mod_overrides folder in your Payday 2 assets folder, and then restart your game.]]
+Localization.wc_mod_overrides_not_installed_download = "Download Now"
+Localization.wc_mod_overrides_not_installed_cancel = "Later"
+
 WeaponCustomization._advanced_menu_options = {
 	[1] = {
+		text = "wc_adv_toggle_preview_spin",
+		func = "AdvancedToggleWeaponSpin",
+	},
+	[2] = {
+		text = "wc_adv_toggle_colour_grading",
+		func = "AddvancedToggleColourGrading",
+	},
+	[3] = {
 		text = "wc_adv_clear_weapon",
 		func = "AdvancedClearWeaponCheck",
 	}
 }
-WeaponCustomization._menu_text_scaling = 0.9
+WeaponCustomization._menu_text_scaling = 0.85
 
 function WeaponCustomization.weapon_visual_customization_callback(self, data)
 
@@ -200,7 +219,15 @@ function WeaponCustomization._open_weapon_customization_preview_node(self, data)
 	managers.menu:open_node("blackmarket_mask_node", data)
 	WeaponCustomization:LoadCurrentWeaponCustomization( category, slot )
 
+	WeaponCustomization:Temp_CheckOverridesInstalled()
+
 end
+
+Hooks:Add("MenuSceneManagerOverrideSceneTemplate", "MenuSceneManagerOverrideSceneTemplate_WeaponCustomization", function(scene, template, data, custom_name, skip_transition)
+	if managers.blackmarket._customizing_weapon and template == "blackmarket_mask" then
+		return "blackmarket_item"
+	end
+end)
 
 Hooks:Add("BlackMarketGUIStartPageData", "BlackMarketGUIStartPageData_WeaponCustomization", function(gui)
 	if gui.identifiers then
@@ -241,6 +268,12 @@ end)
 -- 		table.insert(data, "w_visual_customize")
 -- 	end
 -- end)
+
+Hooks:Add("BlackMarketGUIOnPopulateWeapons", "BlackMarketGUIOnPopulateWeapons_WeaponCustomization", function(gui, category, data)
+	if managers.blackmarket._customizing_weapon then
+		managers.blackmarket._customizing_weapon = nil
+	end
+end)
 
 Hooks:Add("BlackMarketGUIChooseMaskPartCallback", "BlackMarketGUIChooseMaskPartCallback_WeaponCustomization", function(gui, data)
 	WeaponCustomization:UpdateWeaponPartsWithMaskMod( data )
@@ -306,7 +339,7 @@ Hooks:Add("BlackMarketGUIUpdateInfoText", "BlackMarketGUIUpdateInfoText_WeaponCu
 		end
 
 		-- Add advanced options
-		self._info_texts_color[5] = Color.white
+		self._info_texts_color[5] = tweak_data.screen_colors.text
 		updated_texts[5].text = "\n" .. managers.localization:to_upper_text("wc_advanced_options") .. "\n"
 		for k, v in ipairs( WeaponCustomization._advanced_menu_options ) do
 			updated_texts[5].text = updated_texts[5].text .. managers.localization:text( v.text ) .. "\n"
@@ -319,6 +352,7 @@ Hooks:Add("BlackMarketGUIUpdateInfoText", "BlackMarketGUIUpdateInfoText_WeaponCu
 			updated_texts[4].text = "\n" .. managers.localization:to_upper_text("wc_highlighted_mod") .. "\n" .. slot_data.name_localized
 
 			if not slot_data.unlocked or (type(slot_data.unlocked) == "number" and slot_data.unlocked <= 0) then
+				self._info_texts_color[5] = tweak_data.screen_colors.important_1
 				updated_texts[5].text = managers.localization:text("wc_unavailable_mod")
 			end
 
@@ -468,6 +502,38 @@ function WeaponCustomization:_GetIndexFromLine(line, modifying)
 end
 
 -- Clear Weapon Function
+function WeaponCustomization:AdvancedToggleWeaponSpin()
+
+	if managers.menu_scene then
+		if managers.menu_scene._disable_rotate ~= nil then
+			managers.menu_scene._disable_rotate = not managers.menu_scene._disable_rotate
+		else
+			managers.menu_scene._disable_rotate = true
+		end
+	end
+
+end
+
+function WeaponCustomization:AddvancedToggleColourGrading()
+
+	if managers and managers.environment_controller then
+
+		local self = WeaponCustomization
+		local grading = "color_payday"
+		if self._previous_colour_grading then
+			grading = self._previous_colour_grading
+			self._previous_colour_grading = nil
+		else
+			self._previous_colour_grading = managers.environment_controller:default_color_grading()
+		end
+
+		managers.environment_controller:set_default_color_grading( grading )
+		managers.environment_controller:refresh_render_settings()
+
+	end
+
+end
+
 function WeaponCustomization:AdvancedClearWeaponCheck()
 
 	local title = managers.localization:text("wc_clear_weapon_title")
@@ -515,6 +581,49 @@ function WeaponCustomization.AdvancedClearWeaponAccept()
 			weapon.visual_blueprint = nil
 		end
 		
+	end
+
+end
+
+-- Temporary Popup
+function WeaponCustomization:Temp_CheckOverridesInstalled()
+
+	local file_name = "assets/mod_overrides/GoonModWeaponCustomizer/units/payday2/weapons/wpn_fps_ass_74_pts/wpn_fps_ass_74_b_standard.material_confi"
+	file_name = Application:base_path() .. file_name
+
+	local f= io.open(file_name, "r")
+	if f ~= nil then
+		io.close(f)
+	else
+		WeaponCustomization:Temp_ShowOverridesNotInstalledWindow()
+	end
+
+end
+
+function WeaponCustomization:Temp_ShowOverridesNotInstalledWindow()
+
+	local title = managers.localization:text("wc_mod_overrides_not_installed_title")
+	local message = managers.localization:text("wc_mod_overrides_not_installed_desc")
+	local menuOptions = {}
+	menuOptions[1] = {
+		text = managers.localization:text("wc_mod_overrides_not_installed_download"),
+		callback = WeaponCustomization.Temp_DownloadOverrides,
+		is_cancel_button = true
+	}
+	menuOptions[2] = {
+		text = managers.localization:text("wc_mod_overrides_not_installed_cancel"),
+		is_cancel_button = true
+	}
+	local menu = SimpleMenu:New(title, message, menuOptions)
+	menu:Show()
+
+end
+
+function WeaponCustomization:Temp_DownloadOverrides()
+
+	if SystemInfo:platform() == Idstring("WIN32") then
+		os.execute( "explorer " .. WeaponCustomization._mod_overrides_download_location )
+		os.execute( "explorer " .. Application:base_path() .. "assets\\mod_overrides\\" )
 	end
 
 end
