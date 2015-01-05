@@ -623,7 +623,9 @@ function BlackMarketGui.populate_masks(self, data)
 
 			end
 
-			Hooks:Call("BlackMarketGUIOnPopulateMasksActionList", self, new_data)
+			if i ~= 1 then
+				Hooks:Call("BlackMarketGUIOnPopulateMasksActionList", self, new_data)
+			end
 
 			if i ~= 1 then
 				if 0 < managers.money:get_mask_sell_value(new_data.name, new_data.global_value) then
