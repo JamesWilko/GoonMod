@@ -7,7 +7,7 @@ if not RequiredScript then return end
 
 if not _G.GoonBase then
 	_G.GoonBase = {}
-	GoonBase.Version = 23
+	GoonBase.Version = 24
 	GoonBase.GameVersion = "1.23.3"
 	GoonBase.LogFile = "GoonBase.log"
 	GoonBase.Path = "GoonBase/"
