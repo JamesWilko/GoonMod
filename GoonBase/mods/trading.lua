@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Weapon Customizer Beta, built on 1/3/2015 12:28:05 AM
+-- Payday 2 GoonMod, Public Release Beta 2, built on 1/9/2015 9:30:33 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -28,6 +28,10 @@ Trading.BlackMarketGUI = nil
 Trading.TradeData = {}
 Trading.ActiveTradeWindow = nil
 Trading.MenuId = "goonbase_trading_options_menu"
+
+Trading.BlacklistedMasks = {
+	["character_locked"] = true,
+}
 
 -- Categories
 Trading.Categories = {}
@@ -66,8 +70,11 @@ Trading.Network.AutoDecline_MaskSlots = "DeclineMaskSlots"
 Trading.Network.AutoDecline_AlreadyTrading = "AlreadyTrading"
 
 -- Options
-GoonBase.Options.Trading = {}
-GoonBase.Options.Trading.Enabled = true
+if not GoonBase.Options.Trading then
+	GoonBase.Options.Trading = {}
+	GoonBase.Options.Trading.Enabled = true
+	GoonBase.Options.Trading.FixedPreferredCharacterMask = false
+end
 
 -- Localization
 local Localization = GoonBase.Localization
@@ -294,8 +301,12 @@ end)
 
 Hooks:Add("BlackMarketGUIOnPopulateMasksActionList", "BlackMarketGUIOnPopulateMasksActionList_" .. Mod:ID(), function(gui, data)
 
+	Trading:_FixPreferredCharacterMask()
+
 	if GoonBase.Options.Trading.Enabled and not data.equipped and GoonBase.Network:IsMultiplayer() then
-		table.insert(data, "m_trade")
+		if not Trading.BlacklistedMasks[ data.name ] then
+			table.insert(data, "m_trade")
+		end
 	end
 
 end)
@@ -1506,6 +1517,47 @@ function Trading:ShowMaskModTradabilityMessage(mod_name)
 	}
 	local tradeMenu = SimpleMenu:New(title, message, menuOptions)
 	tradeMenu:Show()
+
+end
+
+-- Fix for people who traded away their preferred character masks
+function Trading:_FixPreferredCharacterMask()
+
+	if GoonBase.Options.Trading and not GoonBase.Options.Trading.FixedPreferredCharacterMask then
+
+		Print("[Trading] Checking if player traded away character locked mask...")
+
+		local index = managers.blackmarket._global.crafted_items.masks[1]
+		if index.mask_id ~= "character_locked" then
+
+			Print("[Trading] Charcter locked mask not in proper place, fixing, mask in its place will be lost...")
+
+			index.mask_id = "character_locked"
+			index.global_value = "normal"
+			index.modded = false
+			index.blueprint = {
+				["color"] = {
+					id = "nothing",
+					global_value = "normal",
+				},
+				["material"] = {
+					id = "plastic",
+					global_value = "normal",
+				},
+				["pattern"] = {
+					id = "no_color_no_material",
+					global_value = "normal",
+				},
+			}
+
+		else
+			Print("[Trading] Mask is in proper place, skipping fix")
+		end
+
+		GoonBase.Options.Trading.FixedPreferredCharacterMask = true
+		GoonBase.Options:Save()
+
+	end
 
 end
 -- END OF FILE

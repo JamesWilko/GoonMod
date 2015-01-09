@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/30/2014 6:10:13 PM
+-- Payday 2 GoonMod, Public Release Beta 2, built on 1/9/2015 9:30:33 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -172,63 +172,18 @@ function ModShop:WeaponModAllowed(mod)
 end
 
 Hooks:Add("BlackMarketGUIOnPopulateBuyMasksActionList", "BlackMarketGUIOnPopulateBuyMasksActionList_" .. Mod:ID(), function(gui, data)
-	if ModShop:MaskAllowed(data) then
+	if ModShop:IsMaskOrModAllowed(data, ModShop.MaskAllowanceList) then
 		table.insert(data, "bm_modshop")
 	end
 end)
 
-function ModShop:MaskAllowed(mask)
-
-	if mask == nil then
-		return false
-	end
-
-	local gv = mask.global_value
-	if gv == nil then
-		return true
-	end
-
-	if ModShop.ExclusionList[mask.name] == true or ModShop.ExclusionList[gv] == true then
-		return false
-	end
-
-	for k, v in pairs( tweak_data.dlc ) do
-		if v.achievement_id ~= nil and v.content ~= nil and v.content.loot_drops ~= nil then
-			for i, loot in pairs( v.content.loot_drops ) do
-				if loot.item_entry ~= nil and loot.item_entry == mask.name then
-					return managers.achievment.handler:has_achievement(v.achievement_id)
-				end
-			end
-		end
-	end
-
-	local infamy_lock = mask.infamy_lock
-	if infamy_lock ~= nil or gv == "infamy" then
-		local is_unlocked = managers.infamy:owned(infamy_lock)
-		if not is_unlocked then
-			return false
-		end
-	end
-
-	if ModShop.MaskAllowanceList[gv] then
-		return true
-	end
-
-	if not managers.dlc:is_dlc_unlocked(gv) then
-		return false
-	end
-
-	return true
-
-end
-
 Hooks:Add("BlackMarketGUIOnPopulateMaskModsActionList", "BlackMarketGUIOnPopulateMaskModsActionList_" .. Mod:ID(), function(gui, data)
-	if ModShop:MaskModAllowed(data) then
+	if ModShop:IsMaskOrModAllowed(data, ModShop.MaskModAllowanceList) then
 		table.insert(data, "mp_modshop")
 	end
 end)
 
-function ModShop:MaskModAllowed(mod)
+function ModShop:IsMaskOrModAllowed(mod, allowance_list)
 
 	if mod == nil then
 		return false
@@ -255,17 +210,17 @@ function ModShop:MaskModAllowed(mod)
 
 	local infamy_lock = mod.infamy_lock
 	if infamy_lock ~= nil or gv == "infamy" then
-		local is_unlocked = managers.infamy:owned(infamy_lock)
+		local is_unlocked = managers.infamy:owned(infamy_lock) or infamy_lock == nil
 		if not is_unlocked then
 			return false
 		end
 	end
 
-	if ModShop.MaskModAllowanceList[gv] then
+	if allowance_list and allowance_list[gv] then
 		return true
 	end
 
-	if not managers.dlc:is_dlc_unlocked(gv) then
+	if gv ~= "infamy" and not managers.dlc:is_dlc_unlocked(gv) then
 		return false
 	end
 
@@ -411,8 +366,22 @@ end
 
 function ModShop:ShowPurchaseMenu()
 
+	if not ExtendedInv then
+		Print("[Error] Attempting to show purchase menu with no Extended Inventory...")
+		return
+	end
+
 	local gage_coins = ExtendedInv:GetItem( ModShop.PurchaseCurrency )
 	local purchase_cost = self._purchase_data.cost
+
+	if not gage_coins.amount or type(gage_coins.amount) == "string" then
+		Print("[Error] Attempting to show purchase menu with no coin amount, or a string as the amount")
+		return
+	end
+	if not purchase_cost or type(purchase_cost) == "string" then
+		Print("[Error] Attmpting to show purchase menu with a string as the purchasing cost")
+		return
+	end
 
 	-- Check if item is free of charge
 	if self._purchase_data.free_of_charge ~= nil and self._purchase_data.free_of_charge == true then
@@ -483,6 +452,11 @@ end
 function ModShop:PurchaseItem()
 
 	local psuccess, perror = pcall(function()
+
+		if not ExtendedInv then
+			Print("[Error] Attempting to purchase item with no Extended Inventory...")
+			return
+		end
 		
 		local purchase_data = ModShop._purchase_data
 		local item = purchase_data.name

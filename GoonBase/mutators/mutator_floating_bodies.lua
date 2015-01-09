@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/30/2014 6:10:13 PM
+-- Payday 2 GoonMod, Public Release Beta 2, built on 1/9/2015 9:30:33 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -10,6 +10,7 @@ Mutator.OptionsDesc = "Enemies will float upwards after death. Will not effect b
 Mutator.AllPlayersRequireMod = true
 
 Mutator._FloatTime = 60
+Mutator._ClientStealthFloatTime = 15
 Mutator._PostUpdateRagdolled = "CopActionHurtPostUpdateRagdolled_" .. Mutator:ID()
 
 Hooks:Add("GoonBaseRegisterMutators", "GoonBaseRegisterMutators_" .. Mutator:ID(), function()
@@ -20,13 +21,26 @@ function Mutator:OnEnabled()
 
 	Hooks:Add("CopActionHurtPostUpdateRagdolled", self._PostUpdateRagdolled, function(cop, t)
 
-		local float = t - (cop._death_time or t) < self._FloatTime
+		if not cop._death_time then
+			cop._death_time = t
+		end
+		local float_time = t - (cop._death_time or t)
+		local should_float = float_time < self._FloatTime
+		local float_timed_out = float_time > self._FloatTime
 
-		if float and not cop._unit:brain():is_pager_started() then
+		if managers.groupai:state():whisper_mode() then
 
-			if not cop._death_time then
-				cop._death_time = t
+			if Network:is_server() then
+				if should_float and cop._unit:brain().is_pager_started then
+					should_float = not cop._unit:brain():is_pager_started()
+				end
+			else
+				should_float = float_time > self._ClientStealthFloatTime
 			end
+
+		end
+
+		if should_float then
 
 			if not cop._death_twist then
 				cop._death_twist = math.random(2) == 1 and 1 or -1
@@ -52,7 +66,7 @@ function Mutator:OnEnabled()
 
 		end
 
-		if not float then
+		if float_timed_out then
 			cop:_freeze_ragdoll()
 			cop.update = nil
 		end

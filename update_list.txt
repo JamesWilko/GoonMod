@@ -78,6 +78,7 @@ GoonBase\mods\trading.lua
 GoonBase\mods\train_heist_plans.lua
 GoonBase\mods\weapon_customization.lua
 GoonBase\mods\weapon_customization_menus.lua
+GoonBase\mods\weapon_customization_part_data.lua
 GoonBase\mods\weapon_remember_gadget.lua
 GoonBase\mods\zoom_sensitivity.lua
 GoonBase\mutators\base_mutator.lua

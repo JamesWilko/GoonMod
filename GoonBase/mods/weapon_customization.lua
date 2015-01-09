@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 2, built on 1/4/2015 2:00:55 AM
+-- Payday 2 GoonMod, Public Release Beta 2, built on 1/9/2015 9:30:33 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -35,6 +35,7 @@ WeaponCustomization._mod_overrides_download_location = "https://github.com/James
 
 -- Load extras
 SafeDoFile( GoonBase.Path .. "mods/weapon_customization_menus.lua" )
+SafeDoFile( GoonBase.Path .. "mods/weapon_customization_part_data.lua" )
 
 -- Localization
 local Localization = GoonBase.Localization
@@ -56,6 +57,9 @@ You may need to restart your game, or load a mission, to fully clear your textur
 Localization.WeaponCustomization_ClearDataAccept = "Clear Data"
 Localization.WeaponCustomization_ClearDataCancel = "Cancel"
 
+Localization.WeaponCustomization_PrintAllPartNames = "Output All Weapon Part Names"
+Localization.WeaponCustomization_PrintAllPartNamesDesc = "Outputs all weapon part names to a CSV file"
+
 Localization.bm_mtl_no_material = "No Material"
 
 -- Options
@@ -71,6 +75,7 @@ if GoonBase.Options.WeaponCustomization == nil then
 	GoonBase.Options.WeaponCustomization.Material = 1
 	GoonBase.Options.WeaponCustomization.HideDiffuse = false
 	GoonBase.Options.WeaponCustomization.HideNormal = false
+	GoonBase.Options.WeaponCustomization.TempShownOverridesNotInstalled = false
 end
 
 -- Menu
@@ -162,6 +167,12 @@ Hooks:Add("NewRaycastWeaponBasePostAssemblyComplete", "NewRaycastWeaponBasePostA
 end)
 
 Hooks:Add("PlayerStandardStartActionEquipWeapon", "PlayerStandardStartActionEquipWeapon_WeaponCustomization", function(ply, t)
+	if managers.player:local_player() then
+		WeaponCustomization:LoadEquippedWeaponCustomizations( managers.player:local_player():inventory():equipped_unit():base() )
+	end
+end)
+
+Hooks:Add("PlayerStandardStartMaskUp", "PlayerStandardStartMaskUp_WeaponCustomization", function(ply, data)
 	if managers.player:local_player() then
 		WeaponCustomization:LoadEquippedWeaponCustomizations( managers.player:local_player():inventory():equipped_unit():base() )
 	end
@@ -507,6 +518,16 @@ function WeaponCustomization:LoadCurrentWeaponCustomization( category, slot )
 		return
 	end
 
+	-- Create default blueprint if it doesn't exist
+	if not weapon.visual_blueprint then
+		weapon.visual_blueprint = {}
+		local weapon = managers.blackmarket._global.crafted_items[category][slot]
+		for k, v in pairs( weapon.blueprint ) do
+			weapon.visual_blueprint[v] = clone( WeaponCustomization._default_part_visual_blueprint )
+		end
+	end
+
+	-- Load and apply blueprint
 	WeaponCustomization:LoadWeaponCustomizationFromBlueprint( weapon.visual_blueprint )
 
 end
@@ -514,6 +535,7 @@ end
 function WeaponCustomization:LoadWeaponCustomizationFromBlueprint( blueprint, unit_override )
 
 	if not blueprint then
+		blueprint = clone( WeaponCustomization._default_part_visual_blueprint )
 		Print("[Warning] Could not load weapon customization, no visual blueprint specified")
 		return
 	end

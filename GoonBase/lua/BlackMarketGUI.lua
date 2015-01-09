@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 2, built on 1/4/2015 2:00:55 AM
+-- Payday 2 GoonMod, Public Release Beta 2, built on 1/9/2015 9:30:33 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -604,9 +604,6 @@ function BlackMarketGui.populate_masks(self, data)
 			if new_data.unlocked then
 				if not new_data.equipped then
 					table.insert(new_data, "m_equip")
-					if GoonBase.Options.Trading ~= nil and GoonBase.Options.Trading.Enabled then
-						table.insert(new_data, "m_trade")
-					end
 				end
 
 				if i ~= 1 and new_data.equipped then
@@ -623,7 +620,9 @@ function BlackMarketGui.populate_masks(self, data)
 
 			end
 
-			Hooks:Call("BlackMarketGUIOnPopulateMasksActionList", self, new_data)
+			if i ~= 1 then
+				Hooks:Call("BlackMarketGUIOnPopulateMasksActionList", self, new_data)
+			end
 
 			if i ~= 1 then
 				if 0 < managers.money:get_mask_sell_value(new_data.name, new_data.global_value) then
@@ -1110,6 +1109,8 @@ function BlackMarketGui.populate_mods(self, data)
 		else
 			table.insert(data[equipped], "wm_preview")
 		end
+
+		Hooks:Call("BlackMarketGUIOnPopulateModsActionList", self, data[equipped])
 
 		local factory = tweak_data.weapon.factory.parts[data[equipped].name]
 		if data.name == "sight" and factory and factory.texture_switch then

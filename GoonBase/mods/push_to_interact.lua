@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/30/2014 6:10:13 PM
+-- Payday 2 GoonMod, Public Release Beta 2, built on 1/9/2015 9:30:33 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -24,6 +24,9 @@ end
 -- Push to Interact
 _G.GoonBase.PushToInteract = _G.GoonBase.PushToInteract or {}
 local PushToInteract = _G.GoonBase.PushToInteract
+PushToInteract.ForceKeepInteraction = {
+	["corpse_alarm_pager"] = true,
+}
 
 -- Options
 if not GoonBase.Options.PushToInteract then
@@ -134,6 +137,14 @@ Hooks:Add("PlayerStandardCheckActionInteract", "PlayerStandardCheckActionInterac
 
 		local dt = t - ply._last_interact_press_t
 		local always_use = grace_time < 0.001
+
+		if managers.interaction and alive( managers.interaction:active_object() ) then
+			local tw = managers.interaction:active_object():interaction().tweak_data
+			if PushToInteract.ForceKeepInteraction[tw] then
+				always_use = true
+			end
+		end
+
 		if always_use or dt >= grace_time then
 			return false
 		end
