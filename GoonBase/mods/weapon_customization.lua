@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 2, built on 1/9/2015 9:30:33 PM
+-- Payday 2 GoonMod, Public Release Beta 2, built on 1/10/2015 2:53:10 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -217,6 +217,51 @@ Hooks:Add("BlackMarketGUIOnPopulateMaskMods", "BlackMarketGUIOnPopulateMaskMods_
 end)
 
 -- Functions
+function WeaponCustomization:AddCustomizablePart( part_id )
+	local tbl = clone( WeaponCustomization._default_part_visual_blueprint )
+	tbl.id = part_id
+	tbl.modifying = false
+	table.insert( managers.blackmarket._customizing_weapon_parts, tbl )
+end
+
+function WeaponCustomization:CreateCustomizablePartsList( weapon )
+
+	-- Clear weapon parts
+	managers.blackmarket._customizing_weapon_parts = {}
+	local blueprint_parts = {}
+
+	-- Add blueprint parts
+	for k, v in ipairs( weapon.blueprint ) do
+
+		-- Add blueprint part
+		WeaponCustomization:AddCustomizablePart( v )
+		blueprint_parts[v] = true
+
+		-- Check if part has adds
+		local part_data = tweak_data.weapon.factory.parts[v]
+		if part_data and part_data.adds then
+			for x, y in pairs( part_data.adds ) do
+				WeaponCustomization:AddCustomizablePart( y )
+				blueprint_parts[y] = true
+			end
+		end
+
+	end
+
+	-- Add weapon extra part adds
+	local weapon_data = tweak_data.weapon.factory[ weapon.factory_id ]
+	if weapon_data and weapon_data.adds then
+		for k, v in pairs( weapon_data.adds ) do
+			if blueprint_parts[k] then
+				for x, y in pairs( v ) do
+					WeaponCustomization:AddCustomizablePart( y )
+				end
+			end
+		end
+	end
+
+end
+
 function WeaponCustomization:QueueWeaponUpdate( material_id, pattern_id, tint_color_a, tint_color_b, parts_table )
 
 	if not self._update_queue then

@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 2, built on 1/9/2015 9:30:33 PM
+-- Payday 2 GoonMod, Public Release Beta 2, built on 1/10/2015 2:53:10 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -24,19 +24,6 @@ function WeaponCustomization:GetLocalizedPartName( part_name, part )
 	end
 	return (part.name_id and managers.localization:text( part.name_id ) or part_name)
 end
-
-WeaponCustomization.ExtraWeaponDefaultParts = {
-	["wpn_fps_ass_g36"] = {
-		"wpn_fps_ass_g36_body_standard",
-		"wpn_fps_ass_g36_g_standard",
-	},
-	["wpn_fps_sho_ksg"] = {
-		"wpn_fps_sho_ksg_fg_standard",
-		"wpn_fps_sho_ksg_fg_short",
-		"wpn_fps_upg_o_mbus_front",
-		"wpn_fps_upg_o_dd_front",
-	},
-}
 
 local standard_barrel = "Standard Barrel"
 local standard_magazine = "Standard Magazine"
@@ -272,7 +259,7 @@ WeaponCustomization.MissingPartLocalizations = {
 	["bm_wp_g3_m_standard"] = standard_magazine,
 
 	["bm_wp_g36_body_standard"] = standard_body,
-	["bm_wp_g36_body_sl8"] = standard_body,
+	["bm_wp_g36_body_sl8"] = "Sniper Body",
 	["bm_wp_g36_g_standard"] = standard_grip,
 	["bm_wp_g36_m_standard"] = standard_magazine,
 	["bm_wp_g36_s_standard"] = standard_stock,

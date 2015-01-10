@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 2, built on 1/9/2015 9:30:33 PM
+-- Payday 2 GoonMod, Public Release Beta 2, built on 1/10/2015 2:53:10 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -232,23 +232,7 @@ function WeaponCustomization._open_weapon_customization_preview_node(self, data)
 	local slot = data[1].weapon_slot_data.slot
 	local weapon = managers.blackmarket._global.crafted_items[category][slot]
 
-	managers.blackmarket._customizing_weapon_parts = {}
-	for k, v in ipairs( weapon.blueprint ) do
-		local tbl = clone( WeaponCustomization._default_part_visual_blueprint )
-		tbl.id = v
-		tbl.modifying = false
-		table.insert( managers.blackmarket._customizing_weapon_parts, tbl )
-	end
-
-	if WeaponCustomization.ExtraWeaponDefaultParts and WeaponCustomization.ExtraWeaponDefaultParts[ weapon.factory_id ] then
-		for k, v in pairs( WeaponCustomization.ExtraWeaponDefaultParts[ weapon.factory_id ] ) do
-			local tbl = clone( WeaponCustomization._default_part_visual_blueprint )
-			tbl.id = v
-			tbl.modifying = false
-			table.insert( managers.blackmarket._customizing_weapon_parts, tbl )
-		end
-	end
-
+	WeaponCustomization:CreateCustomizablePartsList( weapon )
 	managers.blackmarket._selected_weapon_parts = clone( WeaponCustomization._default_part_visual_blueprint )
 
 	WeaponCustomization._controller_index = {
@@ -705,14 +689,8 @@ function WeaponCustomization.AdvancedClearWeaponAccept()
 		local slot = managers.blackmarket._customizing_weapon_data.slot
 		local weapon = managers.blackmarket._global.crafted_items[category][slot]
 
-		-- Clear weapon parts
-		managers.blackmarket._customizing_weapon_parts = {}
-		for k, v in ipairs( weapon.blueprint ) do
-			local tbl = clone( WeaponCustomization._default_part_visual_blueprint )
-			tbl.id = v
-			tbl.modifying = false
-			table.insert( managers.blackmarket._customizing_weapon_parts, tbl )
-		end
+		-- Rebuild weapon parts list
+		WeaponCustomization:CreateCustomizablePartsList( weapon )
 
 		-- Clear selected parts
 		managers.blackmarket._selected_weapon_parts = clone( WeaponCustomization._default_part_visual_blueprint )
