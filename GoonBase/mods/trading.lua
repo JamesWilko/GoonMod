@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 2, built on 1/9/2015 9:30:33 PM
+-- Payday 2 GoonMod, Public Release Beta 2, built on 1/10/2015 2:53:10 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -1528,9 +1528,23 @@ function Trading:_FixPreferredCharacterMask()
 		Print("[Trading] Checking if player traded away character locked mask...")
 
 		local index = managers.blackmarket._global.crafted_items.masks[1]
-		if index.mask_id ~= "character_locked" then
+		local requires_reset = false
+
+		if index then
+			if index.mask_id ~= "character_locked" then
+				requires_reset = true
+			end
+		else
+			requires_reset = true
+		end
+
+		if requires_reset then
 
 			Print("[Trading] Charcter locked mask not in proper place, fixing, mask in its place will be lost...")
+
+			if not index then
+				index = {}
+			end
 
 			index.mask_id = "character_locked"
 			index.global_value = "normal"
@@ -1549,6 +1563,8 @@ function Trading:_FixPreferredCharacterMask()
 					global_value = "normal",
 				},
 			}
+
+			managers.blackmarket._global.crafted_items.masks[1] = index
 
 		else
 			Print("[Trading] Mask is in proper place, skipping fix")
