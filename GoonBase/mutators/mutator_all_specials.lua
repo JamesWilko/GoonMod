@@ -147,7 +147,7 @@ function Mutator:ModifyUnitCategories(data, difficulty_index)
 	data.unit_categories.CS_swat_R870 = data.unit_categories.CS_tazer
 	data.unit_categories.CS_heavy_M4 = data.unit_categories.CS_tazer
 	data.unit_categories.CS_heavy_M4_w = data.unit_categories.CS_tazer
-	data.unit_categories.CS_shield = data.unit_categories.CS_tazer
+--	data.unit_categories.CS_shield = data.unit_categories.CS_tazer
 	data.unit_categories.FBI_suit_C45_M4 = data.unit_categories.CS_tazer
 	data.unit_categories.FBI_suit_M4_MP5 = data.unit_categories.CS_tazer
 	data.unit_categories.FBI_suit_stealth_MP5 = data.unit_categories.CS_tazer
@@ -155,8 +155,8 @@ function Mutator:ModifyUnitCategories(data, difficulty_index)
 	data.unit_categories.FBI_swat_R870 = data.unit_categories.CS_tazer
 	data.unit_categories.FBI_heavy_G36 = data.unit_categories.CS_tazer
 	data.unit_categories.FBI_heavy_G36_w = data.unit_categories.CS_tazer
-	data.unit_categories.FBI_shield = data.unit_categories.CS_tazer
-	data.unit_categories.FBI_tank = data.unit_categories.CS_tazer
+--	data.unit_categories.FBI_shield = data.unit_categories.CS_tazer
+--	data.unit_categories.FBI_tank = data.unit_categories.CS_tazer
 
 end
 -- END OF FILE
