@@ -61,6 +61,7 @@ Mutators.MutatorsList = {
 	"mutators/mutator_suicidal_spawnrate_cops.lua",
 	"mutators/mutator_suicide_cloakers.lua",
 	"mutators/mutator_unbreakable.lua",
+    "mutators/mutator_all_specials.lua"
 }
 Mutators.MenuPrefix = "toggle_mutator_"
 
@@ -177,7 +178,7 @@ Hooks:Add("MenuManagerSetupCustomMenus", "MenuManagerSetupCustomMenus_MutatorsMe
 
 	-- Add mutators to menu
 	Mutators:AddLoadedMutatorsToMenu()
-	
+
 end)
 
 Hooks:Add("MenuManagerBuildCustomMenus", "MenuManagerBuildCustomMenus_MutatorsMenu", function(menu_manager, menu_nodes)
@@ -198,7 +199,7 @@ Hooks:Add("MenuManagerBuildCustomMenus", "MenuManagerBuildCustomMenus_MutatorsMe
 	if menu_nodes.pause ~= nil then
 		GoonBase.MenuHelper:AddMenuItem( menu_nodes.pause, menu_id, "Mutators_OptionsIngameName", "Mutators_OptionsIngameDesc", "options", "after" )
 	end
-	
+
 	-- Verify incompatibilities
 	Mutators:VerifyAllIncompatibilities()
 
@@ -217,9 +218,9 @@ function Mutators:ShowHelpMenu()
 end
 
 function Mutators:LoadMutators()
-	
+
 	for k, v in pairs( self.MutatorsList ) do
-		SafeDoFile( GoonBase.Path .. self.MutatorsPath .. v )		
+		SafeDoFile( GoonBase.Path .. self.MutatorsPath .. v )
 	end
 
 end
