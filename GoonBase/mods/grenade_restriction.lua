@@ -45,10 +45,11 @@ Hooks:Add( "PlayerStandardCheckActionThrowGrenade", "PlayerStandardCheckActionTh
 			this._last_grenade_time = t
 			return false
 		end
-		if input.btn_throw_grenade_press then
-			this._has_thrown_grenade = true
-		end
 
+	end
+
+	if input.btn_throw_grenade_press then
+		this._has_thrown_grenade = true
 	end
 
 end )
