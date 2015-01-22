@@ -61,7 +61,8 @@ Mutators.MutatorsList = {
 	"mutators/mutator_suicidal_spawnrate_cops.lua",
 	"mutators/mutator_suicide_cloakers.lua",
 	"mutators/mutator_unbreakable.lua",
-    "mutators/mutator_all_specials.lua"
+    "mutators/mutator_all_specials.lua",
+    "mutators/mutator_stealth_hell.lua"
 }
 Mutators.MenuPrefix = "toggle_mutator_"
 
