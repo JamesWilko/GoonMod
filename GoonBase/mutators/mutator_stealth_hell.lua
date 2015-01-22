@@ -29,7 +29,7 @@ function Mutator:OnEnabled()
 
                 -- Framing frame day 3
                 if managers.job:current_level_id() == "framing_frame_3" then
-                   for k,v in pairs(managers.mission._scripts.default._elements) do
+                   for _,v in pairs(managers.mission._scripts.default._elements) do
 
                       -- sudden death upon picking up gold
                       if v._values and v._values.trigger_list
@@ -37,17 +37,22 @@ function Mutator:OnEnabled()
                          and (v._values.trigger_list[1].notify_unit_sequence == "state_zipline_enable")
                       then
                          v._values.on_executed = function(unit)
+                            io.stderr:write("Sudden death!\n")
+                            player = managers.player:player_unit()
+                            player:character_damage():set_health(0) 
+                            player:character_damage():_check_bleed_out(false)
                          end
                       end
 
                       -- spawn cloakers in vault
                       if v._editor_name and string.sub(v._editor_name, 1, -2) == "spawnLootInVault"
                       then
-                         v._values.orig_on_executed = v._values.on_executed
-                         v._values.on_executed = function(unit)
+                         v.orig_on_executed = v._values.on_executed
+                         v.on_executed = function(unit)
+                            io.stderr:write("spawn cloaker!\n")
                             local unitName = Idstring( "units/payday2/characters/ene_spook_1/ene_spook_1")
                             World:spawn_unit(unitName, v._values.position, v._values.rotation)
-                            v._values.orig_on_executed(unit)
+                            v.orig_on_executed(unit)
                          end
                       end
                    end
