@@ -1,6 +1,6 @@
 ----------
--- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/30/2014 6:10:13 PM
--- Copyright 2014, James Wilkinson, Overkill Software
+-- Payday 2 GoonMod, Weapon Customizer Beta, built on 01/22/2015 15:34:00 PM
+-- Copyright 2014 - 2015, Bruce Li, James Wilkinson, Overkill Software
 ----------
 
 local Mutator = class(BaseMutator)
