@@ -26,6 +26,33 @@ function Mutator:OnEnabled()
    Hooks:Add("TweakDataPostInit", self.Tweak, function()
                 io.stderr:write("Reduce pagers to 2\n")
                 tweak_data.player.alarm_pager.bluff_success_chance = {1, 1, 0, 0, 0}
+
+                -- Framing frame day 3
+                if managers.job:current_level_id() == "framing_frame_3" then
+                   for k,v in pairs(managers.mission._scripts.default._elements) do
+
+                      -- sudden death upon picking up gold
+                      if v._values and v._values.trigger_list
+                         and v._values.trigger_list[1]
+                         and (v._values.trigger_list[1].notify_unit_sequence == "state_zipline_enable")
+                      then
+                         v._values.on_executed = function(unit)
+                         end
+                      end
+
+                      -- spawn cloakers in vault
+                      if v._editor_name and string.sub(v._editor_name, 1, -2) == "spawnLootInVault"
+                      then
+                         v._values.orig_on_executed = v._values.on_executed
+                         v._values.on_executed = function(unit)
+                            local unitName = Idstring( "units/payday2/characters/ene_spook_1/ene_spook_1")
+                            World:spawn_unit(unitName, v._values.position, v._values.rotation)
+                            v._values.orig_on_executed(unit)
+                         end
+                      end
+                   end
+                end
+
    end)
 end
 
