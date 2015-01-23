@@ -62,7 +62,10 @@ Mutators.MutatorsList = {
 	"mutators/mutator_suicide_cloakers.lua",
 	"mutators/mutator_unbreakable.lua",
     "mutators/mutator_all_specials.lua",
-    "mutators/mutator_stealth_hell.lua"
+    "mutators/mutator_stealth_hell.lua",
+    "mutators/mutator_limited_pagers.lua",
+    "mutators/mutator_tough_guard.lua",
+    "mutators/mutator_sam_fisher.lua"
 }
 Mutators.MenuPrefix = "toggle_mutator_"
 

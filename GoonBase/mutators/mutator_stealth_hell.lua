@@ -18,29 +18,6 @@ Mutator.Units.Cop = "CharacterTweakDataPostInitCop_" .. Mutator.Id
 Mutator.Tweak = "TweakDataPostInit_" .. Mutator.Id
 Mutator.Mission = "BaseInteractionExtPostStart_" .. Mutator.Id
 
-function FollowUnit()
-
-   local new_objective
-
-   local valid_criminals = {}
-   for pl_key, pl_record in pairs( managers.groupai:state():all_player_criminals() ) do
-      if pl_record.status ~= "dead" then
-         table.insert( valid_criminals, pl_key )
-      end
-   end
-
-   if #valid_criminals > 0 then
-      local follow_unit = managers.groupai:state():all_player_criminals()[ valid_criminals[ math.random( #valid_criminals ) ] ].unit -- pick a random player
-      new_objective = {
-         type = "follow",
-         follow_unit = follow_unit,
-         scan = true,
-         is_default = true
-      }
-   end
-   return new_objective
-end
-
 function Spawn_Clk(pos)
    local clker = Idstring( "units/payday2/characters/ene_spook_1/ene_spook_1" )
    local unit = World:spawn_unit(clker, Vector3(), Rotation())
