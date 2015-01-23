@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/30/2014 6:10:13 PM
+-- Payday 2 GoonMod, Public Release Beta 2, built on 1/9/2015 9:30:33 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -21,7 +21,7 @@ function Mutator:OnEnabled()
 
 	Hooks:Add("NewRaycastWeaponBaseInit", self._RWChkID, function(weapon, unit) 
 
-		Hooks:PostHook(NewRaycastWeaponBase, self._RWChkIDPost, function(self, dmg_mul)
+		Hooks:PostHook(NewRaycastWeaponBase, "_get_current_damage", self._RWChkIDPost, function(self, dmg_mul)
 			return math.huge
 		end)
 

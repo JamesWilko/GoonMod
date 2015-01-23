@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Weapon Customizer Beta, built on 1/3/2015 12:28:05 AM
+-- Payday 2 GoonMod, Public Release Beta 2, built on 1/4/2015 2:00:55 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -37,7 +37,8 @@ end
 
 Hooks:RegisterHook("CopDamagePostDamageBullet")
 function CopDamage.damage_bullet(self, attack_data)
-	self.orig.damage_bullet(self, attack_data)
-	Hooks:Call("CopDamagePostDamageBullet", self, attack_data)
+	local res = self.orig.damage_bullet(self, attack_data)
+	Hooks:Call("CopDamagePostDamageBullet", self, attack_data, res)
+	return res
 end
 -- END OF FILE

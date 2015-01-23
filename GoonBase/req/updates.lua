@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/30/2014 6:10:13 PM
+-- Payday 2 GoonMod, Public Release Beta 2, built on 1/9/2015 9:30:33 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -72,8 +72,11 @@ Localization.Updates_ManualPaydayFolder = "Open Payday 2 Folder"
 Localization.Updates_ManualLater = "Update Later"
 
 Localization.Updates_NoUpdateTitle = "No Update Required"
-Localization.Updates_NoUpdateMessage = "Your GoonMod installation is currently up-to-date."
+Localization.Updates_NoUpdateMessage = [[Your GoonMod installation is currently up-to-date.
+
+If necessary, you can force a re-download of the latest files by clicking on the Force Redownload button.]]
 Localization.Updates_NoUpdateAccept = "OK"
+Localization.Updates_NoUpdateForce = "Force Redownload"
 
 Localization.Updates_VersionMismatchTitle = "Unsupported Version"
 Localization.Updates_VersionMismatchMessage = [[Your version of Payday 2 is currently unsupported, your game has probably updated.
@@ -412,12 +415,22 @@ function Updates:ShowNoUpdates()
 	local message = managers.localization:text("Updates_NoUpdateMessage")
 	local menuOptions = {}
 	menuOptions[1] = {
+		text = managers.localization:text("Updates_NoUpdateForce"),
+		callback = Updates.ForceRedownloadMod,
+		is_cancel_button = true
+	}
+	menuOptions[2] = {
 		text = managers.localization:text("Updates_NoUpdateAccept"),
 		is_cancel_button = true
 	}
 	local updateWindow = SimpleMenu:New(title, message, menuOptions)
 	updateWindow:Show()
 
+end
+
+function Updates.ForceRedownloadMod()
+	Updates._force_redownload = true
+	Updates:CheckForUpdates( true )
 end
 
 -- Updating Window
@@ -516,13 +529,21 @@ function Updates:UpdateVersionCallback( success, file )
 				shouldUpdate = true
 			end
 		end
+
+		-- Forced redownload
+		if Updates._force_redownload then
+			shouldUpdate = true
+		end
 		
-		-- Check if update required
+		-- Forced check if update required
 		if not shouldUpdate then
+
+			-- Show forced check for updates screen
 			if Updates._force_check then
 				Updates:ShowNoUpdates()
 				Updates._force_check = nil
 			end
+
 			return
 		end
 
@@ -574,7 +595,12 @@ function Updates:UpdateListCallback(success, file)
 	end
 
 	Updates.HasCheckedForUpdates = true
-	self:RequestUpdatePermission()
+
+	if not Updates._force_redownload then
+		self:RequestUpdatePermission()
+	else
+		Updates.BeginUpdateFiles()
+	end
 
 end
 

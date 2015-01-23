@@ -1,14 +1,12 @@
 ----------
--- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/30/2014 6:10:13 PM
+-- Payday 2 GoonMod, Public Release Beta 2, built on 1/23/2015 10:01:12 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
-if not RequiredScript then return end
-
 if not _G.GoonBase then
 	_G.GoonBase = {}
-	GoonBase.Version = 22
-	GoonBase.GameVersion = "1.23.3"
+	GoonBase.Version = 25
+	GoonBase.GameVersion = "1.24.0"
 	GoonBase.LogFile = "GoonBase.log"
 	GoonBase.Path = "GoonBase/"
 	GoonBase.LuaPath = "GoonBase/lua/"
@@ -48,6 +46,7 @@ GoonBase.ModFiles = {
 	"mods/train_heist_plans.lua",
 	"mods/weapon_customization.lua",
 	"mods/weapon_customization_menus.lua",
+	"mods/weapon_customization_part_data.lua",
 	"mods/weapon_remember_gadget.lua",
 	"mods/zoom_sensitivity.lua",
 }
@@ -219,10 +218,16 @@ if not GoonBase.HasLoadedScripts then
 end
 
 -- Load Hook Scripts
+if not _G.RegisteredScripts and RegisterScript then
+	RegisterScript("GoonBase/goonbase.lua", 2, "*")
+	_G.RegisteredScripts = true
+end
+
 if RequiredScript then
 
 	local requiredScript = RequiredScript:lower()
 	if GoonBase.HookFiles[requiredScript] then
+
 
 		if GoonBase.SupportedVersion or (not GoonBase.SupportedVersion and table.contains(GoonBase.RequireHookFiles, requiredScript)) then
 

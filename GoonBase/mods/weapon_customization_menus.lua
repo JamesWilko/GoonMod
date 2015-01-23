@@ -1,9 +1,13 @@
 ----------
--- Payday 2 GoonMod, Weapon Customizer Beta, built on 1/2/2015 3:25:53 PM
+-- Payday 2 GoonMod, Public Release Beta 2, built on 1/10/2015 2:53:10 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
 local WeaponCustomization = GoonBase.WeaponCustomization
+if not GoonBase.WeaponCustomization then
+	return
+end
+
 local Localization = GoonBase.Localization
 Localization.WeaponCustomization_MenuItem = "Customize Weapon"
 Localization.bm_menu_customize_weapon_title = "Customize Weapon: $weapon_name"
@@ -14,19 +18,59 @@ Localization.wc_highlighted_mod = "Highlighted"
 Localization.wc_unavailable_mod = "Unavailable"
 Localization.wc_advanced_options = "Advanced"
 
+Localization.wc_advanced_options_menu = "Advanced Options"
+
 Localization.wc_adv_clear_weapon = "Revert to Factory Standard"
+Localization.wc_adv_toggle_preview_spin = "Toggle Rotating Preview"
+Localization.wc_adv_toggle_colour_grading = "Toggle Ingame Colour Grading"
+
 Localization.wc_clear_weapon_title = "Revert Weapon"
 Localization.wc_clear_weapon_message = "This will revert your weapon customization back to factory standard, do you wish to continue?"
 Localization.wc_clear_weapon_accept = "Revert"
 Localization.wc_clear_weapon_cancel = "Cancel"
 
+Localization.wc_mod_overrides_not_installed_title = "Mod Overrides Missing"
+Localization.wc_mod_overrides_not_installed_desc = [[The mod overrides required to make the Weapon Customization mod are missing from your game mod_overrides folder.
+You must install these, or else you will not see your weapon customization.
+
+A link to the download is found below. Extract the inner folder 'GoonModWeaponCustomizer' to your mod_overrides folder in your Payday 2 assets folder, and then restart your game.]]
+Localization.wc_mod_overrides_not_installed_download = "Download Now"
+Localization.wc_mod_overrides_not_installed_dont_show = "I Know, Don't Show This Again"
+Localization.wc_mod_overrides_not_installed_cancel = "Later"
+
 WeaponCustomization._advanced_menu_options = {
 	[1] = {
+		text = "wc_adv_toggle_preview_spin",
+		func = "AdvancedToggleWeaponSpin",
+	},
+	[2] = {
+		text = "wc_adv_toggle_colour_grading",
+		func = "AddvancedToggleColourGrading",
+	},
+	[3] = {
 		text = "wc_adv_clear_weapon",
 		func = "AdvancedClearWeaponCheck",
 	}
 }
-WeaponCustomization._menu_text_scaling = 0.9
+WeaponCustomization._menu_text_scaling = 0.85
+
+WeaponCustomization._controller_index = {
+	modifying = 1,
+	not_modifying = 1,
+}
+
+local BTN_X = utf8.char(57346)
+local BTN_Y = utf8.char(57347)
+local BTN_LT = utf8.char(57354)
+local BTN_LB = utf8.char(57352)
+local BTN_RT = utf8.char(57355)
+local BTN_RB = utf8.char(57353)
+local BTN_START = utf8.char(57349)
+
+function WeaponCustomization:IsUsingController()
+	local type = managers.controller:get_default_wrapper_type()
+	return type == "xbox360" or type == "ps3"
+end
 
 function WeaponCustomization.weapon_visual_customization_callback(self, data)
 
@@ -171,6 +215,7 @@ function WeaponCustomization.weapon_visual_customization_callback(self, data)
 		managers.blackmarket:view_weapon( data.category, data.slot, callback(self, self, "_open_weapon_customization_preview_node", {new_node_data}) )
 	end
 	if data.category == "melee_weapons" then
+		-- Melee weapons don't work properly yet, so don't uncomment this unless you want to fix it yourself
 		-- managers.menu:open_node(self._preview_node_name, {})
 		-- managers.blackmarket:preview_melee_weapon(data.name)
 		-- self:_open_weapon_customization_preview_node( {new_node_data} )
@@ -187,20 +232,26 @@ function WeaponCustomization._open_weapon_customization_preview_node(self, data)
 	local slot = data[1].weapon_slot_data.slot
 	local weapon = managers.blackmarket._global.crafted_items[category][slot]
 
-	managers.blackmarket._customizing_weapon_parts = {}
-	for k, v in ipairs( weapon.blueprint ) do
-		local tbl = clone( WeaponCustomization._default_part_visual_blueprint )
-		tbl.id = v
-		tbl.modifying = false
-		table.insert( managers.blackmarket._customizing_weapon_parts, tbl )
-	end
-
+	WeaponCustomization:CreateCustomizablePartsList( weapon )
 	managers.blackmarket._selected_weapon_parts = clone( WeaponCustomization._default_part_visual_blueprint )
+
+	WeaponCustomization._controller_index = {
+		modifying = 1,
+		not_modifying = 1,
+	}
 
 	managers.menu:open_node("blackmarket_mask_node", data)
 	WeaponCustomization:LoadCurrentWeaponCustomization( category, slot )
 
+	WeaponCustomization:Temp_CheckOverridesInstalled()
+
 end
+
+Hooks:Add("MenuSceneManagerOverrideSceneTemplate", "MenuSceneManagerOverrideSceneTemplate_WeaponCustomization", function(scene, template, data, custom_name, skip_transition)
+	if managers.blackmarket._customizing_weapon and template == "blackmarket_mask" then
+		return "blackmarket_item"
+	end
+end)
 
 Hooks:Add("BlackMarketGUIStartPageData", "BlackMarketGUIStartPageData_WeaponCustomization", function(gui)
 	if gui.identifiers then
@@ -219,8 +270,8 @@ Hooks:Add("BlackMarketGUIPostSetup", "BlackMarketGUIPostSetup_WeaponCustomizatio
 
 	local w_visual_customize = {
 		prio = 5,
-		btn = "BTN_STICK_L",
-		pc_btn = nil,
+		btn = "BTN_BACK",
+		pc_btn = Idstring("toggle_chat"),
 		name = "WeaponCustomization_MenuItem",
 		callback = callback(gui, gui, "customize_weapon_visuals")
 	}
@@ -242,20 +293,17 @@ end)
 -- 	end
 -- end)
 
+Hooks:Add("BlackMarketGUIOnPopulateWeapons", "BlackMarketGUIOnPopulateWeapons_WeaponCustomization", function(gui, category, data)
+	if managers.blackmarket._customizing_weapon then
+		managers.blackmarket._customizing_weapon = nil
+	end
+end)
+
 Hooks:Add("BlackMarketGUIChooseMaskPartCallback", "BlackMarketGUIChooseMaskPartCallback_WeaponCustomization", function(gui, data)
 	WeaponCustomization:UpdateWeaponPartsWithMaskMod( data )
 end)
 
 Hooks:Add("BlackMarketGUIUpdateInfoText", "BlackMarketGUIUpdateInfoText_WeaponCustomization", function(self)
-
-	local table_contains = function(tbl, val)
-		for k, v in ipairs( tbl ) do
-			if v.id == val then
-				return v
-			end
-		end
-		return false
-	end
 
 	local slot_data = self._slot_data
 	local tab_data = self._tabs[self._selected]._data
@@ -289,16 +337,68 @@ Hooks:Add("BlackMarketGUIUpdateInfoText", "BlackMarketGUIUpdateInfoText_WeaponCu
 
 			updated_texts[2].text = managers.localization:to_upper_text("wc_modifying_parts") .. "\n"
 			updated_texts[3].text = managers.localization:to_upper_text("wc_not_modifying_parts") .. "\n"
-			for k, v in pairs( weapon.blueprint ) do
 
-				local part = tweak_data.weapon.factory.parts[v]
-				if part then
+			if WeaponCustomization:IsUsingController() then
+				updated_texts[2].text = BTN_LT .. " " .. updated_texts[2].text
+				updated_texts[3].text = BTN_RT .. " " .. updated_texts[3].text
+			end
 
-					local tbl = table_contains( blackmarket._customizing_weapon_parts, v )
-					local part_name = managers.localization:to_upper_text(part.name_id or "bm_wp_m4_lower_reciever")
-					local part_index = (tbl and tbl.modifying) and 2 or 3
-					updated_texts[ part_index ].text = updated_texts[ part_index ].text .. "    " .. part_name .. "\n"
+			local num_modifying = 0
+			local num_not_modifying = 0
+			for k, v in pairs( blackmarket._customizing_weapon_parts ) do
+				if v and v.modifying then
+					num_modifying = num_modifying + 1
+				else
+					num_not_modifying = num_not_modifying + 1
+				end
+			end
 
+			local modifying_lines = 0
+			local not_modifying_lines = 0
+			for k, v in pairs( blackmarket._customizing_weapon_parts ) do
+
+				if v.id then
+					local part = tweak_data.weapon.factory.parts[v.id]
+					if part then
+
+						local part_name = WeaponCustomization:_GetLocalizedPartName(v.id, part)
+						local modifying = (v and v.modifying or false)
+						local part_index = modifying and 2 or 3
+
+						if WeaponCustomization:IsUsingController() then
+
+							if v and v.modifying then
+								modifying_lines = modifying_lines + 1
+							else
+								not_modifying_lines = not_modifying_lines + 1
+							end
+
+							-- Clamp values
+							if WeaponCustomization._controller_index.modifying > num_modifying then
+								WeaponCustomization._controller_index.modifying = 1
+							end
+							if WeaponCustomization._controller_index.not_modifying > num_not_modifying then
+								WeaponCustomization._controller_index.not_modifying = 1
+							end
+
+							-- Place markers on appropriate lines
+							local ind = WeaponCustomization:_GetIndexFromLine(modifying and modifying_lines or not_modifying_lines, modifying)
+							if modifying then
+								if WeaponCustomization._controller_index.modifying == modifying_lines then
+									part_name = BTN_X .. " " .. part_name
+								end
+							else
+								if WeaponCustomization._controller_index.not_modifying == not_modifying_lines then
+									part_name = BTN_Y .. " " .. part_name
+								end
+							end
+
+						end
+						part_name = "    " .. part_name .. "\n"
+
+						updated_texts[ part_index ].text = updated_texts[ part_index ].text .. part_name
+
+					end
 				end
 
 			end
@@ -306,8 +406,12 @@ Hooks:Add("BlackMarketGUIUpdateInfoText", "BlackMarketGUIUpdateInfoText_WeaponCu
 		end
 
 		-- Add advanced options
-		self._info_texts_color[5] = Color.white
-		updated_texts[5].text = "\n" .. managers.localization:to_upper_text("wc_advanced_options") .. "\n"
+		self._info_texts_color[5] = tweak_data.screen_colors.text
+		updated_texts[5].text = "\n"
+		if WeaponCustomization:IsUsingController() then
+			updated_texts[5].text = updated_texts[5].text .. BTN_START .. " "
+		end
+		updated_texts[5].text = updated_texts[5].text .. managers.localization:to_upper_text("wc_advanced_options") .. "\n"
 		for k, v in ipairs( WeaponCustomization._advanced_menu_options ) do
 			updated_texts[5].text = updated_texts[5].text .. managers.localization:text( v.text ) .. "\n"
 		end
@@ -319,10 +423,19 @@ Hooks:Add("BlackMarketGUIUpdateInfoText", "BlackMarketGUIUpdateInfoText_WeaponCu
 			updated_texts[4].text = "\n" .. managers.localization:to_upper_text("wc_highlighted_mod") .. "\n" .. slot_data.name_localized
 
 			if not slot_data.unlocked or (type(slot_data.unlocked) == "number" and slot_data.unlocked <= 0) then
+				self._info_texts_color[5] = tweak_data.screen_colors.important_1
 				updated_texts[5].text = managers.localization:text("wc_unavailable_mod")
 			end
 
 		end
+
+		-- updated_texts[5].text = ""
+		-- updated_texts[5].text = updated_texts[5].text .. "\n BTN_X: " .. BTN_X
+		-- updated_texts[5].text = updated_texts[5].text .. "\n BTN_Y: " .. BTN_Y
+		-- updated_texts[5].text = updated_texts[5].text .. "\n BTN_LB: " .. BTN_LB
+		-- updated_texts[5].text = updated_texts[5].text .. "\n BTN_LT: " .. BTN_LT
+		-- updated_texts[5].text = updated_texts[5].text .. "\n BTN_RB: " .. BTN_RB
+		-- updated_texts[5].text = updated_texts[5].text .. "\n BTN_RT: " .. BTN_RT
 
 		-- Update texts
 		self:_update_info_text(slot_data, updated_texts, nil, WeaponCustomization._menu_text_scaling)
@@ -348,6 +461,52 @@ Hooks:Add("BlackMarketGUIMouseReleased", "BlackMarketGUIMouseReleased_WeaponCust
 
 end)
 
+Hooks:Add("MenuUpdate", "MenuUpdate_WeaponCustomization", function(t, dt)
+
+	if WeaponCustomization:IsUsingController() and managers.blackmarket._customizing_weapon then
+
+		local controller = managers.menu:get_controller()
+		local r_trigger = controller:get_input_pressed("primary_attack")
+		local l_trigger = controller:get_input_pressed("secondary_attack")
+		local button_x = controller:get_input_pressed("reload")
+		local button_y = controller:get_input_pressed("switch_weapon")
+		local start = controller:get_input_pressed("start")
+
+		-- Cycle through modifying and not modifying options
+		if r_trigger then
+			WeaponCustomization._controller_index.not_modifying = WeaponCustomization._controller_index.not_modifying + 1
+			WeaponCustomization:_UpdateBlackmarketGUI()
+		end
+
+		if l_trigger then
+			WeaponCustomization._controller_index.modifying = WeaponCustomization._controller_index.modifying + 1
+			WeaponCustomization:_UpdateBlackmarketGUI()
+		end
+
+		-- Switch modifying and not modifying items
+		if button_x then
+			WeaponCustomization:_SwapWeaponPartModifyingStatus(WeaponCustomization._controller_index.modifying, true, true)
+		end
+
+		if button_y then
+			WeaponCustomization:_SwapWeaponPartModifyingStatus(WeaponCustomization._controller_index.not_modifying, false, true)
+		end
+
+		-- Controller advanced options
+		if start then
+			WeaponCustomization:ShowControllerAdvancedOptions()
+		end
+
+	end
+
+end)
+
+function WeaponCustomization:_UpdateBlackmarketGUI()
+	if managers.menu_component and managers.menu_component._blackmarket_gui then
+		managers.menu_component._blackmarket_gui:update_info_text()
+	end
+end
+
 function WeaponCustomization:LeftMouseReleased(gui, button, x, y)
 	WeaponCustomization:LeftMouseReleased_SelectParts(gui, button, x, y)
 	WeaponCustomization:LeftMouseReleased_Advanced(gui, button, x, y)
@@ -364,16 +523,9 @@ function WeaponCustomization:LeftMouseReleased_SelectParts(gui, button, x, y)
 			if k == 3 then modifying_item = false end
 
 			if modifying_item ~= nil then
-
-				local tbl_index = WeaponCustomization:_GetIndexFromLine(line, modifying_item)
-
-				if tbl_index and managers.blackmarket._customizing_weapon_parts[ tbl_index ] then
-					managers.blackmarket._customizing_weapon_parts[ tbl_index ].modifying = not managers.blackmarket._customizing_weapon_parts[ tbl_index ].modifying
-				end
-
+				WeaponCustomization:_SwapWeaponPartModifyingStatus(line, modifying_item)
 				gui:update_info_text()
 				break
-
 			end
 
 		end
@@ -434,6 +586,16 @@ function WeaponCustomization:RightMouseReleased(gui, button, x, y)
 
 end
 
+function WeaponCustomization:_SwapWeaponPartModifyingStatus( line, modifying, update )
+	local tbl_index = WeaponCustomization:_GetIndexFromLine(line, modifying)
+	if tbl_index and managers.blackmarket._customizing_weapon_parts[ tbl_index ] then
+		managers.blackmarket._customizing_weapon_parts[ tbl_index ].modifying = not managers.blackmarket._customizing_weapon_parts[ tbl_index ].modifying
+	end
+	if update then
+		WeaponCustomization:_UpdateBlackmarketGUI()
+	end
+end
+
 function WeaponCustomization:_IsInObjectRect(x, y, obj)
 	local rx, ry, rw, rh = obj:text_rect()
 	if x >= rx and x <= rx + rw and y >= ry and y <= ry + rh then
@@ -468,6 +630,38 @@ function WeaponCustomization:_GetIndexFromLine(line, modifying)
 end
 
 -- Clear Weapon Function
+function WeaponCustomization:AdvancedToggleWeaponSpin()
+
+	if managers.menu_scene then
+		if managers.menu_scene._disable_rotate ~= nil then
+			managers.menu_scene._disable_rotate = not managers.menu_scene._disable_rotate
+		else
+			managers.menu_scene._disable_rotate = true
+		end
+	end
+
+end
+
+function WeaponCustomization:AddvancedToggleColourGrading()
+
+	if managers and managers.environment_controller then
+
+		local self = WeaponCustomization
+		local grading = "color_payday"
+		if self._previous_colour_grading then
+			grading = self._previous_colour_grading
+			self._previous_colour_grading = nil
+		else
+			self._previous_colour_grading = managers.environment_controller:default_color_grading()
+		end
+
+		managers.environment_controller:set_default_color_grading( grading )
+		managers.environment_controller:refresh_render_settings()
+
+	end
+
+end
+
 function WeaponCustomization:AdvancedClearWeaponCheck()
 
 	local title = managers.localization:text("wc_clear_weapon_title")
@@ -495,14 +689,8 @@ function WeaponCustomization.AdvancedClearWeaponAccept()
 		local slot = managers.blackmarket._customizing_weapon_data.slot
 		local weapon = managers.blackmarket._global.crafted_items[category][slot]
 
-		-- Clear weapon parts
-		managers.blackmarket._customizing_weapon_parts = {}
-		for k, v in ipairs( weapon.blueprint ) do
-			local tbl = clone( WeaponCustomization._default_part_visual_blueprint )
-			tbl.id = v
-			tbl.modifying = false
-			table.insert( managers.blackmarket._customizing_weapon_parts, tbl )
-		end
+		-- Rebuild weapon parts list
+		WeaponCustomization:CreateCustomizablePartsList( weapon )
 
 		-- Clear selected parts
 		managers.blackmarket._selected_weapon_parts = clone( WeaponCustomization._default_part_visual_blueprint )
@@ -515,6 +703,92 @@ function WeaponCustomization.AdvancedClearWeaponAccept()
 			weapon.visual_blueprint = nil
 		end
 		
+	end
+
+end
+
+-- Advanced options for controller
+function WeaponCustomization:ShowControllerAdvancedOptions()
+
+	local title = managers.localization:text("wc_advanced_options_menu")
+	local message = ""
+	local menuOptions = {}
+	
+	local i = 1
+	for k, v in ipairs( WeaponCustomization._advanced_menu_options ) do
+		menuOptions[i] = {
+			text = managers.localization:text( v.text ),
+			callback = WeaponCustomization[v.func],
+			is_cancel_button = true
+		}
+		i = i + 1
+	end
+
+	menuOptions[i] = {
+		text = managers.localization:text("wc_clear_weapon_cancel"),
+		is_cancel_button = true
+	}
+
+	local menu = SimpleMenu:New(title, message, menuOptions)
+	menu:Show()
+
+end
+
+-- Temporary Popup
+function WeaponCustomization:Temp_CheckOverridesInstalled()
+
+	local file_name = "assets/mod_overrides/GoonModWeaponCustomizer/units/payday2/weapons/wpn_fps_ass_74_pts/wpn_fps_ass_74_b_standard.material_config"
+	file_name = Application:base_path() .. file_name
+
+	local f= io.open(file_name, "r")
+	if f ~= nil then
+		io.close(f)
+	else
+		if GoonBase.Options.WeaponCustomization and not GoonBase.Options.WeaponCustomization.TempShownOverridesNotInstalled then
+			WeaponCustomization:Temp_ShowOverridesNotInstalledWindow()
+		end
+	end
+
+end
+
+function WeaponCustomization:Temp_ShowOverridesNotInstalledWindow()
+
+	local title = managers.localization:text("wc_mod_overrides_not_installed_title")
+	local message = managers.localization:text("wc_mod_overrides_not_installed_desc")
+	local menuOptions = {}
+	menuOptions[1] = {
+		text = managers.localization:text("wc_mod_overrides_not_installed_download"),
+		callback = WeaponCustomization.Temp_DownloadOverrides,
+		is_cancel_button = true
+	}
+	menuOptions[2] = {
+		text = managers.localization:text("wc_mod_overrides_not_installed_dont_show"),
+		callback = WeaponCustomization.Temp_DontShowInFuture,
+		is_cancel_button = true
+	}
+	menuOptions[3] = {
+		text = managers.localization:text("wc_mod_overrides_not_installed_cancel"),
+		is_cancel_button = true
+	}
+	local menu = SimpleMenu:New(title, message, menuOptions)
+	menu:Show()
+
+end
+
+function WeaponCustomization:Temp_DownloadOverrides()
+
+	if SystemInfo:platform() == Idstring("WIN32") then
+		os.execute( "explorer " .. WeaponCustomization._mod_overrides_download_location )
+		os.execute( "explorer " .. Application:base_path() .. "assets\\mod_overrides\\" )
+	end
+
+end
+
+function WeaponCustomization:Temp_DontShowInFuture()
+
+	if GoonBase.Options.WeaponCustomization then
+		GoonBase.Options.WeaponCustomization.TempShownOverridesNotInstalled = true
+		GoonBase.Options:Save()
 	end
 
 end

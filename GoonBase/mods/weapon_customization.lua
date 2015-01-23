@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Weapon Customizer Beta, built on 1/3/2015 12:28:05 AM
+-- Payday 2 GoonMod, Public Release Beta 2, built on 1/23/2015 10:01:12 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -35,6 +35,7 @@ WeaponCustomization._mod_overrides_download_location = "https://github.com/James
 
 -- Load extras
 SafeDoFile( GoonBase.Path .. "mods/weapon_customization_menus.lua" )
+SafeDoFile( GoonBase.Path .. "mods/weapon_customization_part_data.lua" )
 
 -- Localization
 local Localization = GoonBase.Localization
@@ -56,6 +57,9 @@ You may need to restart your game, or load a mission, to fully clear your textur
 Localization.WeaponCustomization_ClearDataAccept = "Clear Data"
 Localization.WeaponCustomization_ClearDataCancel = "Cancel"
 
+Localization.WeaponCustomization_PrintAllPartNames = "Output All Weapon Part Names"
+Localization.WeaponCustomization_PrintAllPartNamesDesc = "Outputs all weapon part names to a CSV file"
+
 Localization.bm_mtl_no_material = "No Material"
 
 -- Options
@@ -71,6 +75,7 @@ if GoonBase.Options.WeaponCustomization == nil then
 	GoonBase.Options.WeaponCustomization.Material = 1
 	GoonBase.Options.WeaponCustomization.HideDiffuse = false
 	GoonBase.Options.WeaponCustomization.HideNormal = false
+	GoonBase.Options.WeaponCustomization.TempShownOverridesNotInstalled = false
 end
 
 -- Menu
@@ -167,6 +172,12 @@ Hooks:Add("PlayerStandardStartActionEquipWeapon", "PlayerStandardStartActionEqui
 	end
 end)
 
+Hooks:Add("PlayerStandardStartMaskUp", "PlayerStandardStartMaskUp_WeaponCustomization", function(ply, data)
+	if managers.player:local_player() then
+		WeaponCustomization:LoadEquippedWeaponCustomizations( managers.player:local_player():inventory():equipped_unit():base() )
+	end
+end)
+
 Hooks:Add("BlackMarketGUIOnPopulateMaskMods", "BlackMarketGUIOnPopulateMaskMods_WeaponCustomization", function(gui, data)
 
 	-- Create "no material" data
@@ -206,6 +217,51 @@ Hooks:Add("BlackMarketGUIOnPopulateMaskMods", "BlackMarketGUIOnPopulateMaskMods_
 end)
 
 -- Functions
+function WeaponCustomization:AddCustomizablePart( part_id )
+	local tbl = clone( WeaponCustomization._default_part_visual_blueprint )
+	tbl.id = part_id
+	tbl.modifying = false
+	table.insert( managers.blackmarket._customizing_weapon_parts, tbl )
+end
+
+function WeaponCustomization:CreateCustomizablePartsList( weapon )
+
+	-- Clear weapon parts
+	managers.blackmarket._customizing_weapon_parts = {}
+	local blueprint_parts = {}
+
+	-- Add blueprint parts
+	for k, v in ipairs( weapon.blueprint ) do
+
+		-- Add blueprint part
+		WeaponCustomization:AddCustomizablePart( v )
+		blueprint_parts[v] = true
+
+		-- Check if part has adds
+		local part_data = tweak_data.weapon.factory.parts[v]
+		if part_data and part_data.adds then
+			for x, y in pairs( part_data.adds ) do
+				WeaponCustomization:AddCustomizablePart( y )
+				blueprint_parts[y] = true
+			end
+		end
+
+	end
+
+	-- Add weapon extra part adds
+	local weapon_data = tweak_data.weapon.factory[ weapon.factory_id ]
+	if weapon_data and weapon_data.adds then
+		for k, v in pairs( weapon_data.adds ) do
+			if blueprint_parts[k] then
+				for x, y in pairs( v ) do
+					WeaponCustomization:AddCustomizablePart( y )
+				end
+			end
+		end
+	end
+
+end
+
 function WeaponCustomization:QueueWeaponUpdate( material_id, pattern_id, tint_color_a, tint_color_b, parts_table )
 
 	if not self._update_queue then
@@ -342,8 +398,7 @@ function WeaponCustomization:UpdateWeapon( material_id, pattern_id, tint_color_a
 	tint_color_b = tint_color_b or Color(1, 1, 1)
 
 	-- Callbacks
-	local async_clbk = nil
-	local texture_load_result_clbk = callback(self, self, "clbk_texture_loaded", async_clbk)
+	local texture_load_result_clbk = callback(self, self, "clbk_texture_loaded")
 
 	self._materials = {}
 	self._textures = {}
@@ -407,16 +462,9 @@ function WeaponCustomization:UpdateWeapon( material_id, pattern_id, tint_color_a
 
 	for tex_id, texture_data in pairs(self._textures) do
 		if not texture_data.ready then
-			local new_texture
-			if async_clbk then
-				TextureCache:request(texture_data.name, "normal", texture_load_result_clbk, 90)
-			else
-				new_texture = TextureCache:retrieve(texture_data.name, "normal")
-				texture_data.ready = true
-				for _, material in ipairs(self._materials) do
-					material:set_texture(tex_id == "pattern" and "material_texture" or "reflection_texture", new_texture)
-				end
-				TextureCache:unretrieve(texture_data.name)
+			texture_data.ready = true
+			for _, material in ipairs(self._materials) do
+				Application:set_material_texture(material, Idstring(tex_id == "pattern" and "material_texture" or "reflection_texture"), texture_data.name, Idstring("normal"), 0)
 			end
 		end
 	end
@@ -425,16 +473,14 @@ function WeaponCustomization:UpdateWeapon( material_id, pattern_id, tint_color_a
 
 end
 
-function WeaponCustomization:clbk_texture_loaded(async_clbk, tex_name)
+function WeaponCustomization:clbk_texture_loaded(tex_name)
 
 	for tex_id, texture_data in pairs(self._textures) do
 		if not texture_data.ready and tex_name == texture_data.name then
 			texture_data.ready = true
-			local new_texture = TextureCache:retrieve(tex_name, "normal")
 			for _, material in ipairs(self._materials) do
-				material:set_texture(tex_id == "pattern" and "material_texture" or "reflection_texture", new_texture)
+				Application:set_material_texture(material, Idstring(tex_id == "pattern" and "material_texture" or "reflection_texture"), tex_name, Idstring("normal"), 0)
 			end
-			TextureCache:unretrieve(tex_name)
 		end
 	end
 
@@ -507,6 +553,16 @@ function WeaponCustomization:LoadCurrentWeaponCustomization( category, slot )
 		return
 	end
 
+	-- Create default blueprint if it doesn't exist
+	if not weapon.visual_blueprint then
+		weapon.visual_blueprint = {}
+		local weapon = managers.blackmarket._global.crafted_items[category][slot]
+		for k, v in pairs( weapon.blueprint ) do
+			weapon.visual_blueprint[v] = clone( WeaponCustomization._default_part_visual_blueprint )
+		end
+	end
+
+	-- Load and apply blueprint
 	WeaponCustomization:LoadWeaponCustomizationFromBlueprint( weapon.visual_blueprint )
 
 end
@@ -514,7 +570,8 @@ end
 function WeaponCustomization:LoadWeaponCustomizationFromBlueprint( blueprint, unit_override )
 
 	if not blueprint then
-		Print("[Error] Could not load weapon customization, no visual blueprint specified")
+		blueprint = clone( WeaponCustomization._default_part_visual_blueprint )
+		Print("[Warning] Could not load weapon customization, no visual blueprint specified")
 		return
 	end
 

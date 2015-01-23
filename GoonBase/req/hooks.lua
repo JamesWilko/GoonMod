@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/30/2014 6:10:13 PM
+-- Payday 2 GoonMod, Public Release Beta 2, built on 1/4/2015 2:00:55 AM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -29,13 +29,7 @@ function Hooks:UnregisterHook( id )
 end
 
 function Hooks:Unregister( id )
-
-	for k, v in pairs(self.registered_hooks) do
-		if k[id] ~= nil then
-			k[id] = nil
-		end
-	end
-
+	self.registered_hooks[id] = nil
 end
 
 function Hooks:Remove( id )
