@@ -7,22 +7,116 @@ local Mutator = class(BaseMutator)
 Mutator.Id = "HellStealth"
 Mutator.OptionsName = "Stealth in the hell"
 Mutator.OptionsDesc = "Prepare to be suprised in stealth"
-Mutator.AllPlayersRequireMod = true
 
 Hooks:Add("GoonBaseRegisterMutators", "GoonBaseRegisterMutators_HellStealth", function()
 	GoonBase.Mutators:RegisterMutator( Mutator )
 end)
 
 Mutator.Units = {}
-Mutator.Units.Sec = "CharacterTweakDataPostInitSecurity_" .. Mutator::ID()
-Mutator.Tweak = "TweakDataPostInit_" .. Mutator::ID()
+Mutator.Units.Sec = "CharacterTweakDataPostInitSecurity_" .. Mutator.Id
+Mutator.Units.Cop = "CharacterTweakDataPostInitCop_" .. Mutator.Id
+Mutator.Tweak = "TweakDataPostInit_" .. Mutator.Id
+Mutator.Mission = "BaseInteractionExtPostStart_" .. Mutator.Id
+
+function FollowUnit()
+
+   local new_objective
+
+   local valid_criminals = {}
+   for pl_key, pl_record in pairs( managers.groupai:state():all_player_criminals() ) do
+      if pl_record.status ~= "dead" then
+         table.insert( valid_criminals, pl_key )
+      end
+   end
+
+   if #valid_criminals > 0 then
+      local follow_unit = managers.groupai:state():all_player_criminals()[ valid_criminals[ math.random( #valid_criminals ) ] ].unit -- pick a random player
+      new_objective = {
+         type = "follow",
+         follow_unit = follow_unit,
+         scan = true,
+         is_default = true
+      }
+   end
+   return new_objective
+end
+
+function Spawn_Clk(pos)
+   local clker = Idstring( "units/payday2/characters/ene_spook_1/ene_spook_1" )
+   local unit = World:spawn_unit(clker, Vector3(), Rotation())
+   unit:brain():set_logic("inactive", nil)
+   unit:movement():set_position(pos)
+   unit:brain():set_logic("attack", nil)
+end
+
+function Spawn_Taser(pos)
+   local clker = Idstring( "units/payday2/characters/ene_tazer_1/ene_tazer_1" )
+   local unit = World:spawn_unit(clker, Vector3(), Rotation())
+   unit:brain():set_logic("inactive", nil)
+   unit:movement():set_position(pos)
+   unit:brain():set_logic("attack", nil)
+end
+
+function Die(pos)
+   local clker = Idstring( "units/payday2/characters/ene_spook_1/ene_spook_1" )
+   local unit = World:spawn_unit(clker, Vector3(), Rotation(270))
+   unit:movement():set_position(pos)
+   unit:brain():set_logic("attack", nil)
+
+--   unit:brain():set_logic("attack", nil)
+end
 
 function Mutator:OnEnabled()
    io.stderr:write("HellStealth enabled\n")
    Hooks:Add("CharacterTweakDataPostInitSecurity", self.Units.Sec, function(data, presets)
                 io.stderr:write("Set security health to 200\n")
-                data.security.HEALTH_INT = 200
+                data.security.HEALTH_INIT = 200
    end)
+   Hooks:Add("CharacterTweakDataPostInitCop", self.Units.Cop, function(data, presets)
+                io.stderr:write("Set cop health to 200\n")
+   end)
+
+   Hooks:Add("PlayerTweakDataPostInit", self.Tweak, function(data)
+                io.stderr:write("Reduce pagers to 2\n")
+                data.alarm_pager.bluff_success_chance = {1, 1, 0, 0, 0}
+   end)
+
+   Hooks:Add("BaseInteractionExtPostStart", self.Mission, function(interact, player)
+                local pos = interact._unit:position()
+
+                local current_level = managers.job:current_level_id()
+                local idstr = interact._unit:name():t()
+                io.stderr:write("[Interact] " .. current_level .. " " .. interact._unit:name():t() .. "\n")
+                if current_level == "framing_frame_1" then
+                   if idstr == "@ID5422d8b99c7c1b57@" then -- Keycard
+                      Die(pos)
+                   end
+                   if idstr == "@IDdeeb533605a7f83b@" then -- A random painting
+                      if math.random() < 0.1 then
+                         Die(pos)
+                      end
+                   end
+                end
+
+                if current_level == "framing_frame_2" then
+                   if idstr == "@IDdd162740788712c8@" then -- Money
+                      Die(pos)
+                   end
+                end
+
+                if current_level == "framing_frame_3" then
+                   if idstr == "@ID24118b6b9d2f5f81@" then -- Computer
+                      Die(pos)
+                   end
+                   if idstr == "@ID54e8d784dbceaf07@" then -- HDD
+                      Spawn_Clk(pos)
+                   end
+                   if idstr == "@IDd904ebd1e81458a8@" then -- Computer on Roof
+                      Spawn_Clk(pos)
+                   end
+                end
+   end)
+   --[[
    Hooks:Add("TweakDataPostInit", self.Tweak, function()
                 io.stderr:write("Reduce pagers to 2\n")
                 tweak_data.player.alarm_pager.bluff_success_chance = {1, 1, 0, 0, 0}
@@ -39,7 +133,7 @@ function Mutator:OnEnabled()
                          v._values.on_executed = function(unit)
                             io.stderr:write("Sudden death!\n")
                             player = managers.player:player_unit()
-                            player:character_damage():set_health(0) 
+                            player:character_damage():set_health(0)
                             player:character_damage():_check_bleed_out(false)
                          end
                       end
@@ -59,10 +153,12 @@ function Mutator:OnEnabled()
                 end
 
    end)
+   --]]
 end
 
 function Mutator:OnDisabled()
    Hooks:Remove(self.Units.Sec)
+   Hooks:Remove(self.Units.Cop)
    Hooks:Remove(self.Tweak)
 end
 -- END OF FILE

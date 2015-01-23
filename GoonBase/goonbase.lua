@@ -76,6 +76,7 @@ GoonBase.HookFiles = {
 	["lib/managers/gageassignmentmanager"] = "GageAssignmentManager.lua",
 	["lib/managers/achievmentmanager"] = "AchievementManager.lua",
 	["lib/tweak_data/infamytweakdata"] = "InfamyTweakData.lua",
+    ["lib/tweak_data/playertweakdata"] = "PlayerTweakData.lua",
 	-- ["lib/setups/setup"] = "Setup.lua",
 	["lib/setups/gamesetup"] = "GameSetup.lua",
 	["lib/setups/menusetup"] = "MenuSetup.lua",
@@ -210,7 +211,7 @@ if not GoonBase.HasLoadedScripts then
 
 			Hooks:RegisterHook("GoonBasePostLoadedMods")
 			Hooks:Call("GoonBasePostLoadedMods")
-			
+
 		end
 
 	end
@@ -224,7 +225,7 @@ if RequiredScript then
 	if GoonBase.HookFiles[requiredScript] then
 
 		if GoonBase.SupportedVersion or (not GoonBase.SupportedVersion and table.contains(GoonBase.RequireHookFiles, requiredScript)) then
-		
+
 			if type( GoonBase.HookFiles[requiredScript] ) == "table" then
 				for k, v in pairs( GoonBase.HookFiles[requiredScript] ) do
 					SafeDoFile( GoonBase.LuaPath .. v )
