@@ -16,7 +16,7 @@ Mutator.Units = {}
 Mutator.Units.Sec = "CharacterTweakDataPostInitSecurity_" .. Mutator.Id
 
 function Mutator:OnEnabled()
-   _G.Print("Tough guard  enabled\n")
+   Print("Tough guard  enabled\n")
    Hooks:Add("CharacterTweakDataPostInitSecurity", self.Units.Sec, function(data, presets)
                 io.stderr:write("Set security health to 200\n")
                 data.security.HEALTH_INIT = 200

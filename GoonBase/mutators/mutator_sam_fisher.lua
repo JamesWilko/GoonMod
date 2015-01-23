@@ -23,7 +23,7 @@ function Spawn_Clk(pos)
 end
 
 function Mutator:OnEnabled()
-   _G.Print("Sam Fisher Here\n")
+   Print("Sam Fisher Here\n")
 
    Hooks:Add("BaseInteractionExtPostStart", self.SpawnClk, function(interact, player)
                 local pos = interact._unit:position()

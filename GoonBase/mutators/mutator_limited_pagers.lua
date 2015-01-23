@@ -15,7 +15,7 @@ end)
 Mutator.Pager = "PagerTweakDataPostInit_" .. Mutator.Id
 
 function Mutator:OnEnabled()
-   _G.Print("Clever communicators enabled\n")
+   Print("Clever communicators enabled\n")
    Hooks:Add("PlayerTweakDataPostInit", self.Pager, function(data)
                 io.stderr:write("Reduce pagers to 2\n")
                 data.alarm_pager.bluff_success_chance = {1, 1, 0, 0, 0}
