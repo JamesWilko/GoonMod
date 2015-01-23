@@ -1,5 +1,5 @@
 ----------
--- Payday 2 GoonMod, Public Release Beta 2, built on 1/10/2015 2:53:10 PM
+-- Payday 2 GoonMod, Public Release Beta 2, built on 1/23/2015 10:01:12 PM
 -- Copyright 2014, James Wilkinson, Overkill Software
 ----------
 
@@ -59,6 +59,7 @@ WeaponCustomization.MissingPartLocalizations = {
 	["wpn_fps_pis_beretta_g_std"] = standard_grip,
 	["wpn_fps_pis_beretta_sl_std"] = standard_slide,
 	["wpn_fps_pis_beretta_o_std"] = standard_sights,
+	["bm_wp_beretta_body_rail"] = standard_rail,
 
 	["bm_wp_deagle_body_standard"] = standard_body,
 	["bm_wp_deagle_b_standard"] = standard_barrel,
@@ -365,6 +366,7 @@ WeaponCustomization.MissingPartLocalizations = {
 
 	["bm_wp_upg_vg_ass_smg_afg"] = "AFG",
 	["bm_wp_upg_vg_ass_smg_stubby"] = "Stubby",
+	["wpn_fps_upg_fl_ass_peq15_flashlight"] = "Flashlight",
 
 }
 -- END OF FILE
