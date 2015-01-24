@@ -8,7 +8,7 @@ Mutator.Id = "ToughGuard"
 Mutator.OptionsName = "Dozer Guard!"
 Mutator.OptionsDesc = "Guards are tough as rock. I would bring a Thanatos for stealth!"
 
-Hooks:Add("GoonBaseRegisterMutators", "GoonBaseRegisterMutators_HellStealth", function()
+Hooks:Add("GoonBaseRegisterMutators", "GoonBaseRegisterMutators_ToughGuard", function()
 	GoonBase.Mutators:RegisterMutator( Mutator )
 end)
 
