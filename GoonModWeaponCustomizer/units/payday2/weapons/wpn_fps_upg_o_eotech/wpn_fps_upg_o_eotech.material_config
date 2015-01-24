@@ -20,3 +20,5 @@
         <variable value="0.91999995708466 0 1" type="vector3" name="fresnel_settings"/>
     </material>
 </materials>
+
+<!-- END OF FILE -->

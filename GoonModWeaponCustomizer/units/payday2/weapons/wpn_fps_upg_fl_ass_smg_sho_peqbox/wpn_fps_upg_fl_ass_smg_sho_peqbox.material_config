@@ -19,3 +19,4 @@
         <variable value="1" type="scalar" name="falloff_exp"/>
     </material>
 </materials>
+<!-- END OF FILE -->

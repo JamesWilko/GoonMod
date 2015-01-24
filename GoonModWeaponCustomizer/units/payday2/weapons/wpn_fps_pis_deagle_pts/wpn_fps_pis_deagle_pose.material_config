@@ -45,3 +45,5 @@
 <variable value="1" type="scalar" name="material_amount"/>
     </material>	
 </materials>
+
+<!-- END OF FILE -->

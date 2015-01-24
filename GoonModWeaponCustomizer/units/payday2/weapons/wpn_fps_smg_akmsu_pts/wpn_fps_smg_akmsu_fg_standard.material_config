@@ -10,3 +10,5 @@
 		<reflection_texture type="cubemap" global_texture="current_global_texture"/>
     </material>
 </materials>
+
+<!-- END OF FILE -->

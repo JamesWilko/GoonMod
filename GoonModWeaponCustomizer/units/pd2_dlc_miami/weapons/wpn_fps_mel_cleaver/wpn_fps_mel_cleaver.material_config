@@ -11,3 +11,5 @@
         <variable value="1 0 2" type="vector3" name="environment_settings"/>
     </material>
 </materials>
+
+<!-- END OF FILE -->
