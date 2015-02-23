@@ -21,7 +21,7 @@ _G.GoonBase.CorpseDelimiter = _G.GoonBase.CorpseDelimiter or {}
 GoonBase.CorpseDelimiter.MenuFile = "corpse_mod_menu.txt"
 
 -- Options
-GoonBase.Options.BodyCount = GoonBase.Options.BodyCount or {}
+GoonBase.Options.BodyCount 							= GoonBase.Options.BodyCount or {}
 GoonBase.Options.BodyCount.UseCustomCorpseLimit 	= GoonBase.Options.BodyCount.UseCustomCorpseLimit or true
 GoonBase.Options.BodyCount.MaxCorpses 				= GoonBase.Options.BodyCount.MaxCorpses or 256
 GoonBase.Options.BodyCount.RemoveShields 			= GoonBase.Options.BodyCount.RemoveShields or false
@@ -72,17 +72,23 @@ Hooks:Add( "MenuManagerInitialize", "MenuManagerInitialize_" .. Mod:ID(), functi
 	end
 
 	GoonBase.CorpseDelimiter.DoRemoveAllCorpses = function(self)
-		managers.enemy:dispose_all_corpses()
+		if managers.enemy then
+			managers.enemy:dispose_all_corpses()
+		end
 	end
 
 	GoonBase.CorpseDelimiter.DoRemoveAllShields = function(self)
 
-		local enemy_data = managers.enemy._enemy_data
-		local corpses = enemy_data.corpses
-		for u_key, u_data in pairs(corpses) do
-			if u_data.unit:inventory() ~= nil then
-				u_data.unit:inventory():destroy_all_items()
+		if managers.enemy then
+
+			local enemy_data = managers.enemy._enemy_data
+			local corpses = enemy_data.corpses
+			for u_key, u_data in pairs(corpses) do
+				if u_data.unit:inventory() ~= nil then
+					u_data.unit:inventory():destroy_all_items()
+				end
 			end
+
 		end
 
 	end
