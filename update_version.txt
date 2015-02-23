@@ -1,4 +1,0 @@
-27
-1.24.2
-http://payday.jameswilko.com/archives/70
-manual=false
