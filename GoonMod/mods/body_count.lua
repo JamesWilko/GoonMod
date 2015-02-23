@@ -18,6 +18,7 @@ end
 
 -- Body Count Mod
 _G.GoonBase.CorpseDelimiter = _G.GoonBase.CorpseDelimiter or {}
+GoonBase.CorpseDelimiter.MenuFile = "corpse_mod_menu.txt"
 
 -- Options
 GoonBase.Options.BodyCount = GoonBase.Options.BodyCount or {}
@@ -56,22 +57,18 @@ Hooks:Add( "MenuManagerInitialize", "MenuManagerInitialize_" .. Mod:ID(), functi
 	-- Callbacks
 	MenuCallbackHandler.ToggleCorpseLimit = function(this, item)
 		GoonBase.Options.BodyCount.UseCustomCorpseLimit = item:value() == "on" and true or false
-		GoonBase.Options:Save()
 	end
 
 	MenuCallbackHandler.SetMaximumCorpseAmount = function(this, item)
 		GoonBase.Options.BodyCount.MaxCorpses = math.floor( item:value() )
-		GoonBase.Options:Save()
 	end
 
 	MenuCallbackHandler.ToggleDespawnShields = function(this, item)
 		GoonBase.Options.BodyCount.RemoveShields = item:value() == "on" and true or false
-		GoonBase.Options:Save()
 	end
 
 	MenuCallbackHandler.SetShieldDespawnTime = function(this, item)
 		GoonBase.Options.BodyCount.RemoveShieldsTime = math.floor( item:value() )
-		GoonBase.Options:Save()
 	end
 
 	GoonBase.CorpseDelimiter.DoRemoveAllCorpses = function(self)
@@ -90,6 +87,6 @@ Hooks:Add( "MenuManagerInitialize", "MenuManagerInitialize_" .. Mod:ID(), functi
 
 	end
 
-	MenuHelper:LoadFromJsonFile( GoonBase.MenusPath .. "corpse_mod_menu.txt", GoonBase.CorpseDelimiter, GoonBase.Options.BodyCount )
+	MenuHelper:LoadFromJsonFile( GoonBase.MenusPath .. GoonBase.CorpseDelimiter.MenuFile, GoonBase.CorpseDelimiter, GoonBase.Options.BodyCount )
 
 end)

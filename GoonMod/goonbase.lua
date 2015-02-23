@@ -10,6 +10,7 @@ if not _G.GoonBase then
 	GoonBase.ModsFolder = "mods/"
 	GoonBase.MenusPath = "menus/"
 	GoonBase.LocalizationFolder = "loc/"
+	GoonBase.SavePath = SavePath .. "goonmod_options.txt"
 	GoonBase.SupportedVersion = true
 	GoonBase.LogTag = "[GoonMod]"
 end

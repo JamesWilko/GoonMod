@@ -3,6 +3,7 @@
 	"parent_menu_id" : "goonbase_options_menu",
 	"title" : "gm_options_corpse_menu_title",
 	"description" : "gm_options_corpse_menu_desc",
+	"back_callback" : "ClosedGoonModOptions",
 	"items" : [
 
 		{
