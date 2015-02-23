@@ -25,12 +25,12 @@
 	"gm_options_corpse_keybind_remove_shields_title" : "Remove All Shields",
 	"gm_options_corpse_keybind_remove_shields_desc" : "Key to clean up all shields in the level when pressed",
 
-	"OptionsMenu_CustomWaypointMenuTitle" : "Custom Waypoints",
-	"OptionsMenu_CustomWaypointMenuMessage" : "Change settings for your customizable waypoints",
-	"OptionsMenu_CustomWaypointKeybindPlace" : "Place Waypoint",
-	"OptionsMenu_CustomWaypointKeybindRemove" : "Remove Waypoint",
-	"OptionsMenu_CustomWaypointShowDistanceTitle" : "Show Distance on Waypoints",
-	"OptionsMenu_CustomWaypointShowDistanceMessage" : "Show how far away you are from custom waypoints",
+	"gm_options_custom_waypoints_menu_title" : "Custom Waypoints",
+	"gm_options_custom_waypoints_menu_desc" : "Change settings for your customizable waypoints",
+	"gm_options_custom_waypoints_place" : "Place Waypoint",
+	"gm_options_custom_waypoints_remove" : "Remove Waypoint",
+	"gm_options_custom_waypoints_distance_title" : "Show Distance on Waypoints",
+	"gm_options_custom_waypoints_distance_desc" : "Show how far away you are from custom waypoints",
 
 	"bm_menu_extended_inv" : "Special",
 	"bm_ex_inv_in_reserve" : "IN RESERVE",
