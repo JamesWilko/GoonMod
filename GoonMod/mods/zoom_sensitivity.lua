@@ -16,36 +16,31 @@ if not Mod:IsEnabled() then
 end
 
 -- Options
-GoonBase.Options.IronsightSensitivity = GoonBase.Options.IronsightSensitivity or {}
-GoonBase.Options.IronsightSensitivity.Enabled = true
+GoonBase.Options.IronsightSensitivity 			= GoonBase.Options.IronsightSensitivity or {}
+GoonBase.Options.IronsightSensitivity.Enabled 	= GoonBase.Options.IronsightSensitivity.Enabled or true
 
 -- Add options to menu
 Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_" .. Mod:ID(), function( menu_manager )
 
-	local success, err = pcall(function()
+	MenuCallbackHandler.toggle_zoom_sensitivity = function(this, item)
+		GoonBase.Options.IronsightSensitivity.Enabled = item:value() == "on" and true or false
+		GoonBase.Options:Save()
+	end
 
-		MenuCallbackHandler.toggle_zoom_sensitivity = function(this, item)
-			GoonBase.Options.IronsightSensitivity.Enabled = item:value() == "on" and true or false
-			GoonBase.Options:Save()
-		end
-
-		MenuHelper:AddToggle({
-			id = "toggle_zoom_sensitivity",
-			title = "OptionsMenu_ZoomSensitivityTitle",
-			desc = "OptionsMenu_ZoomSensitivityMessage",
-			callback = "toggle_zoom_sensitivity",
-			value = GoonBase.Options.IronsightSensitivity.Enabled,
-			menu_id = "goonbase_options_menu"
-		})
-
-	end)
-	if not success then PrintTable(err) end
+	MenuHelper:AddToggle({
+		id = "toggle_zoom_sensitivity",
+		title = "OptionsMenu_ZoomSensitivityTitle",
+		desc = "OptionsMenu_ZoomSensitivityMessage",
+		callback = "toggle_zoom_sensitivity",
+		value = GoonBase.Options.IronsightSensitivity.Enabled,
+		menu_id = "goonbase_options_menu"
+	})
 
 end)
 
 Hooks:Add( "MenuManagerSetMouseSensitivity", "MenuManagerSetMouseSensitivity_" .. Mod:ID(), function( menu_manager, zoomed )
 
-	if GoonBase.Options.IronsightSensitivity == nil or not GoonBase.Options.IronsightSensitivity.Enabled then
+	if not GoonBase.Options.IronsightSensitivity and not GoonBase.Options.IronsightSensitivity.Enabled then
 		return
 	end
 
