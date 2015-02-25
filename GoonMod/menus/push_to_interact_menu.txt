@@ -1,0 +1,65 @@
+{
+	"menu_id" : "gm_options_push_to_interact_menu",
+	"parent_menu_id" : "goonbase_options_menu",
+	"title" : "gm_options_push_interact_menu_title",
+	"description" : "gm_options_push_interact_menu_desc",
+	"back_callback" : "ClosedGoonModOptions",
+	"items" : [
+
+		{
+			"type" : "toggle",
+			"id" : "gm_pti_toggle_push_interact",
+			"title" : "gm_options_push_interact_enabled_title",
+			"description" : "gm_options_push_interact_enabled_desc",
+			"callback" : "TogglePushToInteract",
+			"value" : "Enabled",
+			"default_value" : true,
+		},
+		{
+			"type" : "slider",
+			"id" : "gm_pti_slider_interaction_min_time",
+			"title" : "gm_options_push_interact_min_time_title",
+			"description" : "gm_options_push_interact_min_time_desc",
+			"callback" : "SetPushToInteractMinimumTime",
+			"value" : "InteractionMinTime",
+			"default_value" : 2,
+			"min" : 0,
+			"max" : 10,
+			"step" : 0.5,
+		},
+		{
+			"type" : "toggle",
+			"id" : "gm_pti_toggle_hold_all",
+			"title" : "gm_options_push_interact_hold_all_title",
+			"description" : "gm_options_push_interact_hold_all_desc",
+			"callback" : "ToggleHoldAllInteractions",
+			"value" : "HoldAllEnabled",
+			"default_value" : false,
+		},
+		
+		{
+			"type" : "divider",
+			"size" : 16,
+		},
+
+		{
+			"type" : "toggle",
+			"id" : "gm_pti_toggle_use_stop_key",
+			"title" : "gm_options_push_interact_use_stop_key_title",
+			"description" : "gm_options_push_interact_use_stop_key_desc",
+			"callback" : "TogglePushInteractUseStopKey",
+			"value" : "UseStopKey",
+			"default_value" : false,
+		},
+		{
+			"type" : "keybind",
+			"id" : "gm_pti_keybind_cancel_interact",
+			"title" : "gm_options_push_interact_stop_key_title",
+			"description" : "gm_options_push_interact_stop_key_desc",
+			"keybind_id" : "PushToInteractCancelCurrentInteraction",
+			"func" : "CancelCurrentInteraction",
+		}
+
+	]
+
+}

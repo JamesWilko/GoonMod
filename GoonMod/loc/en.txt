@@ -137,14 +137,18 @@
 	"MissingMutators_Continue" : "Continue Anyway",
 	"MissingMutators_Cancel" : "Cancel",
 
-	"OptionsMenu_PushInteractSubmenuTitle" : "Push to Interact",
-	"OptionsMenu_PushInteractSubmenuDesc" : "Change settings for Push to Interact",
-	"OptionsMenu_PushInteractEnableTitle" : "Enable Push to Interact",
-	"OptionsMenu_PushInteractEnableDesc" : "Enable Push to Interact, pushing the interact button will automatically hold the button until it is pushed again",
-	"OptionsMenu_PushInteractTimeTitle" : "Push Grace Period",
-	"OptionsMenu_PushInteractTimeDesc" : "Grace period of the push in seconds. Push-to-interact will only take effect if the button is held for this long",
-	"OptionsMenu_PushInteractHelperTitle" : "Enable Helper Indicator",
-	"OptionsMenu_PushInteractHelperDesc" : "Show a blue outline around the interaction timer when Push-to-interact will hold the interaction for you",
+	"gm_options_push_interact_menu_title" : "Push to Interact",
+	"gm_options_push_interact_menu_desc" : "Change settings for Push to Interact",
+	"gm_options_push_interact_enabled_title" : "Enable Push to Interact",
+	"gm_options_push_interact_enabled_desc" : "Enable Push to Interact, pushing the interact button will automatically hold the button until it is pushed again.",
+	"gm_options_push_interact_min_time_title" : "Minimum Interaction Time",
+	"gm_options_push_interact_min_time_desc" : "All interactions longer than this time, in seconds, will be held automatically.",
+	"gm_options_push_interact_hold_all_title" : "Hold All Interactions",
+	"gm_options_push_interact_hold_all_desc" : "All interactions will be held automatically, regardless of length.",
+	"gm_options_push_interact_use_stop_key_title" : "Use Cancel Interaction Key",
+	"gm_options_push_interact_use_stop_key_desc" : "Interactions can only be stopped by pressing the 'Cancel Interaction' key once they are being held for you.",
+	"gm_options_push_interact_stop_key_title" : "Cancel Interaction",
+	"gm_options_push_interact_stop_key_desc" : "Keybind to cancel the interaction.",
 
 	"OptionsMenu_StatTrakSubmenuTitle" : "Stat-trak Weapons",
 	"OptionsMenu_StatTrakSubmenuDesc" : "Weapons will track kills made with them",
@@ -233,6 +237,4 @@
 	"Options_WorldLaserRainbowDesc" : "Enable rainbow instead of the set Hue",
 	"Options_WorldLaserRainbowSpeedTitle" : "Rainbow Speed",
 	"Options_WorldLaserRainbowSpeedDesc" : "Set the speed of the rainbow effect",
-	
-	"aaaaaaa" : "aaaaaaaaa",
 }
