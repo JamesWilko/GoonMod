@@ -4,7 +4,7 @@ if not _G.GoonBase then
 	_G.GoonBase = {}
 
 	GoonBase.Version = 26
-	GoonBase.GameVersion = "1.24.3"
+	GoonBase.GameVersion = "1.25.0"
 	GoonBase.SupportedVersion = true
 
 	GoonBase.Path = ""
@@ -161,8 +161,10 @@ if not GoonBase.HasLoadedScripts then
 			SafeDoFile( GoonBase.RequiresFolder .. v )
 		end
 
+		GoonBase.SupportedVersion = GoonBase.Utils:GameUpdateVersionCheck()
+
 		-- Run hooks
-		if Hooks ~= nil then
+		if GoonBase.SupportedVersion and Hooks ~= nil then
 
 			Hooks:RegisterHook("GoonBaseLoadMods")
 			Hooks:Call("GoonBaseLoadMods")
@@ -183,7 +185,7 @@ if RequiredScript then
 	local requiredScript = RequiredScript:lower()
 	if GoonBase.HookFiles[requiredScript] then
 
-		if GoonBase.SupportedVersion or (not GoonBase.SupportedVersion and table.contains(GoonBase.RequireHookFiles, requiredScript)) then
+		if GoonBase.SupportedVersion or table.contains(GoonBase.RequireHookFiles, requiredScript) then
 		
 			if type( GoonBase.HookFiles[requiredScript] ) == "table" then
 				for k, v in pairs( GoonBase.HookFiles[requiredScript] ) do
