@@ -62,13 +62,17 @@ function Menu:AddButton( button_data )
 		help_id = button_data.desc,
 		callback = button_data.callback,
 		back_callback = button_data.back_callback,
-		disabled_color = Color(0.25, 1, 1, 1),
+		disabled_color = Color(0.25, 1, 1, 1) or button_data.disabled_color,
 		next_node = button_data.next_node,
 	}
 
 	local menu = self:GetMenu( button_data.menu_id )
 	local item = menu:create_item(data, params)
 	item._priority = button_data.priority or 0
+
+	if button_data.disabled then
+		item:set_enabled( not button_data.disabled )
+	end
 
 	menu._items_list = menu._items_list or {}
 	table.insert( menu._items_list, item )

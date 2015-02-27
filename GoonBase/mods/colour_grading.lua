@@ -86,6 +86,9 @@ end
 function ColourGrading:GetGradingOption( is_menu )
 	if is_menu == nil then
 		is_menu = not ColourGrading:IsInGame()
+		if not is_menu then
+			return false
+		end
 	end
 	if ColourGrading:ColourGradingEnabled( is_menu ) then
 		return ColourGrading.GradingOptions[ ColourGrading:GetGradingIndex(is_menu) ]
@@ -108,8 +111,10 @@ end
 function ColourGrading:UpdateColourGrading()
 	if managers and managers.environment_controller then
 		local grading = ColourGrading:GetGradingOption()
-		managers.environment_controller:set_default_color_grading( grading )
-		managers.environment_controller:refresh_render_settings()
+		if grading then
+			managers.environment_controller:set_default_color_grading( grading )
+			managers.environment_controller:refresh_render_settings()
+		end
 	end
 end
 
@@ -130,37 +135,11 @@ Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_" .. Mod
 	})
 
 	-- Menu
-	MenuCallbackHandler.colour_grading_set_override = function(this, item)
-		GoonBase.Options.ColourGrading.GradingOption = tonumber(item:value())
-		GoonBase.Options:Save()
-		ColourGrading:UpdateColourGrading()
-	end
-
 	MenuCallbackHandler.colour_grading_set_override_menu = function(this, item)
 		GoonBase.Options.ColourGrading.GradingOptionMenu = tonumber(item:value())
 		GoonBase.Options:Save()
 		ColourGrading:UpdateColourGrading()
 	end
-
-	GoonBase.MenuHelper:AddMultipleChoice({
-		id = "colour_grading_override_selector",
-		title = "Option_ColourGradingName",
-		desc = "Option_ColourGradingDesc",
-		callback = "colour_grading_set_override",
-		menu_id = ColourGrading.MenuId,
-		items = {
-			[1] = "GradingOption_Off",
-			[2] = "GradingOption_PaydayPlus",
-			[3] = "GradingOption_Heat",
-			[4] = "GradingOption_Nice",
-			[5] = "GradingOption_Sin",
-			[6] = "GradingOption_BHD",
-			[7] = "GradingOption_XGen",
-			[8] = "GradingOption_XXXGen",
-			[9] = "GradingOption_Matrix",
-		},
-		value = GoonBase.Options.ColourGrading.GradingOption,
-	})
 
 	GoonBase.MenuHelper:AddMultipleChoice({
 		id = "colour_grading_override_selector_menu",

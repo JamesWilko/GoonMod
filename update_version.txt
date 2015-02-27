@@ -1,4 +1,4 @@
-27
-1.24.2
-http://payday.jameswilko.com/archives/70
+28
+1.25.0
+http://payday.jameswilko.com/archives/75
 manual=false

@@ -977,6 +977,7 @@ function BlackMarketGui.populate_mods(self, data)
 		end
 
 		if mod_name then
+
 			local forbid = managers.blackmarket:can_modify_weapon(new_data.category, new_data.slot, new_data.name)
 			if forbid then
 				if type(new_data.unlocked) == "number" then
@@ -987,7 +988,7 @@ function BlackMarketGui.populate_mods(self, data)
 
 				new_data.lock_texture = self:get_lock_icon(new_data, "guis/textures/pd2/lock_incompatible")
 				new_data.mid_text = nil
-				new_data.conflict = managers.localization:text("bm_menu_" .. tostring(tweak_data.weapon.factory.parts[forbid].type))
+				new_data.conflict = managers.localization:text("bm_menu_" .. tostring(tweak_data.weapon.factory.parts[forbid] and tweak_data.weapon.factory.parts[forbid].type or forbid))
 			end
 
 			local weapon = managers.blackmarket:get_crafted_category_slot(data.prev_node_data.category, data.prev_node_data.slot) or {}

@@ -23,6 +23,9 @@ Modifications highlighted in red require another modification to be enabled befo
 Once a modification is enabled/disabled, you will be required to restart your game to ensure that the modifications fully and successfully load or unload.]]
 Localization.ModsMenu_ButtonInfoButtonAccept = "Close"
 
+Localization.ModsMenu_ButtonDisabledUpdates = "Mods Disabled Due To Updates"
+Localization.ModsMenu_ButtonDisabledUpdatesHelp = "All mods have been disabled due to a game update. You can select \"Ignore Unsupported Version\" from the options menu to circumvent this at your own risk!"
+
 -- Menus
 Hooks:Add("MenuManagerSetupCustomMenus", "MenuManagerSetupCustomMenus_ModsMenu", function( menu_manager, menu_nodes )
 
@@ -132,6 +135,19 @@ function Mods:AddLoadedModsToMenu()
 		if v.HideInOptionsMenu ~= true then
 			v:SetupMenu()
 		end
+	end
+
+	if not GoonBase.SupportedVersion then
+
+		GoonBase.MenuHelper:AddButton({
+			id = "goonbase_mods_menu_disabled_updates",
+			title = "ModsMenu_ButtonDisabledUpdates",
+			desc = "ModsMenu_ButtonDisabledUpdatesHelp",
+			disabled = true,
+			menu_id = Mods.MenuID,
+			priority = 998,
+		})
+
 	end
 
 end

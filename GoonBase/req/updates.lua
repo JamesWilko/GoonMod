@@ -743,7 +743,7 @@ function Updates:CompareVersionStrings(local_version_str, other_version_str)
 	local other_version = self:ParseUpdateString(other_version_str)
 
 	-- Return false if version is out of date
-	for i = 1, 3, 1 do
+	for i = 1, 2, 1 do
 		if local_version[i] < other_version[i] then
 			return false
 		end
