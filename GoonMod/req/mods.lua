@@ -94,11 +94,10 @@ function Mods:LoadMods()
 
 	if GoonBase.SupportedVersion then
 
-		local mods_folder_path = GoonBase.Path .. GoonBase.ModsFolder
-		GoonBase.ModFiles = file.GetFiles( mods_folder_path )
+		GoonBase.ModFiles = file.GetFiles( GoonBase.ModsFolder )
 
 		for k, v in pairs( GoonBase.ModFiles ) do
-			SafeDoFile( mods_folder_path .. v )
+			SafeDoFile( GoonBase.ModsFolder .. v )
 		end
 
 	end

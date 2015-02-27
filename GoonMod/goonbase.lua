@@ -1,18 +1,24 @@
 
 if not _G.GoonBase then
+
 	_G.GoonBase = {}
+
 	GoonBase.Version = 26
 	GoonBase.GameVersion = "1.24.3"
-	GoonBase.LogFile = "GoonMod.txt"
+	GoonBase.SupportedVersion = true
+
 	GoonBase.Path = ""
 	GoonBase.LuaPath = "lua/"
 	GoonBase.RequiresFolder = "req/"
 	GoonBase.ModsFolder = "mods/"
 	GoonBase.MenusPath = "menus/"
 	GoonBase.LocalizationFolder = "loc/"
+
+	GoonBase.LogFile = "GoonMod.txt"
 	GoonBase.SavePath = SavePath .. "goonmod_options.txt"
-	GoonBase.SupportedVersion = true
+
 	GoonBase.LogTag = "[GoonMod]"
+
 end
 
 GoonBase.RequireHookFiles = {
@@ -137,7 +143,12 @@ if not GoonBase.HasLoadedScripts then
 
 	GoonBase.Path = ModPath
 	GoonBase.LogFile = LogsPath .. GoonBase.LogFile
+
+	GoonBase.LuaPath = ModPath .. GoonBase.LuaPath
+	GoonBase.RequiresFolder = ModPath .. GoonBase.RequiresFolder
+	GoonBase.ModsFolder = ModPath .. GoonBase.ModsFolder
 	GoonBase.MenusPath = ModPath .. GoonBase.MenusPath
+	GoonBase.LocalizationFolder = ModPath .. GoonBase.LocalizationFolder
 
 	-- Check required classes exist now
 	if class and Application and string.split then
@@ -145,9 +156,9 @@ if not GoonBase.HasLoadedScripts then
 		GoonBase.HasLoadedScripts = true
 
 		-- Load required files
-		local required_files = file.GetFiles( GoonBase.Path .. GoonBase.RequiresFolder )
+		local required_files = file.GetFiles( GoonBase.RequiresFolder )
 		for k, v in ipairs( required_files ) do
-			SafeDoFile( GoonBase.Path .. GoonBase.RequiresFolder .. v )
+			SafeDoFile( GoonBase.RequiresFolder .. v )
 		end
 
 		-- Run hooks
@@ -176,10 +187,10 @@ if RequiredScript then
 		
 			if type( GoonBase.HookFiles[requiredScript] ) == "table" then
 				for k, v in pairs( GoonBase.HookFiles[requiredScript] ) do
-					SafeDoFile( GoonBase.Path .. GoonBase.LuaPath .. v )
+					SafeDoFile( GoonBase.LuaPath .. v )
 				end
 			else
-				SafeDoFile( GoonBase.Path .. GoonBase.LuaPath .. GoonBase.HookFiles[requiredScript] )
+				SafeDoFile( GoonBase.LuaPath .. GoonBase.HookFiles[requiredScript] )
 			end
 
 		end
