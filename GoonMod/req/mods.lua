@@ -22,8 +22,8 @@ Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_ModsMenu
 		-- Options menu
 		MenuHelper:AddButton({
 			id = "goonbase_mods_menu_button",
-			title = "ModsMenu_Button",
-			desc = "ModsMenu_ButtonDesc",
+			title = "gm_mods_menu",
+			desc = "gm_mods_menu_desc",
 			next_node = Mods.MenuID,
 			menu_id = "goonbase_options_menu",
 			priority = 1002,
@@ -43,8 +43,8 @@ Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_ModsMenu
 
 		MenuHelper:AddButton({
 			id = "goonbase_mods_menu_help_button",
-			title = "ModsMenu_ButtonInfoButton",
-			desc = "ModsMenu_ButtonInfoButtonDesc",
+			title = "gm_mods_menu_info",
+			desc = "gm_mods_menu_info_desc",
 			callback = "open_mods_menu_help",
 			menu_id = Mods.MenuID,
 			priority = 1004,
@@ -77,11 +77,14 @@ end)
 
 function Mods:ShowHelpMenu()
 
-	local title = managers.localization:text("ModsMenu_ButtonInfoButtonTitle")
-	local message = managers.localization:text("ModsMenu_ButtonInfoButtonMessage")
+	local title = managers.localization:text("gm_mods_info_popup_title")
+	local message = managers.localization:text("gm_mods_info_popup_message")
 	local menu_options = {}
-	menu_options[1] = { text = managers.localization:text("ModsMenu_ButtonInfoButtonAccept"), is_cancel_button = true }
-	local help_menu = QuickMenu:new(title, message, menu_options, true)
+	menu_options[1] = {
+		text = managers.localization:text("gm_mods_info_popup_accept"),
+		is_cancel_button = true
+	}
+	local help_menu = QuickMenu:new( title, message, menu_options, true )
 
 end
 
@@ -118,6 +121,17 @@ function Mods:AddLoadedModsToMenu()
 		if v.HideInOptionsMenu ~= true then
 			v:SetupMenu()
 		end
+	end
+
+	if not GoonBase.SupportedVersion then
+		MenuHelper:AddButton({
+			id = "goonbase_mods_menu_mods_disabled",
+			title = "gm_mods_menu_disabled",
+			desc = "gm_mods_menu_disabled_desc",
+			disabled = true,
+			menu_id = Mods.MenuID,
+			priority = 1000,
+		})
 	end
 
 end
@@ -178,6 +192,23 @@ Hooks:Add("LocalizationManagerPostInit", "LocalizationManagerPostInit_ModLoader"
 	end
 
 	Mods._cached_localization = {}
+
+end)
+
+Hooks:Add("MenuManagerOnOpenMenu", "MenuManagerOnOpenMenu_GoonMod", function( menu_manager, menu, position )
+
+	if menu == "menu_main" then
+		if not GoonBase.SupportedVersion then
+
+			local id = "goonmod_mod_disabled_game_update"
+			local title = managers.localization:text("gm_notify_disable_game_update")
+			local message = managers.localization:text("gm_notify_disable_game_update_message")
+			local priority = 901
+
+			NotificationsManager:AddNotification( id, title, message, priority )
+
+		end
+	end
 
 end)
 

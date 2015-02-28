@@ -1,14 +1,21 @@
 {
-	"GoonBaseOptionsName" : "GoonMod",
-	"GoonBaseOptionsDesc" : "Change your GoonMod preferences",
+	"gm_options_menu" : "GoonMod",
+	"gm_options_menu_desc" : "Change your GoonMod preferences",
 
-	"ModsMenu_Button" : "Modifications",
-	"ModsMenu_ButtonDesc" : "Control which modifications are loaded",
-	"ModsMenu_ButtonInfoButton" : "Help",
-	"ModsMenu_ButtonInfoButtonDesc" : "Show the modifications menu help",
-	"ModsMenu_ButtonInfoButtonTitle" : "Modifications",
-	"ModsMenu_ButtonInfoButtonMessage" : "This menu allows you to enable and disable specific modifications in GoonMod. If a modification is enabled, it will load itself when Payday 2 is launched.\nModifications highlighted in red require another modification to be enabled before they can be loaded, these modifications will be shown at the top of the screen.\nOnce a modification is enabled/disabled, you will be required to restart your game to ensure that the modifications fully and successfully load or unload.",
-	"ModsMenu_ButtonInfoButtonAccept" : "Close",
+	"gm_mods_menu" : "Modifications",
+	"gm_mods_menu_desc" : "Control which modifications are loaded",
+	"gm_mods_menu_info" : "Help",
+	"gm_mods_menu_info_desc" : "Show the modifications menu help",
+
+	"gm_mods_info_popup_title" : "Modifications",
+	"gm_mods_info_popup_message" : "This menu allows you to enable and disable specific modifications in GoonMod. If a modification is enabled, it will load itself when Payday 2 is launched.\nModifications highlighted in red require another modification to be enabled before they can be loaded, these modifications will be shown at the top of the screen.\nOnce a modification is enabled/disabled, you will be required to restart your game to ensure that the modifications fully and successfully load or unload.",
+	"gm_mods_info_popup_accept" : "Close",
+
+	"gm_notify_disable_game_update" : "GoonMod Disabled!",
+	"gm_notify_disable_game_update_message" : "GoonMod has been disabled due to a game update.\nPlease wait for an update to be released to use it again!",
+
+	"gm_mods_menu_disabled" : "All Modifications Disabled",
+	"gm_mods_menu_disabled_desc" : "All GoonMod modifications have been disabled due to a game update. Either wait for a game update, or bypass the update-lock from the options menu at your own risk.",
 
 	"gm_options_corpse_menu_title" : "Corpses",
 	"gm_options_corpse_menu_desc" : "Change settings for the ingame corpses",
