@@ -1571,9 +1571,6 @@ function BlackMarketGui._update_info_text(self, slot_data, updated_texts, data, 
 		self._rename_caret:set_world_position(x + w, y)
 	end
 
-	-- info_box_panel:set_h(64)
-	self._info_panel:set_h(64)
-
 end
 
 function BlackMarketGui:mouse_pressed(button, x, y)
