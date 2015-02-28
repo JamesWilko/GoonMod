@@ -21,7 +21,8 @@ local ExtendedInv = _G.GoonBase.ExtendedInventory
 ExtendedInv.InitialLoadComplete = false
 ExtendedInv.RegisteredItems = {}
 ExtendedInv.Items = {}
-ExtendedInv.SaveFile = GoonBase.Path .. "inventory.ini"
+ExtendedInv.SaveFile = SavePath .. "goonbase_inventory.txt"
+ExtendedInv.OldFormatSaveFile = SavePath .. "inventory.ini"
 
 -- Initialize
 Hooks:RegisterHook("ExtendedInventoryInitialized")
@@ -29,6 +30,7 @@ Hooks:Add("GoonBasePostLoadedMods", "GoonBasePostLoadedMods_ExtendedInv", functi
 	Hooks:Call("ExtendedInventoryInitialized")
 end)
 
+-- Functions
 function ExtendedInv:_MissingItemError(item)
 	Print("[Error] Could not find item '" .. item .. "' in Extended Inventory!")
 end
@@ -100,14 +102,13 @@ function ExtendedInv:GetReserveText(item)
 	return item.reserve_text or managers.localization:text("bm_ex_inv_in_reserve")
 end
 
+-- Hooks
 Hooks:Add("BlackMarketGUIPostSetup", "BlackMarketGUIPostSetup_ExtendedInventory", function(gui, is_start_page, component_data)
 	gui.identifiers.extended_inv = Idstring("extended_inv")
 end)
 
 function ExtendedInv.do_populate_extended_inventory(self, data)
 
-	local psuccess, perror = pcall(function()
-		
 	local new_data = {}
 	local guis_catalog = "guis/"
 	local index = 0
@@ -158,131 +159,104 @@ function ExtendedInv.do_populate_extended_inventory(self, data)
 		end
 	end
 
-	end)
-	if not psuccess then
-		Print("[Error] " .. perror)
-	end
-
 end
 
 Hooks:Add("BlackMarketGUIStartPageData", "BlackMarketGUIStartPageData_ExtendedInventory", function(gui, data)
 
-	local psuccess, perror = pcall(function()
-		
-		local should_hide_tab = true
-		for k, v in pairs( ExtendedInv:GetAllItems() ) do
-			if v.hide_when_none_in_stock == false or (v.hide_when_none_in_stock == true and v.amount > 0) then
-				should_hide_tab = false
-			end
+	local should_hide_tab = true
+	for k, v in pairs( ExtendedInv:GetAllItems() ) do
+		if v.hide_when_none_in_stock == false or (v.hide_when_none_in_stock == true and v.amount > 0) then
+			should_hide_tab = false
 		end
-		if should_hide_tab then
-			return
-		end
-
-		gui.populate_extended_inventory = ExtendedInv.do_populate_extended_inventory
-
-		table.insert(data, {
-			name = "bm_menu_extended_inv",
-			category = "extended_inv",
-			on_create_func_name = "populate_extended_inventory",
-			identifier = gui.identifiers.extended_inv,
-			override_slots = {5, 2},
-			start_crafted_item = 1
-		})
-
-	end)
-	if not psuccess then
-		Print("[Error] " .. perror)
 	end
+	if should_hide_tab then
+		return
+	end
+
+	gui.populate_extended_inventory = ExtendedInv.do_populate_extended_inventory
+
+	table.insert(data, {
+		name = "bm_menu_extended_inv",
+		category = "extended_inv",
+		on_create_func_name = "populate_extended_inventory",
+		identifier = gui.identifiers.extended_inv,
+		override_slots = {5, 2},
+		start_crafted_item = 1
+	})
 
 end)
 
 Hooks:Add("BlackMarketGUIUpdateInfoText", "BlackMarketGUIUpdateInfoText_ExtendedInventory", function(gui)
 
-	local psuccess, perror = pcall(function()
+	local self = gui
+	local slot_data = self._slot_data
+	local tab_data = self._tabs[self._selected]._data
+	local prev_data = tab_data.prev_node_data
+	local ids_category = Idstring(slot_data.category)
+	local identifier = tab_data.identifier
+	local updated_texts = {
+		{text = ""},
+		{text = ""},
+		{text = ""},
+		{text = ""},
+		{text = ""}
+	}
+	
+	if ids_category == self.identifiers.extended_inv then
 
-		local self = gui
-		local slot_data = self._slot_data
-		local tab_data = self._tabs[self._selected]._data
-		local prev_data = tab_data.prev_node_data
-		local ids_category = Idstring(slot_data.category)
-		local identifier = tab_data.identifier
-		local updated_texts = {
-			{text = ""},
-			{text = ""},
-			{text = ""},
-			{text = ""},
-			{text = ""}
-		}
-		
-		if ids_category == self.identifiers.extended_inv then
+		updated_texts[1].text = slot_data.name_localized or ""
+		updated_texts[2].text = tostring(slot_data.amount or 0) .. " " .. ExtendedInv:GetReserveText(slot_data.name)
+		updated_texts[4].text = slot_data.desc_localized or ""
 
-			updated_texts[1].text = slot_data.name_localized or ""
-			updated_texts[2].text = tostring(slot_data.amount or 0) .. " " .. ExtendedInv:GetReserveText(slot_data.name)
-			updated_texts[4].text = slot_data.desc_localized or ""
+		gui:_update_info_text(slot_data, updated_texts)
 
-			gui:_update_info_text(slot_data, updated_texts)
-
-		end
-
-	end)
-	if not psuccess then
-		Print("[Error] " .. perror)
 	end
 
 end)
 
 -- Saving and Loading
-function ExtendedInv:GetSaveString()
+function ExtendedInv:Save( file_name )
 
-	local contents = "";
-	for k, v in pairs( ExtendedInv.Items ) do
-		
-		if type(v) == "table" then
-			contents = string.format( "%s[%s]\n", contents, tostring(k) )
-			for a, b in pairs( v ) do
-				contents = string.format( "%s%s=%s\n", contents, tostring(a), tostring(b) )
-			end
-		end
-
+	if file_name == nil then
+		file_name = ExtendedInv.SaveFile
 	end
 
-	return contents
-
-end
-
-function ExtendedInv:Save(fileName)
-
-	if fileName == nil then
-		fileName = ExtendedInv.SaveFile
-	end
-
-	-- Encode data using "base64" while saving
-	-- Simple, but will stop most players from editing the save file since it'll look like gibberish
-	-- Those who want to cheat that badly will decode any encryption or use lua to bypass it, so
-	-- no point in super-complicated systems
-	local file = io.open(fileName, "w+")
-	local data = ExtendedInv:GetSaveString()
+	local file = io.open(file_name, "w+")
+	local data = json.encode( ExtendedInv.Items )
 	data = GoonBase.Utils.Base64:Encode( data )
 	file:write( data )
 	file:close()
 
 end
 
-function ExtendedInv:Load(fileName)
+function ExtendedInv:Load( file_name )
 
-	if fileName == nil then
-		fileName = ExtendedInv.SaveFile
+	file_name = file_name or ExtendedInv.SaveFile
+	local file = io.open(file_name, 'r')
+	if not file then
+		Print( "Could not open GoonMod Extended Inventory save file, attempting to load old format..." )
+		ExtendedInv:LoadOldFormat()
+		return 
 	end
 
-	local file = io.open(fileName, 'r')
-	local key
+	local file_data = file:read("*all")
+	file_data = GoonBase.Utils.Base64:Decode( data )
+	ExtendedInv.Items = json.decode( file_data )
 
-	if file == nil then
-		Print( "Could not open file (" .. fileName .. ")! Does it exist?" )
+end
+
+function ExtendedInv:LoadOldFormat( file_name )
+
+	file_name = file_name or ExtendedInv.OldFormatSaveFile
+
+	local file = io.open(file_name, 'r')
+
+	if not file then
+		Print( "Could not open old format save file (" .. file_name .. ")! Does it exist?" )
 		return
 	end
 
+	local key
 	local fileString = ""
 	for line in file:lines() do
 		fileString = fileString .. line .. "\n"
