@@ -29,7 +29,6 @@ GoonBase.RequireHookFiles = {
 GoonBase.HookFiles = {
 
 	["lib/managers/menumanager"] = "MenuManager.lua",
-	["lib/managers/chatmanager"] = "ChatManager.lua",
 	["lib/managers/enemymanager"] = "EnemyManager.lua",
 	["lib/units/weapons/grenades/quicksmokegrenade"] = "QuickSmokeGrenade.lua",
 	["lib/managers/hudmanager"] = "HUDManager.lua",
@@ -179,7 +178,6 @@ if not GoonBase.HasLoadedScripts then
 end
 
 -- Load Hook Scripts
-
 if RequiredScript then
 
 	local requiredScript = RequiredScript:lower()
