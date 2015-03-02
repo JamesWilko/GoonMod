@@ -15,6 +15,7 @@ local massive_font_size = tweak_data.menu.pd2_massive_font_size
 local large_font_size = tweak_data.menu.pd2_large_font_size
 local medium_font_size = tweak_data.menu.pd2_medium_font_size
 local small_font_size = tweak_data.menu.pd2_small_font_size
+local tiny_font_size = tweak_data.menu.pd2_small_font_size * 0.75
 
 function BlackMarketGui.init(self, ws, fullscreen_ws, node)
 
@@ -73,14 +74,16 @@ function BlackMarketGuiButtonItem:set_order( prio )
 	BlackMarketGuiButtonItem._default_w = BlackMarketGuiButtonItem._default_w or self._panel:w()
 	BlackMarketGuiButtonItem._highlight_w = BlackMarketGuiButtonItem._highlight_w or self._panel:w() / 2
 	BlackMarketGuiButtonItem._padding = BlackMarketGuiButtonItem._padding or 8
-	BlackMarketGuiButtonItem._max_btn_height = BlackMarketGuiButtonItem._max_btn_height or 5
+	BlackMarketGuiButtonItem._max_btn_height = BlackMarketGuiButtonItem._max_btn_height or 2
 	local btn_h = BlackMarketGuiButtonItem._max_btn_height
 	local num = BlackMarketGui._instance and BlackMarketGui._instance._button_count or 0
+	local overflowed = num and num > btn_h
 
-	if num and num > btn_h then
+	if overflowed then
 
 		self._panel:set_w( BlackMarketGuiButtonItem._highlight_w )
 		self._panel:set_y( (prio % btn_h) * small_font_size )
+		self._btn_text:set_font_size( tiny_font_size )
 
 		if prio > btn_h then
 			self._panel:set_left( self._main_panel:left() + BlackMarketGuiButtonItem._padding )
@@ -92,11 +95,40 @@ function BlackMarketGuiButtonItem:set_order( prio )
 		self._panel:set_w( BlackMarketGuiButtonItem._default_w )
 		self._panel:set_y( (prio - 1) * small_font_size )
 		self._panel:set_left( self._initial_x or 0 )
+		self._btn_text:set_font_size( small_font_size )
 	end
 
-	self._btn_text:set_right(self._panel:w())
+	self._btn_text:set_right( self._panel:w() )
 
 end
+
+function BlackMarketGuiButtonItem.set_text_params(self, params)
+
+	-- Pre
+	self._btn_text:set_font_size(small_font_size)
+
+	self.orig.set_text_params(self, params)
+
+	-- Post
+	local btn_h = BlackMarketGuiButtonItem._max_btn_height or 0
+	local num = BlackMarketGui._instance and BlackMarketGui._instance._button_count or 0
+	local overflowed = num and num > btn_h
+	if overflowed then
+
+		self._btn_text:set_font_size( tiny_font_size )
+		BlackMarketGui.make_fine_text(self, self._btn_text)
+
+		local _, _, w, h = self._btn_text:text_rect()
+		self._btn_text:set_size(w, h)
+		self._btn_text:set_right(self._panel:w())
+		self._btn_text:set_position( self._btn_text:x(), tiny_font_size / 4 - 1 )
+
+	else
+		self._btn_text:set_position( 0, 0 )
+	end
+
+end
+
 
 function BlackMarketGui._update_borders( self )
 
@@ -1070,7 +1102,7 @@ function BlackMarketGui.populate_mods(self, data)
 
 				new_data.lock_texture = self:get_lock_icon(new_data, "guis/textures/pd2/lock_incompatible")
 				new_data.mid_text = nil
-				new_data.conflict = managers.localization:text("bm_menu_" .. tostring(tweak_data.weapon.factory.parts[forbid].type))
+				new_data.conflict = managers.localization:text("bm_menu_" .. tostring(tweak_data.weapon.factory.parts[forbid] and tweak_data.weapon.factory.parts[forbid].type or forbid))
 			end
 
 			local weapon = managers.blackmarket:get_crafted_category_slot(data.prev_node_data.category, data.prev_node_data.slot) or {}
