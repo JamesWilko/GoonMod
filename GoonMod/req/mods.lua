@@ -340,6 +340,9 @@ function BaseMod:VerifyRequirements()
 	self:ResetLocalization()
 	local enabled = (self:IncompatibilitiesAreDisabled() and self:RequirementsAreEnabled()) and true or false
 	self:SetEnabledModMenuItem( enabled )
+	if not enabled and self:IsEnabled() then
+		Mods:EnableMod( self, false )
+	end
 end
 
 function BaseMod:RequirementsAreEnabled()
