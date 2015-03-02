@@ -74,7 +74,7 @@ function BlackMarketGuiButtonItem:set_order( prio )
 	BlackMarketGuiButtonItem._default_w = BlackMarketGuiButtonItem._default_w or self._panel:w()
 	BlackMarketGuiButtonItem._highlight_w = BlackMarketGuiButtonItem._highlight_w or self._panel:w() / 2
 	BlackMarketGuiButtonItem._padding = BlackMarketGuiButtonItem._padding or 8
-	BlackMarketGuiButtonItem._max_btn_height = BlackMarketGuiButtonItem._max_btn_height or 2
+	BlackMarketGuiButtonItem._max_btn_height = BlackMarketGuiButtonItem._max_btn_height or 5
 	local btn_h = BlackMarketGuiButtonItem._max_btn_height
 	local num = BlackMarketGui._instance and BlackMarketGui._instance._button_count or 0
 	local overflowed = num and num > btn_h
@@ -110,7 +110,7 @@ function BlackMarketGuiButtonItem.set_text_params(self, params)
 	self.orig.set_text_params(self, params)
 
 	-- Post
-	local btn_h = BlackMarketGuiButtonItem._max_btn_height or 0
+	local btn_h = BlackMarketGuiButtonItem._max_btn_height or 5
 	local num = BlackMarketGui._instance and BlackMarketGui._instance._button_count or 0
 	local overflowed = num and num > btn_h
 	if overflowed then
