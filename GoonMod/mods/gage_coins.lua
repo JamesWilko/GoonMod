@@ -24,24 +24,24 @@ GageCoins.CoinID = "gage_coin"
 -- Hooks
 Hooks:Add("ExtendedInventoryInitialized", "ExtendedInventoryInitialized_" .. Mod:ID(), function()
 	
-	if ExtendedInv == nil then
+	if not ExtendedInv or not GageCoins then
 		return
 	end
 
 	ExtendedInv:RegisterItem({
 		id = GageCoins.CoinID,
-		name = "GageCoinName",
-		desc = "GageCoinDesc",
-		reserve_text = "GageCoinReserve",
+		name = "gm_exinv_gage_coin",
+		desc = "gm_exinv_gage_coin_desc",
+		reserve_text = "gm_exinv_gage_coin_reserve",
 		texture = "guis/textures/pd2/blackmarket/icons/cash",
-		hide_when_none_in_stock = true,
+		hide_when_none_in_stock = false,
 	})
 
 end)
 
 Hooks:Add("GageAssignmentManagerOnMissionCompleted", "GageAssignmentManagerOnMissionCompleted_" .. Mod:ID(), function(assignment_manager)
 
-	if ExtendedInv == nil then
+	if not ExtendedInv or not GageCoins then
 		return
 	end
 
