@@ -52,7 +52,7 @@
 
 	"gm_gms_purchase" : "Purchase with Gage Coins",
 	"gm_gms_purchase_window_title" : "Purchase",
-	"gm_gms_purchase_window_message" : "You are about to purchase {1}. This will cost you {2} Gage Coin/s.\n\nPurchasing:\n			{1}, {2} GC/s\nBalance before purchase:\n			{3} GC\nBalance after purchase:\n			{4} GC",
+	"gm_gms_purchase_window_message" : "You are about to purchase {1}. This will cost you {2} Gage Coin/s.\n\nPurchasing:\n            {1}, {2} GC/s\nBalance before purchase:\n            {3} GC\nBalance after purchase:\n            {4} GC",
 	"gm_gms_purchase_window_accept" : "Purchase",
 	"gm_gms_purchase_window_cancel" : "Cancel",
 	"gm_gms_purchase_failed" : "Cannot Purchase",

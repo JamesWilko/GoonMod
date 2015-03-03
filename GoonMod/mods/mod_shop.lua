@@ -80,7 +80,7 @@ Hooks:Add("BlackMarketGUIPostSetup", "BlackMarketGUIPostSetup_" .. Mod:ID(), fun
 		prio = 5,
 		btn = "BTN_BACK",
 		pc_btn = Idstring("toggle_chat"),
-		name = "ModShop_BlackmarketPurchaseWithGageCoins",
+		name = "gm_gms_purchase",
 		callback = callback(gui, gui, "modshop_purchase_weaponmod_callback")
 	}
 
@@ -88,7 +88,7 @@ Hooks:Add("BlackMarketGUIPostSetup", "BlackMarketGUIPostSetup_" .. Mod:ID(), fun
 		prio = 5,
 		btn = "BTN_BACK",
 		pc_btn = Idstring("toggle_chat"),
-		name = "ModShop_BlackmarketPurchaseWithGageCoins",
+		name = "gm_gms_purchase",
 		callback = callback(gui, gui, "modshop_purchase_mask_callback")
 	}
 
@@ -96,7 +96,7 @@ Hooks:Add("BlackMarketGUIPostSetup", "BlackMarketGUIPostSetup_" .. Mod:ID(), fun
 		prio = 5,
 		btn = "BTN_BACK",
 		pc_btn = Idstring("toggle_chat"),
-		name = "ModShop_BlackmarketPurchaseWithGageCoins",
+		name = "gm_gms_purchase",
 		callback = callback(gui, gui, "modshop_purchase_mask_part_callback")
 	}
 
@@ -265,36 +265,33 @@ end
 
 function ModShop:SetWeaponModPurchaseData( data )
 
-	local psuccess, perror = pcall(function()
+	if data then
 
 		self:SetPurchaseData( data )
 
 		if self:IsWeaponMod( data.category ) then
-			if data.free_of_charge ~= nil and data.free_of_charge == true then
+			if data.free_of_charge == true then
 				self._purchase_data.free_of_charge = true
 			end
 		end	
 
-	end)
-	if not psuccess then
-		Print("[Error] " .. perror)
 	end
 
 end
 
 function ModShop:SetMaskPurchaseData( data )
 
-	local psuccess, perror = pcall(function()
+	if data then
 
 		self:SetPurchaseData( data )
 
 		if self:IsMask( data.category ) then
 
 			local price = ModShop.MaskPricing[ data.global_value ] or ModShop.MaskPricing["default"]
-			if data.dlc ~= nil then
+			if data.dlc then
 				price = ModShop.MaskPricing["dlc"]
 			end
-			if data.infamy_lock ~= nil then
+			if data.infamy_lock then
 				price = ModShop.MaskPricing["infamy"]
 			end
 
@@ -302,29 +299,26 @@ function ModShop:SetMaskPurchaseData( data )
 
 		end
 
-	end)
-	if not psuccess then
-		Print("[Error] " .. perror)
 	end
 
 end
 
 function ModShop:SetMaskPartPurchaseData( data )
 
-	local psuccess, perror = pcall(function()
+	if data then
 
 		self:SetPurchaseData( data )
 
 		if self:IsMaskPart( data.category ) then
 
 			local mod_data = tweak_data.blackmarket[data.category][data.name]
-			if mod_data ~= nil then
+			if mod_data then
 
-				if mod_data.infamous ~= nil and mod_data.infamous == true then
+				if mod_data.infamous == true then
 					self._purchase_data.cost = ModShop.CostInfamous
 				end
 
-				if mod_data.global_value == "infamy" or mod_data.infamy_lock ~= nil then
+				if mod_data.global_value == "infamy" or mod_data.infamy_lock then
 					self._purchase_data.cost = ModShop.CostInfamous
 				end
 
@@ -332,9 +326,6 @@ function ModShop:SetMaskPartPurchaseData( data )
 
 		end
 
-	end)
-	if not psuccess then
-		Print("[Error] " .. perror)
 	end
 
 end
@@ -359,7 +350,7 @@ function ModShop:ShowPurchaseMenu()
 	end
 
 	-- Check if item is free of charge
-	if self._purchase_data.free_of_charge ~= nil and self._purchase_data.free_of_charge == true then
+	if self._purchase_data.free_of_charge == true then
 		self:ShowFreeOfCharge()
 		return
 	end
@@ -371,8 +362,8 @@ function ModShop:ShowPurchaseMenu()
 	end
 	
 	-- Show purchase menu
-	local title = managers.localization:text("ModShop_PurchaseWindowTitle")
-	local message = managers.localization:text("ModShop_PurchaseWindowMessage")
+	local title = managers.localization:text("gm_gms_purchase_window_title")
+	local message = managers.localization:text("gm_gms_purchase_window_message")
 	message = message:gsub("{1}", self._purchase_data.name_localized)
 	message = message:gsub("{2}", purchase_cost)
 	message = message:gsub("{3}", gage_coins.amount)
@@ -380,11 +371,11 @@ function ModShop:ShowPurchaseMenu()
 
 	local menuOptions = {}
 	menuOptions[1] = {
-		text = managers.localization:text("ModShop_PurchaseWindowAccept"),
+		text = managers.localization:text("gm_gms_purchase_window_accept"),
 		callback = ModShop.PurchaseItem
 	}
 	menuOptions[2] = {
-		text = managers.localization:text("ModShop_PurchaseWindowCancel"),
+		text = managers.localization:text("gm_gms_purchase_window_cancel"),
 		callback = nil,
 		is_cancel_button = true
 	}
@@ -394,12 +385,12 @@ end
 
 function ModShop:ShowFreeOfCharge()
 
-	local title = managers.localization:text("ModShop_FreeOfChargeTitle")
-	local message = managers.localization:text("ModShop_FreeOfChargeMessage")
+	local title = managers.localization:text("gm_gms_purchase_failed")
+	local message = managers.localization:text("gm_gms_free_of_charge_message")
 	message = message:gsub("{1}", self._purchase_data.name_localized)
 	local menuOptions = {}
 	menuOptions[1] = {
-		text = managers.localization:text("ModShop_FreeOfChargeAccept"),
+		text = managers.localization:text("gm_gms_free_of_charge_accept"),
 		is_cancel_button = true
 	}
 	local window = QuickMenu:new(title, message, menuOptions, true)
@@ -408,13 +399,13 @@ end
 
 function ModShop:ShowNotEnoughCoins(cost)
 
-	local title = managers.localization:text("ModShop_NotEnoughCoinsWindowTitle")
-	local message = managers.localization:text("ModShop_NotEnoughCoinsWindowMessage")
+	local title = managers.localization:text("gm_gms_purchase_failed")
+	local message = managers.localization:text("gm_gms_cannot_afford_message")
 	message = message:gsub("{1}", self._purchase_data.name_localized)
 	message = message:gsub("{2}", cost)
 	local menuOptions = {}
 	menuOptions[1] = {
-		text = managers.localization:text("ModShop_NotEnoughCoinsWindowAccept"),
+		text = managers.localization:text("gm_gms_cannot_afford_accept"),
 		is_cancel_button = true
 	}
 	local window = QuickMenu:new(title, message, menuOptions, true)
@@ -423,53 +414,46 @@ end
 
 function ModShop:PurchaseItem()
 
-	local psuccess, perror = pcall(function()
-
-		if not ExtendedInv then
-			Print("[Error] Attempting to purchase item with no Extended Inventory...")
-			return
-		end
-		
-		local purchase_data = ModShop._purchase_data
-		local item = purchase_data.name
-		local category = purchase_data.category
-		local cost = purchase_data.cost
-		local global_value = purchase_data.global_value
-
-		Print("Purchasing ", item, " from category ", category, " at cost: ", cost, " coins")
-
-		-- Add to weapon inventory
-		if ModShop:IsWeaponMod(category) then
-			managers.blackmarket:add_to_inventory(global_value, "weapon_mods", item, true)
-			ModShop:ReloadBlackMarketAfterPurchase()
-		end
-
-		-- Add to mask inventory
-		if ModShop:IsMaskPart(category) then
-			
-			managers.blackmarket:add_traded_mask_part_to_inventory(item, category)
-
-			-- Temporary measure to reload mask mods inventory
-			local blackmarket_gui = managers.menu_component._blackmarket_gui
-			if blackmarket_gui then
-				blackmarket_gui:_abort_customized_mask_callback()
-			end
-
-		end
-
-		-- Add mask to inventory
-		if ModShop:IsMask(category) then
-			managers.blackmarket:add_to_inventory(global_value, "masks", item, true)
-			ModShop:ReloadBlackMarketAfterPurchase()
-		end
-
-		-- Remove coins
-		ExtendedInv:TakeItem( ModShop.PurchaseCurrency, cost )
-		
-	end)
-	if not psuccess then
-		Print("[Error] " .. perror)
+	if not ExtendedInv then
+		Print("[Error] Attempting to purchase item with no Extended Inventory...")
+		return
 	end
+	
+	local purchase_data = ModShop._purchase_data
+	local item = purchase_data.name
+	local category = purchase_data.category
+	local cost = purchase_data.cost
+	local global_value = purchase_data.global_value
+
+	Print("Purchasing ", item, " from category ", category, " at cost: ", cost, " coins")
+
+	-- Add to weapon inventory
+	if ModShop:IsWeaponMod(category) then
+		managers.blackmarket:add_to_inventory(global_value, "weapon_mods", item, true)
+		ModShop:ReloadBlackMarketAfterPurchase()
+	end
+
+	-- Add to mask inventory
+	if ModShop:IsMaskPart(category) then
+		
+		managers.blackmarket:add_traded_mask_part_to_inventory(item, category)
+
+		-- Temporary measure to reload mask mods inventory
+		local blackmarket_gui = managers.menu_component._blackmarket_gui
+		if blackmarket_gui then
+			blackmarket_gui:_abort_customized_mask_callback()
+		end
+
+	end
+
+	-- Add mask to inventory
+	if ModShop:IsMask(category) then
+		managers.blackmarket:add_to_inventory(global_value, "masks", item, true)
+		ModShop:ReloadBlackMarketAfterPurchase()
+	end
+
+	-- Remove coins
+	ExtendedInv:TakeItem( ModShop.PurchaseCurrency, cost )
 
 end
 
