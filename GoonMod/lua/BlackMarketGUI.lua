@@ -1484,6 +1484,16 @@ function BlackMarketGui._start_page_data(self)
 
 end
 
+Hooks:RegisterHook("BlackMarketGUIOnMouseMoved")
+function BlackMarketGui.mouse_moved(self, o, x, y)
+	local r = self.orig.mouse_moved(self, o, x, y)
+	if not self._enabled then
+		return r
+	end
+	Hooks:Call("BlackMarketGUIOnMouseMoved", self, o, x, y)
+	return r
+end
+
 Hooks:RegisterHook("BlackMarketGUIUpdateInfoText")
 function BlackMarketGui.update_info_text(self)
 	self.orig.update_info_text(self)
