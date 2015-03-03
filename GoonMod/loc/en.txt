@@ -166,8 +166,8 @@
 	"TrainHeist_PlansInv" : "Train Intel",
 	"TrainHeist_PlansInvDesc" : "Details of a train transporting an experimental turret. This unlocks the Train Transport heist in Crime.net while you have intel in reserve.\n\nFound in an Armoured Transport. Will be consumed upon successful completion of the heist.",
 
-	"OptionsMenu_ZoomSensitivityTitle" : "Enabled Ironsight Normalized Sensitivity",
-	"OptionsMenu_ZoomSensitivityMessage" : "Lower the sensitivity when using ironsights to more accurately place your shots.",
+	"gm_options_normalized_sensitivity_title" : "Enabled Ironsight Normalized Sensitivity",
+	"gm_options_normalized_sensitivity_desc" : "Lower the sensitivity when using ironsights to more accurately place your shots.",
 
 	"Options_WeaponCustomizationName" : "Weapon Customization",
 	"Options_WeaponCustomizationDesc" : "Weapon Customization Options",
@@ -181,6 +181,7 @@
 	"WeaponCustomization_ClearDataCancel" : "Cancel",
 	"WeaponCustomization_PrintAllPartNames" : "Output All Weapon Part Names",
 	"WeaponCustomization_PrintAllPartNamesDesc" : "Outputs all weapon part names to a CSV file",
+
 	"bm_mtl_no_material" : "No Material",
 	"WeaponCustomization_MenuItem" : "Customize Weapon",
 	"bm_menu_customize_weapon_title" : "Customize Weapon: $weapon_name",

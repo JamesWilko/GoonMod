@@ -29,8 +29,8 @@ Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_" .. Mod
 
 	MenuHelper:AddToggle({
 		id = "toggle_zoom_sensitivity",
-		title = "OptionsMenu_ZoomSensitivityTitle",
-		desc = "OptionsMenu_ZoomSensitivityMessage",
+		title = "gm_options_normalized_sensitivity_title",
+		desc = "gm_options_normalized_sensitivity_desc",
 		callback = "toggle_zoom_sensitivity",
 		value = GoonBase.Options.IronsightSensitivity.Enabled,
 		menu_id = "goonbase_options_menu"
