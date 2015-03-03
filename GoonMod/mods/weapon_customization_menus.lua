@@ -271,6 +271,7 @@ end)
 
 Hooks:Add("BlackMarketGUIUpdateInfoText", "BlackMarketGUIUpdateInfoText_WeaponCustomization", function(self)
 
+
 	local slot_data = self._slot_data
 	local tab_data = self._tabs[self._selected]._data
 	local prev_data = tab_data.prev_node_data
@@ -292,6 +293,21 @@ Hooks:Add("BlackMarketGUIUpdateInfoText", "BlackMarketGUIUpdateInfoText_WeaponCu
 	end
 
 	if identifier == self.identifiers.weapon_customization then
+
+		if not WeaponCustomization._select_rect or not alive( WeaponCustomization._select_rect ) then
+			WeaponCustomization._select_rect = self._panel:child("info_box_panel"):rect({
+				name = "wc_select_rect",
+				blend_mode = "add",
+				color = tweak_data.screen_colors.button_stage_3,
+				alpha = 0.3,
+				valign = "scale",
+				halign = "scale",
+				x = 10,
+				y = 10,
+				w = self._panel:child("info_box_panel"):w() - 20,
+				h = tweak_data.menu.pd2_small_font_size * WeaponCustomization._menu_text_scaling,
+			})
+		end
 
 		local blackmarket = managers.blackmarket
 		if blackmarket._customizing_weapon and blackmarket._customizing_weapon_data and blackmarket._customizing_weapon_parts then
@@ -410,6 +426,10 @@ Hooks:Add("BlackMarketGUIUpdateInfoText", "BlackMarketGUIUpdateInfoText_WeaponCu
 
 end)
 
+Hooks:Add("BlackMarketGUIOnMouseMoved", "BlackMarketGUIOnMouseMoved_WeaponCustomization", function(gui, button, x, y)
+	WeaponCustomization:UpdateHighlight(gui, button, x, y)
+end)
+
 Hooks:Add("BlackMarketGUIMouseReleased", "BlackMarketGUIMouseReleased_WeaponCustomization", function(gui, button, x, y)
 
 	if not managers.blackmarket._customizing_weapon then
@@ -428,7 +448,15 @@ end)
 
 Hooks:Add("MenuUpdate", "MenuUpdate_WeaponCustomization", function(t, dt)
 
-	if WeaponCustomization:IsUsingController() and managers.blackmarket._customizing_weapon then
+	if managers.blackmarket._customizing_weapon then
+		WeaponCustomization:_UpdateControllerBindings()
+	end
+
+end)
+
+function WeaponCustomization:_UpdateControllerBindings()
+
+	if WeaponCustomization:IsUsingController() then
 
 		local controller = managers.menu:get_controller()
 		local r_trigger = controller:get_input_pressed("primary_attack")
@@ -464,12 +492,53 @@ Hooks:Add("MenuUpdate", "MenuUpdate_WeaponCustomization", function(t, dt)
 
 	end
 
-end)
+end
 
 function WeaponCustomization:_UpdateBlackmarketGUI()
 	if managers.menu_component and managers.menu_component._blackmarket_gui then
 		managers.menu_component._blackmarket_gui:update_info_text()
 	end
+end
+
+function WeaponCustomization:UpdateHighlight(gui, button, x, y)
+
+	if not gui then
+		return
+	end
+
+	local inside = false
+	for k, v in pairs( gui._info_texts ) do
+		if v:inside(x, y) then
+
+			local line, line_str = WeaponCustomization:_GetLineFromObjectRect(x, y, v)
+			line = line - 1
+			
+			if alive( WeaponCustomization._select_rect ) and line and (not string.is_nil_or_empty(line_str) and line_str ~= '\n') then
+
+					inside = true
+					line = line < 0 and 0 or line
+
+					WeaponCustomization._select_rect:set_alpha( 0.3 )
+
+					local lh = tweak_data.menu.pd2_small_font_size * WeaponCustomization._menu_text_scaling
+					WeaponCustomization._select_rect:set_y( v:y() + line * lh + lh * 0.5 + line )
+
+					if WeaponCustomization._select_rect_line ~= line then
+						WeaponCustomization._select_rect_line = line
+						managers.menu_component:post_event("highlight")
+					end
+
+			end
+
+		end
+	end
+
+	if not inside then
+		if alive( WeaponCustomization._select_rect ) then
+			WeaponCustomization._select_rect:set_alpha( 0 )
+		end
+	end
+
 end
 
 function WeaponCustomization:LeftMouseReleased(gui, button, x, y)
@@ -490,6 +559,7 @@ function WeaponCustomization:LeftMouseReleased_SelectParts(gui, button, x, y)
 			if modifying_item ~= nil then
 				WeaponCustomization:_SwapWeaponPartModifyingStatus(line, modifying_item)
 				gui:update_info_text()
+				managers.menu_component:post_event("menu_enter")
 				break
 			end
 
@@ -512,6 +582,7 @@ function WeaponCustomization:LeftMouseReleased_Advanced(gui, button, x, y)
 		
 		if adv_option and adv_option.func then
 			self[ adv_option.func ]()
+			managers.menu_component:post_event("menu_enter")
 		end
 
 	end
@@ -542,6 +613,7 @@ function WeaponCustomization:RightMouseReleased(gui, button, x, y)
 				end
 
 				gui:update_info_text()
+				managers.menu_component:post_event("menu_enter")
 				break
 
 			end
@@ -561,20 +633,20 @@ function WeaponCustomization:_SwapWeaponPartModifyingStatus( line, modifying, up
 	end
 end
 
-function WeaponCustomization:_IsInObjectRect(x, y, obj)
-	local rx, ry, rw, rh = obj:text_rect()
-	if x >= rx and x <= rx + rw and y >= ry and y <= ry + rh then
-		return true
-	end
-	return false
-end
-
 function WeaponCustomization:_GetLineFromObjectRect(x, y, obj)
 	local rx, ry, rw, rh = obj:text_rect()
 	local font_size = tweak_data.menu.pd2_small_font_size * WeaponCustomization._menu_text_scaling
 	y = y - ry + font_size / 2
 	y = y / (font_size * 1.05)
-	return math.round_with_precision(y, 0)
+	local line = math.round_with_precision(y, 0)
+	local strs = string.split( obj:text(), "[\n]" )
+	if strs and obj:text():sub(1, 1) == '\n' then
+		table.insert( strs, 1, "\n" )
+	end
+	if strs then
+		return line, strs[line]
+	end
+	return line
 end
 
 function WeaponCustomization:_GetIndexFromLine(line, modifying)

@@ -2,7 +2,7 @@
 -- Mod Definition
 local Mod = class( BaseMod )
 Mod.id = "WeaponCustomization"
-Mod.Name = "[BETA] Weapon Customization"
+Mod.Name = "Weapon Visual Customization"
 Mod.Desc = "Visually customize your weapons using materials, patterns, and colour swatches"
 Mod.Requirements = {}
 Mod.Incompatibilities = {}
