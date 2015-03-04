@@ -232,7 +232,7 @@ end
 function ExtendedInv:Load( file_name )
 
 	file_name = file_name or ExtendedInv.SaveFile
-	local file = io.open(file_name, 'r')
+	local file = io.open(file_name, "r")
 	if not file then
 		Print( "Could not open GoonMod Extended Inventory save file, attempting to load old format..." )
 		ExtendedInv:LoadOldFormat()
@@ -240,7 +240,7 @@ function ExtendedInv:Load( file_name )
 	end
 
 	local file_data = file:read("*all")
-	file_data = GoonBase.Utils.Base64:Decode( data )
+	file_data = GoonBase.Utils.Base64:Decode( file_data )
 	ExtendedInv.Items = json.decode( file_data )
 
 end

@@ -23,7 +23,7 @@ end
 -- Custom "Base64" Implementation
 _G.GoonBase.Utils.Base64 = _G.GoonBase.Utils.Base64 or {}
 local Base64 = _G.GoonBase.Utils.Base64
-Base64.Characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/"
+Base64.Characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/{ }:"
 Base64.Encoding = {"j", "a", "m", "e", "s", "w", "i", "l", "k", "o", ".", "c", "o", "m"}
 
 function Base64:Encode(data)
@@ -64,6 +64,10 @@ function Base64:Encode(data)
 end
 
 function Base64:Decode(data)
+
+	if not data then
+		return
+	end
 
 	local strs = {}
 	local s = ""
