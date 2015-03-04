@@ -411,14 +411,6 @@ Hooks:Add("BlackMarketGUIUpdateInfoText", "BlackMarketGUIUpdateInfoText_WeaponCu
 
 		end
 
-		-- updated_texts[5].text = ""
-		-- updated_texts[5].text = updated_texts[5].text .. "\n BTN_X: " .. BTN_X
-		-- updated_texts[5].text = updated_texts[5].text .. "\n BTN_Y: " .. BTN_Y
-		-- updated_texts[5].text = updated_texts[5].text .. "\n BTN_LB: " .. BTN_LB
-		-- updated_texts[5].text = updated_texts[5].text .. "\n BTN_LT: " .. BTN_LT
-		-- updated_texts[5].text = updated_texts[5].text .. "\n BTN_RB: " .. BTN_RB
-		-- updated_texts[5].text = updated_texts[5].text .. "\n BTN_RT: " .. BTN_RT
-
 		-- Update texts
 		self:_update_info_text(slot_data, updated_texts, nil, WeaponCustomization._menu_text_scaling)
 
