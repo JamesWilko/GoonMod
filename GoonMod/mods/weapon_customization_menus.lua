@@ -269,6 +269,21 @@ Hooks:Add("BlackMarketGUIChooseMaskPartCallback", "BlackMarketGUIChooseMaskPartC
 	WeaponCustomization:UpdateWeaponPartsWithMaskMod( data )
 end)
 
+Hooks:Add("BlackMarketGUIButtonPostSetTextParameters", "BlackMarketGUIButtonPostSetTextParameters_WeaponCustomization", function(self, params)
+
+	local bm = BlackMarketGui._instance
+	if bm then
+
+		local tab_data = bm._tabs[bm._selected]._data
+		if tab_data.identifier == bm.identifiers.weapon_customization then
+			self._btn_text:set_text( self._btn_text:text():lower():gsub("mask", "weapon"):upper() )
+			BlackMarketGui.make_fine_text(self, self._btn_text)
+		end
+
+	end
+
+end)
+
 Hooks:Add("BlackMarketGUIUpdateInfoText", "BlackMarketGUIUpdateInfoText_WeaponCustomization", function(self)
 
 
