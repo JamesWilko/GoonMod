@@ -81,13 +81,15 @@ function BlackMarketGuiButtonItem:set_order( prio )
 
 	if overflowed then
 
+		self:check_overflow_font_size()
 		self._panel:set_w( BlackMarketGuiButtonItem._highlight_w )
-		self._panel:set_y( (prio % btn_h) * small_font_size )
-		self._btn_text:set_font_size( tiny_font_size )
+		self._btn_text:set_font_size( small_font_size )
 
 		if prio > btn_h then
+			self._panel:set_y( (prio % btn_h - 1) * small_font_size )
 			self._panel:set_left( self._main_panel:left() + BlackMarketGuiButtonItem._padding )
 		else
+			self._panel:set_y( (prio % btn_h) * small_font_size )
 			self._panel:set_right( self._main_panel:right() - BlackMarketGuiButtonItem._padding )
 		end
 
@@ -115,13 +117,18 @@ function BlackMarketGuiButtonItem.set_text_params(self, params)
 	local overflowed = num and num > btn_h
 	if overflowed then
 
-		self._btn_text:set_font_size( tiny_font_size )
+		self:check_overflow_font_size()
+		self._btn_text:set_font_size( small_font_size )
 		BlackMarketGui.make_fine_text(self, self._btn_text)
 
 		local _, _, w, h = self._btn_text:text_rect()
 		self._btn_text:set_size(w, h)
 		self._btn_text:set_right(self._panel:w())
-		self._btn_text:set_position( self._btn_text:x(), tiny_font_size / 4 - 1 )
+		if overflow then
+			self._btn_text:set_position( self._btn_text:x(), small_font_size / 4 - 1 )
+		else
+			self._btn_text:set_position( self._btn_text:x(), 0 )
+		end
 
 	else
 		self._btn_text:set_position( 0, 0 )
@@ -129,6 +136,11 @@ function BlackMarketGuiButtonItem.set_text_params(self, params)
 
 end
 
+function BlackMarketGuiButtonItem.check_overflow_font_size( self )
+	if string.len(self._btn_text:text()) > 22 then
+		self._btn_text:set_text( self._btn_text:text():lower():gsub("weapon ", ""):upper() )
+	end
+end
 
 function BlackMarketGui._update_borders( self )
 
@@ -141,10 +153,9 @@ function BlackMarketGui._update_borders( self )
 
 	self._btn_panel:set_visible(self._button_count > 0 and true or false)
 	if self._btn_panel:visible() then
-		if self._button_count > BlackMarketGuiButtonItem._max_btn_height then
-			btn_h = btn_h / 2
-		end
-		self._btn_panel:set_h(btn_h * self._button_count + 16)
+		local h = self._button_count % BlackMarketGuiButtonItem._max_btn_height
+		h = self._button_count > BlackMarketGuiButtonItem._max_btn_height and self._button_count - h or self._button_count
+		self._btn_panel:set_h(btn_h * h + 16)
 	end
 
 	local info_box_panel = self._panel:child("info_box_panel")
