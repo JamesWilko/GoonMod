@@ -104,14 +104,17 @@ function BlackMarketGuiButtonItem:set_order( prio )
 
 end
 
+Hooks:RegisterHook("BlackMarketGUIButtonPreSetTextParameters")
+Hooks:RegisterHook("BlackMarketGUIButtonPostSetTextParameters")
 function BlackMarketGuiButtonItem.set_text_params(self, params)
-
-	-- Pre
+	Hooks:Call("BlackMarketGUIButtonPreSetTextParameters", self, params)
 	self._btn_text:set_font_size(small_font_size)
-
 	self.orig.set_text_params(self, params)
+	Hooks:Call("BlackMarketGUIButtonPostSetTextParameters", self, params)
+end
 
-	-- Post
+Hooks:Add("BlackMarketGUIButtonPostSetTextParameters", "BlackMarketGUIButtonPostSetTextParameters_GoonModBMGUI", function(self, params)
+
 	local btn_h = BlackMarketGuiButtonItem._max_btn_height or 5
 	local num = BlackMarketGui._instance and BlackMarketGui._instance._button_count or 0
 	local overflowed = num and num > btn_h
@@ -134,7 +137,7 @@ function BlackMarketGuiButtonItem.set_text_params(self, params)
 		self._btn_text:set_position( 0, 0 )
 	end
 
-end
+end)
 
 function BlackMarketGuiButtonItem.check_overflow_font_size( self )
 	if string.len(self._btn_text:text()) > 22 then
