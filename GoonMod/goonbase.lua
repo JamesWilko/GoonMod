@@ -82,9 +82,9 @@ GoonBase.HookFiles = {
 -- Required Global Functions
 function _G.Print( ... )
 
-	local str = ""
+	local str = GoonBase.LogTag
 	for k, v in ipairs( arg ) do
-		str = GoonBase.LogTag .. str .. tostring(v)
+		str = str .. tostring(v)
 	end
 
 	-- Write to console
