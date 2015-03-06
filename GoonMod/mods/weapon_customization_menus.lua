@@ -515,7 +515,7 @@ function WeaponCustomization:UpdateHighlight(gui, button, x, y)
 
 	local inside = false
 	for k, v in pairs( gui._info_texts ) do
-		if v:inside(x, y) then
+		if v:inside(x, y) and gui._info_texts_panel:inside(x, y) then
 
 			local line, line_str = WeaponCustomization:_GetLineFromObjectRect(x, y, v)
 			line = line - 1
