@@ -158,6 +158,7 @@ Hooks:Add("BlackMarketGUIOnPopulateMaskMods", "BlackMarketGUIOnPopulateMaskMods_
 		tweak_data.blackmarket.materials.no_material.name_id = "bm_mtl_no_material"
 		tweak_data.blackmarket.materials.no_material.texture = "units/payday2/matcaps/matcap_plastic_df"
 		tweak_data.blackmarket.materials.no_material.value = 0
+		tweak_data.blackmarket.materials.no_material.weapon_only = true
 
 	end
 
@@ -174,7 +175,7 @@ Hooks:Add("BlackMarketGUIOnPopulateMaskMods", "BlackMarketGUIOnPopulateMaskMods_
 		table.remove( data.on_create_data, no_material_index )
 	end
 
-	if data.category == "materials" then
+	if managers.blackmarket._customizing_weapon and data.category == "materials" then
 
 		local clear_material = deep_clone( data.on_create_data[1] )
 		clear_material.id = "no_material"
