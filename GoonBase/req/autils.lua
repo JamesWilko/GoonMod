@@ -223,4 +223,12 @@ function math.round_with_precision(num, idp)
 	local mult = 10 ^ (idp or 0)
 	return math.floor(num * mult + 0.5) / mult
 end
+
+function GoonBase.Utils:IsInGameState()
+	if not game_state_machine then
+		return false
+	end
+	return string.find(game_state_machine:current_state_name(), "game")
+end
+
 -- END OF FILE
