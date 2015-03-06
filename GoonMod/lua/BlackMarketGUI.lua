@@ -200,6 +200,138 @@ function BlackMarketGui._update_borders( self )
 		})
 	end
 
+	if self._info_text_first_set then
+		self._info_text_scroll_offset = self._info_text_scroll_offset or 0
+	end
+	if self._info_text_scroll_offset ~= nil then
+
+		if not self._info_texts_offsets then
+			self._info_texts_offsets = {}
+			for i = 1, #self._info_texts do
+				self._info_texts_offsets[i] = self._info_texts[i]:y()
+			end
+		end
+
+		local min_offset = -self:get_info_text_height() + self._info_texts_panel:h()
+		if self._info_text_scroll_offset < min_offset then
+			self._info_text_scroll_offset = min_offset
+		end
+		if self._info_text_scroll_offset > 0 then
+			self._info_text_scroll_offset = 0
+		end
+		if min_offset < 0 then
+			self:add_info_text_scroll_bar( min_offset, self:get_info_text_height(), self._info_text_scroll_offset )
+		end
+
+		for i = 1, #self._info_texts do
+			self._info_texts[i]:set_y( self._info_texts_offsets[i] + self._info_text_scroll_offset )
+		end
+
+	end
+
+end
+
+function BlackMarketGui:get_info_text_height()
+	local min_i = 1
+	local max_i = #self._info_texts
+	local height = self._info_texts_offsets[max_i] + self._info_texts[max_i]:h() - self._info_texts_offsets[min_i]
+	return height
+end
+
+function BlackMarketGui:add_info_text_scroll_bar( min_offset, max_height, current_offset )
+	
+	local visible = min_offset < 0
+	local scroll_up_indicator_arrow = self._info_texts_panel:child("scroll_up_indicator_arrow")
+	local scroll_down_indicator_arrow = self._info_texts_panel:child("scroll_down_indicator_arrow")
+	local scroll_bar = self._info_texts_panel:child("scroll_bar")
+	local scroll_bar_box_panel = self._info_texts_panel:child("scroll_bar_box_panel")
+	local scroll_width = 8
+	local scroll_height, scroll_position
+
+	if not scroll_up_indicator_arrow then
+
+		local texture, rect = tweak_data.hud_icons:get_icon_data("scrollbar_arrow")
+		scroll_up_indicator_arrow = self._info_texts_panel:bitmap({
+			name = "scroll_up_indicator_arrow",
+			texture = texture,
+			texture_rect = rect,
+			layer = 2,
+			color = Color.white
+		})
+		scroll_up_indicator_arrow:set_top( 0 )
+		scroll_up_indicator_arrow:set_right( self._info_texts_panel:w() )
+
+	end
+
+	if not scroll_down_indicator_arrow then
+
+		local texture, rect = tweak_data.hud_icons:get_icon_data("scrollbar_arrow")
+		scroll_down_indicator_arrow = self._info_texts_panel:bitmap({
+			name = "scroll_down_indicator_arrow",
+			texture = texture,
+			texture_rect = rect,
+			layer = 2,
+			color = Color.white,
+			rotation = 180
+		})
+		scroll_down_indicator_arrow:set_bottom( self._info_texts_panel:h() )
+		scroll_down_indicator_arrow:set_right( self._info_texts_panel:w() )
+
+	end
+
+	if not scroll_bar then
+
+		scroll_bar = self._info_texts_panel:panel({
+			name = "scroll_bar",
+			layer = 3,
+			h = bar_h,
+			w = self._info_texts_panel:w()
+		})
+
+	end
+
+	if not scroll_bar_box_panel then
+
+		scroll_bar_box_panel = scroll_bar:panel({
+			name = "scroll_bar_box_panel",
+			w = 4,
+			halign = "scale",
+			valign = "scale",
+		})
+
+	end
+
+	if self._scroll_bar_box_class then
+		self._scroll_bar_box_class:close()
+	end
+
+	scroll_height = ( scroll_down_indicator_arrow:bottom() - scroll_up_indicator_arrow:top() )
+	scroll_height = scroll_height * self._info_texts_panel:h() / max_height
+	if current_offset ~= 0 then
+		scroll_position = -current_offset * self._info_texts_panel:h() / max_height
+	else
+		scroll_position = 0
+	end
+
+	scroll_bar_box_panel:set_center_x(scroll_bar:w() / 2)
+	self._scroll_bar_box_class = BoxGuiObject:new(scroll_bar_box_panel, {
+		sides = {
+			2,
+			2,
+			0,
+			0
+		}
+	})
+	self._scroll_bar_box_class:set_aligns("scale", "scale")
+	scroll_bar_box_panel:set_w( scroll_width )
+	scroll_bar_box_panel:set_h( scroll_height )
+	scroll_bar:set_top( scroll_up_indicator_arrow:top() + scroll_position )
+	scroll_bar:set_center_x( scroll_up_indicator_arrow:center_x() - 2 )
+	scroll_bar:set_h( scroll_height )
+
+	scroll_up_indicator_arrow:set_visible( scroll_bar:top() > scroll_up_indicator_arrow:bottom() )
+	scroll_down_indicator_arrow:set_visible( scroll_bar:bottom() < scroll_down_indicator_arrow:top() )
+
 end
 
 Hooks:RegisterHook("BlackMarketGUIOnPopulateWeapons")
@@ -1516,6 +1648,8 @@ end
 
 function BlackMarketGui._update_info_text(self, slot_data, updated_texts, data, scale_override)
 
+	self._info_text_first_set = true
+
 	local ignore_lock = false
 	local is_renaming_this = false
 	if data ~= nil then
@@ -1630,17 +1764,22 @@ function BlackMarketGui._update_info_text(self, slot_data, updated_texts, data, 
 end
 
 function BlackMarketGui:mouse_pressed(button, x, y)
+
 	if not self._enabled then
 		return
 	end
+
 	if self._renaming_item then
 		self:_stop_rename_item()
 		return
 	end
+
 	local holding_shift = false
 	local scroll_button_pressed = button == Idstring("mouse wheel up") or button == Idstring("mouse wheel down")
 	local inside_tab_area = self._tab_area_panel:inside(x, y)
+
 	if inside_tab_area then
+
 		if button == Idstring("mouse wheel down") then
 			self:next_page(true)
 			return
@@ -1648,32 +1787,55 @@ function BlackMarketGui:mouse_pressed(button, x, y)
 			self:previous_page(true)
 			return
 		end
+
+	elseif self._info_texts_panel:inside(x, y) and scroll_button_pressed then
+
+		local scroll_speed = small_font_size
+		self._info_text_scroll_offset = self._info_text_scroll_offset or 0
+		if button == Idstring("mouse wheel down") then
+			self._info_text_scroll_offset = self._info_text_scroll_offset - scroll_speed
+			self:_update_borders()
+			return
+		elseif button == Idstring("mouse wheel up") then
+			self._info_text_scroll_offset = self._info_text_scroll_offset + scroll_speed
+			self:_update_borders()
+			return
+		end
+
 	elseif self._tabs[self._selected] and scroll_button_pressed and self._tabs[self._selected]:mouse_pressed(button, x, y) then
+
 		local x, y = self._tabs[self._selected]:selected_slot_center()
 		self._select_rect:set_world_center(x, y)
 		self._select_rect:stop()
 		self._select_rect_box:set_color(Color.white)
 		self._select_rect:set_visible(y > self._tabs[self._selected]._grid_panel:top() and y < self._tabs[self._selected]._grid_panel:bottom())
 		return
+
 	end
+
 	if button ~= Idstring("0") then
 		return
 	end
+
 	if self._panel:child("back_button"):inside(x, y) then
 		managers.menu:back(true)
 		return
 	end
+
 	if self._tab_scroll_table.left_klick and self._tab_scroll_table.left:inside(x, y) then
 		self:previous_page()
 		return
 	end
+
 	if self._tab_scroll_table.right_klick and self._tab_scroll_table.right:inside(x, y) then
 		self:next_page()
 		return
 	end
+
 	if self._selected_slot and self._selected_slot._equipped_rect then
 		self._selected_slot._equipped_rect:set_alpha(1)
 	end
+
 	if self._tab_scroll_panel:inside(x, y) and self._tabs[self._highlighted] and self._tabs[self._highlighted]:inside(x, y) ~= 1 then
 		if self._selected ~= self._highlighted then
 			self:set_selected_tab(self._highlighted)
@@ -1686,6 +1848,7 @@ function BlackMarketGui:mouse_pressed(button, x, y)
 			return
 		end
 	end
+
 	if self._rename_info_text then
 		local text_button = self._info_texts and self._info_texts[self._rename_info_text]
 		if self._slot_data and text_button and text_button:inside(x, y) then
@@ -1695,6 +1858,7 @@ function BlackMarketGui:mouse_pressed(button, x, y)
 			return
 		end
 	end
+
 	if self._btns[self._button_highlighted] and self._btns[self._button_highlighted]:inside(x, y) then
 		local data = self._btns[self._button_highlighted]._data
 		if data.callback and (not self._button_press_delay or self._button_press_delay < TimerManager:main():time()) then
@@ -1703,11 +1867,12 @@ function BlackMarketGui:mouse_pressed(button, x, y)
 			self._button_press_delay = TimerManager:main():time() + 0.2
 		end
 	end
+
 	if self._selected_slot and self._selected_slot._equipped_rect then
 		self._selected_slot._equipped_rect:set_alpha(0.6)
 	end
-end
 
+end
 
 Hooks:RegisterHook("BlackMarketGUIOnPopulateBuyMasks")
 Hooks:RegisterHook("BlackMarketGUIOnPopulateBuyMasksActionList")
