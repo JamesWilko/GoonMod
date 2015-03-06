@@ -373,14 +373,18 @@ end
 -- Hooks
 Hooks:Add("AchievementManagerCheckDisable", "AchievementManagerCheckDisable_Mutators", function(achievement_manager)
 
-	for k, v in pairs( Mutators.LoadedMutators ) do
-		if v:ShouldBeEnabled() then
+	if Utils:IsInGameState() then
+
+		for k, v in pairs( Mutators.LoadedMutators ) do
+			if v:ShouldBeEnabled() then
+				achievement_manager:DisableAchievements("mutators")
+			end
+		end
+
+		if Mutators:GetNumberOfActiveMutators() > 0 then
 			achievement_manager:DisableAchievements("mutators")
 		end
-	end
 
-	if Mutators:GetNumberOfActiveMutators() > 0 then
-		achievement_manager:DisableAchievements("mutators")
 	end
 
 end)
