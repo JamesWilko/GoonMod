@@ -1,8 +1,8 @@
 
 CloneClass( WeaponTweakData )
 
-Hooks:RegisterHook("WeaponTweakDataInitNewWeapons")
-function WeaponTweakData._init_new_weapons(self, ...)
-	self.orig._init_new_weapons(self, arg)
-	Hooks:Call("WeaponTweakDataInitNewWeapons")
+Hooks:RegisterHook("WeaponTweakDataPostInitPlayerWeaponData")
+function WeaponTweakData._init_data_player_weapons(self, tweak_data)
+	self.orig._init_data_player_weapons(self, tweak_data)
+	Hooks:Call("WeaponTweakDataPostInitPlayerWeaponData", self, tweak_data)
 end

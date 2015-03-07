@@ -4,7 +4,7 @@ if not _G.GoonBase then
 	_G.GoonBase = {}
 
 	GoonBase.Version = 100
-	GoonBase.GameVersion = "1.26.0"
+	GoonBase.GameVersion = "1.27.0"
 	GoonBase.SupportedVersion = true
 
 	GoonBase.Path = ""
@@ -71,11 +71,7 @@ GoonBase.HookFiles = {
 	["lib/managers/menu/menuscenemanager"] = "MenuSceneManager.lua",
 	["lib/units/enemies/cop/actions/full_body/copactionhurt"] = "CopActionHurt.lua",
 	["lib/units/equipment/ecm_jammer/ecmjammerbase"] = "ECMJammerBase.lua",
-
-	-- ["lib/units/maskext"] = "MaskExt.lua",
-	-- ["lib/units/beings/player/playerinventory"] = "PlayerInventory.lua",
-	-- ["lib/network/networkgame"] = "NetworkGame.lua",
-	-- ["lib/setups/setup"] = "Setup.lua",
+	["lib/tweak_data/weapontweakdata"] = "WeaponTweakData.lua",
 
 }
 
