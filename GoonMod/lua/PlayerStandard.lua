@@ -36,3 +36,9 @@ function PlayerStandard._check_action_throw_grenade(self, t, input)
 	end
 	return self.orig._check_action_throw_grenade(self, t, input)
 end
+
+Hooks:RegisterHook("PlayerStandardOnUpdate")
+function PlayerStandard.update(self, t, dt)
+	self.orig.update(self, t, dt)
+	Hooks:Call("PlayerStandardOnUpdate", self, t, dt)
+end
