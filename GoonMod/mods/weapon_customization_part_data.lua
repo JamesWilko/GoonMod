@@ -18,7 +18,8 @@ function WeaponCustomization:GetLocalizedPartName( part_name, part )
 	if WeaponCustomization.MissingPartLocalizations[ part.name_id ] then
 		return WeaponCustomization.MissingPartLocalizations[ part.name_id ]
 	end
-	return (part.name_id and managers.localization:text( part.name_id ) or part_name)
+	local generic_name = part.name_id and managers.localization:text( part.name_id ) or part_name
+	return WeaponCustomization:GetGenericPartName( generic_name )
 end
 
 local standard_barrel = "Standard Barrel"
@@ -37,6 +38,37 @@ local vertical_grip = "Vertical Grip"
 local gadget_adapter = "Gadget Adapter"
 local optic_adapter = "Optic Adapter"
 local stock_adapter = "Stock Adapter"
+
+WeaponCustomization.GenericLookups = {
+	{ lookup = "_b_", generic = standard_barrel },
+	{ lookup = "_m_", generic = standard_magazine },
+	{ lookup = "_g_", generic = standard_grip },
+	{ lookup = "_fg_", generic = standard_foregrip },
+	{ lookup = "_body", generic = standard_body },
+	{ lookup = "_stock", generic = standard_stock },
+	{ lookup = "_s_", generic = standard_stock },
+	{ lookup = "_sl", generic = standard_slide },
+	{ lookup = "_rail", generic = standard_rail },
+	{ lookup = "_o_", generic = standard_sights },
+	{ lookup = "_ns_", generic = standard_compensator },
+	{ lookup = "_upper", generic = upper_receiver },
+	{ lookup = "_lower", generic = lower_receiver },
+	{ lookup = "_fl_adapter", generic = gadget_adapter },
+	{ lookup = "_o_adapter", generic = optic_adapter },
+	{ lookup = "_s_adapter", generic = stock_adapter },
+	{ lookup = "_b", generic = standard_barrel },
+	{ lookup = "_m", generic = standard_magazine },
+	{ lookup = "_g", generic = standard_grip },
+}
+
+function WeaponCustomization:GetGenericPartName( part_name )
+	for k, v in ipairs( WeaponCustomization.GenericLookups ) do
+		if string.find(part_name, v.lookup) then
+			return v.generic
+		end
+	end
+	return part_name
+end
 
 WeaponCustomization.MissingPartLocalizations = {
 
@@ -369,6 +401,16 @@ WeaponCustomization.MissingPartLocalizations = {
 	["bm_wp_vhs_ns_vhs"] = standard_foregrip,
 
 	["wpn_fps_shot_shorty_m_extended_short"] = "Extended Magazine",
+
+	["bm_wp_m134_body"] = standard_body,
+	["bm_wp_m134_body_upper"] = "Upper Body",
+	["bm_wp_m134_m_standard"] = "Magazine Belt",
+	["bm_wp_m134_barrel"] = "Barrels",
+
+	["bm_wp_rpg7_m_rocket"] = "Rocket",
+	["bm_wp_rpg7_body"] = standard_body,
+	["bm_wp_rpg7_barrel"] = standard_barrel,
+	["bm_wp_rpg7_sight"] = standard_sights,
 
 	["bm_wp_upg_vg_ass_smg_afg"] = "AFG",
 	["bm_wp_upg_vg_ass_smg_stubby"] = "Stubby",
