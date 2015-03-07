@@ -364,6 +364,16 @@ WeaponCustomization.MissingPartLocalizations = {
 
 	["wpn_fps_shot_shorty_m_extended_short"] = "Extended Magazine",
 
+	["bm_wp_m134_body"] = standard_body,
+	["bm_wp_m134_body_upper"] = "Upper Body",
+	["bm_wp_m134_m_standard"] = "Magazine Belt",
+	["bm_wp_m134_barrel"] = "Barrels",
+
+	["bm_wp_rpg7_m_rocket"] = "Rocket",
+	["bm_wp_rpg7_body"] = standard_body,
+	["bm_wp_rpg7_barrel"] = standard_barrel,
+	["bm_wp_rpg7_sight"] = standard_sights,
+
 	["bm_wp_upg_vg_ass_smg_afg"] = "AFG",
 	["bm_wp_upg_vg_ass_smg_stubby"] = "Stubby",
 	["wpn_fps_upg_fl_ass_peq15_flashlight"] = "Flashlight",
