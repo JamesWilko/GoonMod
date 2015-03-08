@@ -72,6 +72,9 @@ GoonBase.HookFiles = {
 	["lib/units/enemies/cop/actions/full_body/copactionhurt"] = "CopActionHurt.lua",
 	["lib/units/equipment/ecm_jammer/ecmjammerbase"] = "ECMJammerBase.lua",
 	["lib/tweak_data/weapontweakdata"] = "WeaponTweakData.lua",
+	["lib/units/beings/player/playerinventory"] = "PlayerInventory.lua",
+	["lib/tweak_data/skilltreetweakdata"] = "SkillTreeTweakData.lua",
+	-- ["lib/managers/gameplaycentralmanager"] = "GameplayCentralManager.lua",
 
 }
 
