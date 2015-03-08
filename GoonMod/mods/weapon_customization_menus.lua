@@ -181,10 +181,9 @@ function WeaponCustomization.weapon_visual_customization_callback(self, data)
 		managers.blackmarket:view_weapon( data.category, data.slot, callback(self, self, "_open_weapon_customization_preview_node", {new_node_data}) )
 	end
 	if data.category == "melee_weapons" then
-		-- Melee weapons don't work properly yet, so don't uncomment this unless you want to fix it yourself
-		-- managers.menu:open_node(self._preview_node_name, {})
-		-- managers.blackmarket:preview_melee_weapon(data.name)
-		-- self:_open_weapon_customization_preview_node( {new_node_data} )
+		managers.menu:open_node(self._preview_node_name, {})
+		managers.blackmarket:preview_melee_weapon(data.name)
+		self:_open_weapon_customization_preview_node( {new_node_data} )
 	end
 
 end
@@ -196,9 +195,9 @@ function WeaponCustomization._open_weapon_customization_preview_node(self, data)
 
 	local category = data[1].weapon_slot_data.category
 	local slot = data[1].weapon_slot_data.slot
-	local weapon = managers.blackmarket._global.crafted_items[category][slot]
-
-	WeaponCustomization:CreateCustomizablePartsList( weapon )
+	local weapon = WeaponCustomization:GetWeaponTableFromInventory( data[1].weapon_slot_data )
+	
+	WeaponCustomization:CreateCustomizablePartsList( weapon, category == "melee_weapons" )
 	managers.blackmarket._selected_weapon_parts = clone( WeaponCustomization._default_part_visual_blueprint )
 
 	WeaponCustomization._controller_index = {
@@ -207,7 +206,7 @@ function WeaponCustomization._open_weapon_customization_preview_node(self, data)
 	}
 
 	managers.menu:open_node("blackmarket_mask_node", data)
-	WeaponCustomization:LoadCurrentWeaponCustomization( category, slot )
+	WeaponCustomization:LoadCurrentWeaponCustomization( managers.blackmarket._customizing_weapon_data )
 
 	WeaponCustomization:Temp_CheckOverridesInstalled()
 
@@ -253,11 +252,11 @@ Hooks:Add("BlackMarketGUIOnPopulateWeaponActionList", "BlackMarketGUIOnPopulateW
 	end
 end)
 
--- Hooks:Add("BlackMarketGUIOnPopulateMeleeWeaponActionList", "BlackMarketGUIOnPopulateMeleeWeaponActionList_WeaponCustomization", function(gui, data)
--- 	if data.unlocked then
--- 		table.insert(data, "w_visual_customize")
--- 	end
--- end)
+Hooks:Add("BlackMarketGUIOnPopulateMeleeWeaponActionList", "BlackMarketGUIOnPopulateMeleeWeaponActionList_WeaponCustomization", function(gui, data)
+	if data.unlocked then
+		table.insert(data, "w_visual_customize")
+	end
+end)
 
 Hooks:Add("BlackMarketGUIOnPopulateWeapons", "BlackMarketGUIOnPopulateWeapons_WeaponCustomization", function(gui, category, data)
 	if managers.blackmarket._customizing_weapon then
@@ -330,72 +329,76 @@ Hooks:Add("BlackMarketGUIUpdateInfoText", "BlackMarketGUIUpdateInfoText_WeaponCu
 			local weapon_data = managers.blackmarket._customizing_weapon_data
 			local category = weapon_data.category
 			local slot = weapon_data.slot
-			local weapon = managers.blackmarket._global.crafted_items[category][slot]
+			local weapon = WeaponCustomization:GetWeaponTableFromInventory( weapon_data )
 
-			updated_texts[2].text = managers.localization:to_upper_text("wc_modifying_parts") .. "\n"
-			updated_texts[3].text = managers.localization:to_upper_text("wc_not_modifying_parts") .. "\n"
+			if not WeaponCustomization:_IsCustomizingMeleeWeapon() then
 
-			if WeaponCustomization:IsUsingController() then
-				updated_texts[2].text = BTN_LT .. " " .. updated_texts[2].text
-				updated_texts[3].text = BTN_RT .. " " .. updated_texts[3].text
-			end
+				updated_texts[2].text = managers.localization:to_upper_text("wc_modifying_parts") .. "\n"
+				updated_texts[3].text = managers.localization:to_upper_text("wc_not_modifying_parts") .. "\n"
 
-			local num_modifying = 0
-			local num_not_modifying = 0
-			for k, v in pairs( blackmarket._customizing_weapon_parts ) do
-				if v and v.modifying then
-					num_modifying = num_modifying + 1
-				else
-					num_not_modifying = num_not_modifying + 1
+				if WeaponCustomization:IsUsingController() then
+					updated_texts[2].text = BTN_LT .. " " .. updated_texts[2].text
+					updated_texts[3].text = BTN_RT .. " " .. updated_texts[3].text
 				end
-			end
 
-			local modifying_lines = 0
-			local not_modifying_lines = 0
-			for k, v in pairs( blackmarket._customizing_weapon_parts ) do
+				local num_modifying = 0
+				local num_not_modifying = 0
+				for k, v in pairs( blackmarket._customizing_weapon_parts ) do
+					if v and v.modifying then
+						num_modifying = num_modifying + 1
+					else
+						num_not_modifying = num_not_modifying + 1
+					end
+				end
 
-				if v.id then
-					local part = tweak_data.weapon.factory.parts[v.id]
-					if part then
+				local modifying_lines = 0
+				local not_modifying_lines = 0
+				for k, v in pairs( blackmarket._customizing_weapon_parts ) do
 
-						local part_name = WeaponCustomization:_GetLocalizedPartName(v.id, part)
-						local modifying = (v and v.modifying or false)
-						local part_index = modifying and 2 or 3
+					if v.id then
+						local part = tweak_data.weapon.factory.parts[v.id]
+						if part then
 
-						if WeaponCustomization:IsUsingController() then
+							local part_name = WeaponCustomization:_GetLocalizedPartName(v.id, part)
+							local modifying = (v and v.modifying or false)
+							local part_index = modifying and 2 or 3
 
-							if v and v.modifying then
-								modifying_lines = modifying_lines + 1
-							else
-								not_modifying_lines = not_modifying_lines + 1
-							end
+							if WeaponCustomization:IsUsingController() then
 
-							-- Clamp values
-							if WeaponCustomization._controller_index.modifying > num_modifying then
-								WeaponCustomization._controller_index.modifying = 1
-							end
-							if WeaponCustomization._controller_index.not_modifying > num_not_modifying then
-								WeaponCustomization._controller_index.not_modifying = 1
-							end
-
-							-- Place markers on appropriate lines
-							local ind = WeaponCustomization:_GetIndexFromLine(modifying and modifying_lines or not_modifying_lines, modifying)
-							if modifying then
-								if WeaponCustomization._controller_index.modifying == modifying_lines then
-									part_name = BTN_X .. " " .. part_name
+								if v and v.modifying then
+									modifying_lines = modifying_lines + 1
+								else
+									not_modifying_lines = not_modifying_lines + 1
 								end
-							else
-								if WeaponCustomization._controller_index.not_modifying == not_modifying_lines then
-									part_name = BTN_Y .. " " .. part_name
+
+								-- Clamp values
+								if WeaponCustomization._controller_index.modifying > num_modifying then
+									WeaponCustomization._controller_index.modifying = 1
 								end
+								if WeaponCustomization._controller_index.not_modifying > num_not_modifying then
+									WeaponCustomization._controller_index.not_modifying = 1
+								end
+
+								-- Place markers on appropriate lines
+								local ind = WeaponCustomization:_GetIndexFromLine(modifying and modifying_lines or not_modifying_lines, modifying)
+								if modifying then
+									if WeaponCustomization._controller_index.modifying == modifying_lines then
+										part_name = BTN_X .. " " .. part_name
+									end
+								else
+									if WeaponCustomization._controller_index.not_modifying == not_modifying_lines then
+										part_name = BTN_Y .. " " .. part_name
+									end
+								end
+
 							end
+							part_name = "    " .. part_name .. "\n"
+
+							updated_texts[ part_index ].text = updated_texts[ part_index ].text .. part_name
 
 						end
-						part_name = "    " .. part_name .. "\n"
-
-						updated_texts[ part_index ].text = updated_texts[ part_index ].text .. part_name
-
 					end
+
 				end
 
 			end
@@ -414,10 +417,10 @@ Hooks:Add("BlackMarketGUIUpdateInfoText", "BlackMarketGUIUpdateInfoText_WeaponCu
 		end
 
 		-- Selected Mod
-		updated_texts[4].text = "\n"
+		updated_texts[4].text = WeaponCustomization:_IsCustomizingMeleeWeapon() and "" or "\n"
 		if slot_data then
 
-			updated_texts[4].text = "\n" .. managers.localization:to_upper_text("wc_highlighted_mod") .. "\n" .. slot_data.name_localized
+			updated_texts[4].text = updated_texts[4].text .. managers.localization:to_upper_text("wc_highlighted_mod") .. "\n" .. slot_data.name_localized
 
 			if not slot_data.unlocked or (type(slot_data.unlocked) == "number" and slot_data.unlocked <= 0) then
 				self._info_texts_color[5] = tweak_data.screen_colors.important_1
@@ -671,6 +674,18 @@ function WeaponCustomization:_GetIndexFromLine(line, modifying)
 
 	return nil
 
+end
+
+function WeaponCustomization:_IsCustomizingMeleeWeapon()
+	if managers.blackmarket._customizing_weapon_data then
+		local weapon_data = managers.blackmarket._customizing_weapon_data
+		local category = weapon_data.category
+		if category == "primaries" or category == "secondaries" then
+			return false
+		else
+			return true
+		end
+	end
 end
 
 -- Clear Weapon Function

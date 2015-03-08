@@ -121,16 +121,20 @@ Hooks:Add("BlackMarketGUIOnPreviewWeapon", "BlackMarketGUIOnPreviewWeapon_Weapon
 	end
 end)
 
-Hooks:Add("MenuSceneManagerSpawnedItemWeapon", "MenuSceneManagerSpawnedItemWeapon_" .. Mod:ID(), function(factory_id, blueprint, texture_switches, spawned_unit)
+Hooks:Add("MenuSceneManagerSpawnedItemWeapon", "MenuSceneManagerSpawnedItemWeapon_" .. Mod:ID(), function(menu, factory_id, blueprint, texture_switches, spawned_unit)
 
 	WeaponCustomization._menu_weapon_preview_unit = spawned_unit
 
 	if WeaponCustomization._is_previewing then
 		local data = WeaponCustomization._is_previewing["data"]
-		WeaponCustomization:LoadCurrentWeaponCustomization( data.category, data.slot )
+		WeaponCustomization:LoadCurrentWeaponCustomization( data )
 		WeaponCustomization._is_previewing = nil
 	end
 
+end)
+
+Hooks:Add("MenuSceneManagerSpawnedMeleeWeapon", "MenuSceneManagerSpawnedMeleeWeapon_" .. Mod:ID(), function(menu, melee_weapon_id, spawned_unit)
+	WeaponCustomization._menu_weapon_preview_unit = spawned_unit
 end)
 
 Hooks:Add("NewRaycastWeaponBasePostAssemblyComplete", "NewRaycastWeaponBasePostAssemblyComplete_WeaponCustomization", function(weapon, clbk, parts, blueprint)
@@ -196,10 +200,15 @@ function WeaponCustomization:AddCustomizablePart( part_id )
 	table.insert( managers.blackmarket._customizing_weapon_parts, tbl )
 end
 
-function WeaponCustomization:CreateCustomizablePartsList( weapon )
+function WeaponCustomization:CreateCustomizablePartsList( weapon, is_melee )
 
 	-- Clear weapon parts
 	managers.blackmarket._customizing_weapon_parts = {}
+
+	if is_melee then
+		return
+	end
+
 	local blueprint_parts = {}
 
 	-- Add blueprint parts
@@ -280,7 +289,7 @@ function WeaponCustomization:UpdateWeaponPartsWithMod( category, mod_id, parts_t
 		end
 
 		-- Get parts to modify
-		if not parts_table then
+		if not parts_table and managers.blackmarket._customizing_weapon_parts then
 			parts_table = {}
 			for k, v in ipairs( managers.blackmarket._customizing_weapon_parts ) do
 				if v.modifying then
@@ -290,16 +299,33 @@ function WeaponCustomization:UpdateWeaponPartsWithMod( category, mod_id, parts_t
 		end
 
 		-- Modify parts
-		for k, v in pairs( parts_table ) do
+		local weapon_name = managers.blackmarket._customizing_weapon_data.name
+		local weapon_category = managers.blackmarket._customizing_weapon_data.category
+		if parts_table and (weapon_category == "primaries" or weapon_category == "secondaries") then
 
-			-- Update category mod
-			if v[ category ] then
-				v[ category ] = mod_id
+			for k, v in pairs( parts_table ) do
+
+				-- Update category mod
+				if v[ category ] then
+					v[ category ] = mod_id
+				end
+
+				-- Update part visuals
+				local color_data = tweak_data.blackmarket.colors[ v["colors"] ]
+				WeaponCustomization:UpdateWeapon( v["materials"], v["textures"], color_data.colors[1], color_data.colors[2], { [v.id] = true } )
+
 			end
 
-			-- Update part visuals
-			local color_data = tweak_data.blackmarket.colors[ v["colors"] ]
-			WeaponCustomization:UpdateWeapon( v["materials"], v["textures"], color_data.colors[1], color_data.colors[2], { [v.id] = true } )
+		else
+
+			local wep = managers.blackmarket._global.melee_weapons[weapon_name]
+			if wep.visual_blueprint then
+
+				local vis_parts = managers.blackmarket._selected_weapon_parts 
+				local color_data = tweak_data.blackmarket.colors[ vis_parts["colors"] ]
+				WeaponCustomization:UpdateWeapon( vis_parts["materials"], vis_parts["textures"], color_data.colors[1], color_data.colors[2], { ["melee"] = true } )
+
+			end
 
 		end
 
@@ -347,7 +373,11 @@ function WeaponCustomization:UpdateWeapon( material_id, pattern_id, tint_color_a
 			weapon_base = managers.player:local_player():inventory():equipped_unit():base()
 		end
 		if self._menu_weapon_preview_unit and alive( self._menu_weapon_preview_unit ) then
-			weapon_base = self._menu_weapon_preview_unit:base()
+			weapon_base = self._menu_weapon_preview_unit.base and self._menu_weapon_preview_unit:base() or self._menu_weapon_preview_unit
+		end
+
+		if self._menu_weapon_preview_unit then
+			SaveTable( self._menu_weapon_preview_unit.__index, "_menu_weapon_preview_unit.txt" )
 		end
 
 	end
@@ -376,17 +406,30 @@ function WeaponCustomization:UpdateWeapon( material_id, pattern_id, tint_color_a
 	self._textures = {}
 
 	-- Find materials
-	for k, v in pairs( weapon_base._parts ) do
-		if v.unit and ( (parts_table and parts_table[k]) or not parts_table ) then
-			
-			local materials = v.unit:get_objects_by_type(Idstring("material"))
-			for _, m in ipairs(materials) do
-				if m:variable_exists(Idstring("tint_color_a")) then
-					table.insert(self._materials, m)
-				end
-			end
+	if type(weapon_base._parts) == "table" then
 
+		for k, v in pairs( weapon_base._parts ) do
+			if v.unit and ( (parts_table and parts_table[k]) or not parts_table ) then
+				
+				local materials = v.unit:get_objects_by_type(Idstring("material"))
+				for _, m in ipairs(materials) do
+					if m:variable_exists(Idstring("tint_color_a")) then
+						table.insert(self._materials, m)
+					end
+				end
+
+			end
 		end
+
+	else
+
+		local materials = weapon_base:get_objects_by_type(Idstring("material"))
+		for _, m in ipairs(materials) do
+			if m:variable_exists(Idstring("tint_color_a")) then
+				table.insert(self._materials, m)
+			end
+		end
+
 	end
 
 	-- Material
@@ -466,9 +509,10 @@ function WeaponCustomization:SaveCurrentWeaponCustomization()
 	end
 
 	-- Get weapon
-	local weapon_category = managers.blackmarket._customizing_weapon_data.category
-	local weapon_slot = managers.blackmarket._customizing_weapon_data.slot
-	local weapon = managers.blackmarket._global.crafted_items[weapon_category][weapon_slot]
+	local data = managers.blackmarket._customizing_weapon_data
+	local weapon_category = data.category
+	local weapon_slot = data.slot
+	local weapon = WeaponCustomization:GetWeaponTableFromInventory( data )
 
 	if not weapon then
 		Print("[Error] Could not save weapon customization, no weapon found in category '", weapon_category, "' slot '", weapon_slot, "'")
@@ -510,15 +554,19 @@ function WeaponCustomization:SaveCurrentWeaponCustomization()
 
 end
 
-function WeaponCustomization:LoadCurrentWeaponCustomization( category, slot )
+function WeaponCustomization:LoadCurrentWeaponCustomization( data )
+
+	data = data or managers.blackmarket._customizing_weapon_data
 
 	-- Get weapon
-	local weapon_category = category or managers.blackmarket._customizing_weapon_data.category
-	local weapon_slot = slot or managers.blackmarket._customizing_weapon_data.slot
+	local weapon_name = data.name 
+	local weapon_category = data.category
+	local weapon_slot = data.slot
 	if not weapon_category or not weapon_slot then
 		Print("[Error] Could not load weapon customization, could not find category or slot")
+		return
 	end
-	local weapon = managers.blackmarket._global.crafted_items[weapon_category][weapon_slot]
+	local weapon = WeaponCustomization:GetWeaponTableFromInventory( data )
 
 	if not weapon then
 		Print("[Error] Could not load weapon customization, no weapon found in category '", weapon_category, "' slot '", weapon_slot, "'")
@@ -527,11 +575,17 @@ function WeaponCustomization:LoadCurrentWeaponCustomization( category, slot )
 
 	-- Create default blueprint if it doesn't exist
 	if not weapon.visual_blueprint then
+
 		weapon.visual_blueprint = {}
-		local weapon = managers.blackmarket._global.crafted_items[category][slot]
-		for k, v in pairs( weapon.blueprint ) do
-			weapon.visual_blueprint[v] = clone( WeaponCustomization._default_part_visual_blueprint )
+
+		if weapon.blueprint then
+			for k, v in pairs( weapon.blueprint ) do
+				weapon.visual_blueprint[v] = clone( WeaponCustomization._default_part_visual_blueprint )
+			end
+		else
+			weapon.visual_blueprint["melee"] = clone( WeaponCustomization._default_part_visual_blueprint )
 		end
+
 	end
 
 	-- Load and apply blueprint
@@ -539,10 +593,21 @@ function WeaponCustomization:LoadCurrentWeaponCustomization( category, slot )
 
 end
 
+
+function WeaponCustomization:GetWeaponTableFromInventory( data )
+	local category = data.category
+	if category == "primaries" or category == "secondaries" then
+		return managers.blackmarket._global.crafted_items[category][data.slot]
+	end
+	if category == "melee_weapons" then
+		return managers.blackmarket._global.melee_weapons[data.name]
+	end
+	return nil
+end
+
 function WeaponCustomization:LoadWeaponCustomizationFromBlueprint( blueprint, unit_override )
 
 	if not blueprint then
-		blueprint = clone( WeaponCustomization._default_part_visual_blueprint )
 		Print("[Warning] Could not load weapon customization, no visual blueprint specified")
 		return
 	end
@@ -554,7 +619,7 @@ function WeaponCustomization:LoadWeaponCustomizationFromBlueprint( blueprint, un
 		local blackmarket_color = v["colors"]
 		local color = tweak_data.blackmarket.colors[ blackmarket_color ]
 
-		self:UpdateWeapon( material, pattern, color.colors[1], color.colors[2], { [k] = true }, unit_override )
+		self:UpdateWeapon( material, pattern, color.colors[1], color.colors[2], k and { [k] = true } or nil, unit_override )
 
 	end
 
@@ -609,6 +674,13 @@ function WeaponCustomization.ClearDataFromSave()
 
 	-- Erase secondary weapons
 	for k, v in pairs( managers.blackmarket._global.crafted_items["secondaries"] ) do
+		if v.visual_blueprint then
+			v.visual_blueprint = nil
+		end
+	end
+
+	-- Erase melee weapons
+	for k, v in pairs( managers.blackmarket._global["melee_weapons"] ) do
 		if v.visual_blueprint then
 			v.visual_blueprint = nil
 		end
