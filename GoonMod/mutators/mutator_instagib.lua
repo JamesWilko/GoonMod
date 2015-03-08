@@ -2,8 +2,9 @@
 local Mutator = class(BaseMutator)
 Mutator.Id = "Instagib"
 Mutator.OptionsName = "Instagib"
-Mutator.OptionsDesc = "All weapon damage is amplified to lethal levels"
+Mutator.OptionsDesc = "All weapon damage is amplified to lethal levels."
 Mutator.AllPlayersRequireMod = true
+BaseMutator.IsAllowedInRandomizer = false
 
 Mutator._RWChkID = "NewRaycastWeaponBase_" .. Mutator.Id
 Mutator._RWChkIDPost = "NewRaycastWeaponBase_PostHook_" .. Mutator.Id

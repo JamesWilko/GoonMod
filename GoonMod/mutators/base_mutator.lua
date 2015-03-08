@@ -10,6 +10,7 @@ BaseMutator.MenuPrefix = "toggle_mutator_"
 BaseMutator.MenuSuffix = ""
 BaseMutator.HideInOptionsMenu = false
 BaseMutator.AllPlayersRequireMod = false
+BaseMutator.IsAllowedInRandomizer = true
 BaseMutator.Incompatibilities = {}
 
 BaseMutator._AllPlayersRequirementText = "\nWarning: All players must have GoonMod and Mutators installed for this mutator to work properly!"
@@ -39,13 +40,9 @@ function BaseMutator:SetupLocalization()
 		self.OptionsDesc = self.OptionsDesc .. self._AllPlayersRequirementText
 	end
 
-	if managers.localization then
-		managers.localization:add_localized_strings({
-			[ self:GetName() ] = self.OptionsName,
-			[ self:GetDesc() ] = self.OptionsDesc,
-			[ self:GetOriginalDesc() ] = self.OptionsDescOrig,
-		})
-	end
+	Mutators:RegisterLocalization( self:GetName(), self.OptionsName )
+	Mutators:RegisterLocalization( self:GetDesc(), self.OptionsDesc )
+	Mutators:RegisterLocalization( self:GetOriginalDesc(), self.OptionsDescOrig )
 
 end
 
