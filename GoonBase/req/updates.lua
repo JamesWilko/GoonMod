@@ -12,7 +12,7 @@ end
 
 -- Update
 Updates.HasCheckedForUpdates = false
-Updates.BasePath = "https://raw.githubusercontent.com/JamesWilko/GoonMod/master/"
+Updates.BasePath = "https://raw.githubusercontent.com/JamesWilko/GoonMod/legacy/"
 Updates.BasePathToken = ""
 Updates.Version = "update_version.txt"
 Updates.FileList = "update_list.txt"
