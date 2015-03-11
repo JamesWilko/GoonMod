@@ -5,8 +5,8 @@
 
 if not _G.GoonBase then
 	_G.GoonBase = {}
-	GoonBase.Version = 30
-	GoonBase.GameVersion = "1.27.0"
+	GoonBase.Version = 31
+	GoonBase.GameVersion = "1.28.0"
 	GoonBase.LogFile = "GoonBase.log"
 	GoonBase.Path = "GoonBase/"
 	GoonBase.LuaPath = "GoonBase/lua/"

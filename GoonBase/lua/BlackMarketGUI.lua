@@ -1357,7 +1357,7 @@ function BlackMarketGui._start_page_data(self)
 			name = "bm_menu_characters",
 			category = "characters",
 			on_create_func_name = "populate_characters",
-			override_slots = {4, 2},
+			override_slots = {3, 3},
 			identifier = self.identifiers.character
 		})
 	end

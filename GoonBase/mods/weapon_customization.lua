@@ -203,7 +203,7 @@ Hooks:Add("BlackMarketGUIOnPopulateMaskMods", "BlackMarketGUIOnPopulateMaskMods_
 		table.remove( data.on_create_data, no_material_index )
 	end
 
-	if data.category == "materials" then
+	if managers.blackmarket._customizing_weapon and data.category == "materials" then
 
 		local clear_material = deep_clone( data.on_create_data[1] )
 		clear_material.id = "no_material"
