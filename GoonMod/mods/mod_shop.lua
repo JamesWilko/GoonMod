@@ -183,7 +183,7 @@ function ModShop:IsMaskOrModAllowed(mod, allowance_list)
 		end
 	end
 
-	local infamy_lock = mod.infamy_lock
+	local infamy_lock = tweak_data.blackmarket[mod.category][mod.name].infamy_lock
 	if infamy_lock ~= nil or gv == "infamy" then
 		local is_unlocked = managers.infamy:owned(infamy_lock) or infamy_lock == nil
 		if not is_unlocked then
@@ -221,7 +221,7 @@ Hooks:Add("BlackMarketManagerModifyGetInventoryCategory", "BlackMarketManagerMod
 				gv = "infamous"
 			end
 
-			if gv == "normal" or gv == "infamous" or ( (gv ~= "normal" and managers.dlc:is_dlc_unlocked(gv)) or ModShop.DLCAlwaysUnlocked[gv] == true ) then
+			if gv == "normal" or gv == "infamous" or gv == "infamy" or ( (gv ~= "normal" and managers.dlc:is_dlc_unlocked(gv)) or ModShop.DLCAlwaysUnlocked[gv] == true ) then
 				table.insert(data, {
 					id = k,
 					global_value = gv,
