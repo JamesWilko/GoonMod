@@ -14,6 +14,6 @@ end
 Hooks:RegisterHook("EnemyManagerInitEnemyData")
 function EnemyManager._init_enemy_data(self)
 	self.orig._init_enemy_data(self)
-	Hooks:Call("EnemyManagerInitEnemyData", self)
+    Hooks:Call("EnemyManagerInitEnemyData", self)
 end
 -- END OF FILE

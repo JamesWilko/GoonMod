@@ -16,4 +16,10 @@ function BaseInteractionExt.set_contour(self, color, opacity)
 	end
 	self.orig.set_contour(self, color, opacity)
 end
+
+Hooks:RegisterHook("BaseInteractionExtPostStart")
+function BaseInteractionExt.interact(self, player)
+   self.orig.interact(self, player)
+   Hooks:Call("BaseInteractionExtPostStart", self, player)
+end
 -- END OF FILE
