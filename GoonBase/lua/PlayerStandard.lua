@@ -31,4 +31,13 @@ function PlayerStandard._changing_weapon(self)
 	Hooks:Call("PlayerStandardChangingWeapon", self)
 	return self.orig._changing_weapon(self)
 end
+
+Hooks:RegisterHook("PlayerStandardCheckActionThrowGrenade")
+function PlayerStandard._check_action_throw_grenade(self, t, input)
+	local r = Hooks:ReturnCall("PlayerStandardCheckActionThrowGrenade", self, t, input)
+	if r ~= nil then
+		return r
+	end
+	return self.orig._check_action_throw_grenade(self, t, input)
+end
 -- END OF FILE

@@ -49,6 +49,7 @@ GoonBase.ModFiles = {
 	"mods/weapon_customization_part_data.lua",
 	"mods/weapon_remember_gadget.lua",
 	"mods/zoom_sensitivity.lua",
+	"mods/grenade_restriction.lua",
 }
 
 GoonBase.RequireHookFiles = {
