@@ -181,9 +181,9 @@ function WeaponCustomization.weapon_visual_customization_callback(self, data)
 		managers.blackmarket:view_weapon( data.category, data.slot, callback(self, self, "_open_weapon_customization_preview_node", {new_node_data}) )
 	end
 	if data.category == "melee_weapons" then
+		managers.blackmarket._customizing_weapon_data = new_node_data
 		managers.menu:open_node(self._preview_node_name, {})
 		managers.blackmarket:preview_melee_weapon(data.name)
-		self:_open_weapon_customization_preview_node( {new_node_data} )
 	end
 
 end
@@ -191,11 +191,17 @@ end
 function WeaponCustomization._open_weapon_customization_preview_node(self, data)
 
 	managers.blackmarket._customizing_weapon = true
-	managers.blackmarket._customizing_weapon_data = data[1].weapon_slot_data
+	if data then
+		managers.blackmarket._customizing_weapon_data = data[1].weapon_slot_data
+	else
+		data = { managers.blackmarket._customizing_weapon_data }
+		managers.blackmarket._customizing_weapon_data = managers.blackmarket._customizing_weapon_data.weapon_slot_data
+	end
 
-	local category = data[1].weapon_slot_data.category
-	local slot = data[1].weapon_slot_data.slot
-	local weapon = WeaponCustomization:GetWeaponTableFromInventory( data[1].weapon_slot_data )
+	local weapon_data = managers.blackmarket._customizing_weapon_data
+	local category = weapon_data.category
+	local slot = weapon_data.slot
+	local weapon = WeaponCustomization:GetWeaponTableFromInventory( weapon_data )
 	
 	WeaponCustomization:CreateCustomizablePartsList( weapon, category == "melee_weapons" )
 	managers.blackmarket._selected_weapon_parts = clone( WeaponCustomization._default_part_visual_blueprint )
@@ -206,9 +212,9 @@ function WeaponCustomization._open_weapon_customization_preview_node(self, data)
 	}
 
 	managers.menu:open_node("blackmarket_mask_node", data)
-	WeaponCustomization:LoadCurrentWeaponCustomization( managers.blackmarket._customizing_weapon_data )
+	WeaponCustomization:LoadCurrentWeaponCustomization( weapon_data )
 
-	WeaponCustomization:Temp_CheckOverridesInstalled()
+	-- WeaponCustomization:Temp_CheckOverridesInstalled()
 
 end
 
@@ -744,17 +750,18 @@ function WeaponCustomization.AdvancedClearWeaponAccept()
 	if managers.blackmarket._customizing_weapon_data then
 
 		local category = managers.blackmarket._customizing_weapon_data.category
-		local slot = managers.blackmarket._customizing_weapon_data.slot
-		local weapon = managers.blackmarket._global.crafted_items[category][slot]
+		local weapon = WeaponCustomization:GetWeaponTableFromInventory( managers.blackmarket._customizing_weapon_data )
 
 		-- Rebuild weapon parts list
-		WeaponCustomization:CreateCustomizablePartsList( weapon )
+		if category ~= "melee_weapons" then
+			WeaponCustomization:CreateCustomizablePartsList( weapon )
+		end
 
 		-- Clear selected parts
 		managers.blackmarket._selected_weapon_parts = clone( WeaponCustomization._default_part_visual_blueprint )
 
 		-- Save
-		WeaponCustomization:UpdateWeaponPartsWithMod( nil, nil, managers.blackmarket._customizing_weapon_parts, true )
+		WeaponCustomization:UpdateWeaponPartsWithMod( nil, nil, managers.blackmarket._customizing_weapon_parts, category ~= "melee_weapons" )
 
 		-- Clear data on slot
 		if weapon.visual_blueprint then

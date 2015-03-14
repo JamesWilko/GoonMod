@@ -20,6 +20,7 @@ GoonBase.WeaponCustomization = GoonBase.WeaponCustomization or {}
 local WeaponCustomization = GoonBase.WeaponCustomization
 WeaponCustomization.MenuId = "goonbase_weapon_customization_menu"
 WeaponCustomization._update_queue = {}
+WeaponCustomization._melee_save_path = SavePath .. "goonmod_weapon_customization_melee.txt"
 
 WeaponCustomization._default_part_visual_blueprint =  {
 	["materials"] = "no_material",
@@ -135,6 +136,7 @@ end)
 
 Hooks:Add("MenuSceneManagerSpawnedMeleeWeapon", "MenuSceneManagerSpawnedMeleeWeapon_" .. Mod:ID(), function(menu, melee_weapon_id, spawned_unit)
 	WeaponCustomization._menu_weapon_preview_unit = spawned_unit
+	WeaponCustomization:_open_weapon_customization_preview_node()
 end)
 
 Hooks:Add("NewRaycastWeaponBasePostAssemblyComplete", "NewRaycastWeaponBasePostAssemblyComplete_WeaponCustomization", function(weapon, clbk, parts, blueprint)
@@ -151,6 +153,16 @@ Hooks:Add("PlayerStandardStartMaskUp", "PlayerStandardStartMaskUp_WeaponCustomiz
 	if managers.player:local_player() then
 		WeaponCustomization:LoadEquippedWeaponCustomizations( managers.player:local_player():inventory():equipped_unit():base() )
 	end
+end)
+
+Hooks:Add("FPCameraPlayerBaseOnSpawnMeleeItem", "FPCameraPlayerBaseOnSpawnMeleeItem_WeaponCustomization", function(camera, melee_units)
+
+	if melee_units then
+		for k, v in pairs( melee_units ) do
+			WeaponCustomization:LoadEquippedWeaponCustomizations( v, true )
+		end
+	end
+
 end)
 
 Hooks:Add("BlackMarketGUIOnPopulateMaskMods", "BlackMarketGUIOnPopulateMaskMods_WeaponCustomization", function(gui, data)
@@ -366,7 +378,8 @@ function WeaponCustomization:UpdateWeapon( material_id, pattern_id, tint_color_a
 	end
 
 	-- Find weapon
-	local weapon_base = unit_override and unit_override:base() or nil
+	local weapon_base = unit_override or nil
+
 	if not weapon_base then
 
 		if managers.player:local_player() then
@@ -374,10 +387,6 @@ function WeaponCustomization:UpdateWeapon( material_id, pattern_id, tint_color_a
 		end
 		if self._menu_weapon_preview_unit and alive( self._menu_weapon_preview_unit ) then
 			weapon_base = self._menu_weapon_preview_unit.base and self._menu_weapon_preview_unit:base() or self._menu_weapon_preview_unit
-		end
-
-		if self._menu_weapon_preview_unit then
-			SaveTable( self._menu_weapon_preview_unit.__index, "_menu_weapon_preview_unit.txt" )
 		end
 
 	end
@@ -521,10 +530,7 @@ function WeaponCustomization:SaveCurrentWeaponCustomization()
 
 	-- Setup weapon visual customization save
 	if not weapon.visual_blueprint then
-		weapon.visual_blueprint = {}
-		for k, v in ipairs( weapon.blueprint ) do
-			weapon.visual_blueprint[v] = clone( WeaponCustomization._default_part_visual_blueprint )
-		end
+		WeaponCustomization:BuildDefaultVisualBlueprint( weapon )
 	end
 
 	-- Get modified parts
@@ -533,6 +539,9 @@ function WeaponCustomization:SaveCurrentWeaponCustomization()
 		if v.modifying then
 			parts[v.id] = true
 		end
+	end
+	if weapon_category == "melee_weapons" then
+		parts["melee"] = true
 	end
 
 	-- Update visual customization
@@ -550,6 +559,57 @@ function WeaponCustomization:SaveCurrentWeaponCustomization()
 		weapon.visual_blueprint[k]["textures"] = tex
 		weapon.visual_blueprint[k]["colors"] = col
 
+	end
+
+	if weapon_category == "primaries" or weapon_category == "secondaries" then
+		managers.blackmarket._global.crafted_items[weapon_category][weapon_slot] = weapon
+	end
+	if weapon_category == "melee_weapons" then
+		managers.blackmarket._global.melee_weapons[data.name] = weapon
+		self:SaveMeleeWeaponCustomization()
+	end
+
+end
+
+function WeaponCustomization:LoadMeleeWeaponCustomization()
+
+	local file = io.open( WeaponCustomization._melee_save_path, "r" )
+	if file then
+
+		local data = file:read("*all")
+		file:close()
+
+		data = json.decode( data )
+		for k, v in pairs( data ) do
+			if not managers.blackmarket._global.melee_weapons[k].visual_blueprint then
+				managers.blackmarket._global.melee_weapons[k].visual_blueprint = v
+			end
+		end
+		
+	end
+
+end
+
+function WeaponCustomization:SaveMeleeWeaponCustomization()
+
+	-- Load all customizations before saving
+	self:LoadMeleeWeaponCustomization()
+
+	local file = io.open( WeaponCustomization._melee_save_path, "w+" )
+	if file then
+
+		local tbl = {}
+		for k, v in pairs( managers.blackmarket._global.melee_weapons ) do
+			if v.visual_blueprint then
+				tbl[k] = v.visual_blueprint
+			end
+		end
+
+		file:write( json.encode(tbl) )
+		file:close()
+
+	else
+		Print("[Error] Could not save melee weapon visual customizations...")
 	end
 
 end
@@ -573,11 +633,32 @@ function WeaponCustomization:LoadCurrentWeaponCustomization( data )
 		return
 	end
 
-	-- Create default blueprint if it doesn't exist
+	-- Attempt to load melee weapon blueprints, if it still doesn't exist then build the default one
+	if not weapon.visual_blueprint then
+
+		if weapon_category == "melee_weapons" then
+
+			self:LoadMeleeWeaponCustomization()
+			if not weapon.visual_blueprint then
+				WeaponCustomization:BuildDefaultVisualBlueprint( weapon )
+			end
+
+		else
+			WeaponCustomization:BuildDefaultVisualBlueprint( weapon )
+		end
+
+	end
+
+	-- Load and apply blueprint
+	WeaponCustomization:LoadWeaponCustomizationFromBlueprint( weapon.visual_blueprint )
+
+end
+
+function WeaponCustomization:BuildDefaultVisualBlueprint( weapon )
+
 	if not weapon.visual_blueprint then
 
 		weapon.visual_blueprint = {}
-
 		if weapon.blueprint then
 			for k, v in pairs( weapon.blueprint ) do
 				weapon.visual_blueprint[v] = clone( WeaponCustomization._default_part_visual_blueprint )
@@ -588,11 +669,7 @@ function WeaponCustomization:LoadCurrentWeaponCustomization( data )
 
 	end
 
-	-- Load and apply blueprint
-	WeaponCustomization:LoadWeaponCustomizationFromBlueprint( weapon.visual_blueprint )
-
 end
-
 
 function WeaponCustomization:GetWeaponTableFromInventory( data )
 	local category = data.category
@@ -625,17 +702,34 @@ function WeaponCustomization:LoadWeaponCustomizationFromBlueprint( blueprint, un
 
 end
 
-function WeaponCustomization:LoadEquippedWeaponCustomizations( weapon_base )
+function WeaponCustomization:LoadEquippedWeaponCustomizations( weapon_base, is_melee )
 
 	local equipped_weapons = {
 		[1] = managers.blackmarket:equipped_primary(),
-		[2] = managers.blackmarket:equipped_secondary()
+		[2] = managers.blackmarket:equipped_secondary(),
+		[3] = managers.blackmarket:equipped_melee_weapon(),
 	}
 
-	for k, v in pairs( equipped_weapons ) do
-		if weapon_base._factory_id == v.factory_id and v.visual_blueprint then
-			WeaponCustomization:LoadWeaponCustomizationFromBlueprint( v.visual_blueprint, weapon_base._unit )
+	-- Load primary and secondary weapons
+	if weapon_base then
+
+		for k, v in pairs( equipped_weapons ) do
+			if weapon_base._factory_id == v.factory_id and v.visual_blueprint then
+				WeaponCustomization:LoadWeaponCustomizationFromBlueprint( v.visual_blueprint, weapon_base._unit:base() )
+			end
 		end
+
+	end
+
+	-- Load melee weapon
+	if is_melee then
+
+		self:LoadMeleeWeaponCustomization()
+
+		local melee_weapon = equipped_weapons[3]
+		local weapon_blueprint = managers.blackmarket._global.melee_weapons[ melee_weapon ].visual_blueprint
+		WeaponCustomization:LoadWeaponCustomizationFromBlueprint( weapon_blueprint, weapon_base )
+
 	end
 
 end
