@@ -5,8 +5,8 @@
 
 if not _G.GoonBase then
 	_G.GoonBase = {}
-	GoonBase.Version = 31
-	GoonBase.GameVersion = "1.28.0"
+	GoonBase.Version = 32
+	GoonBase.GameVersion = "1.29.0"
 	GoonBase.LogFile = "GoonBase.log"
 	GoonBase.Path = "GoonBase/"
 	GoonBase.LuaPath = "GoonBase/lua/"
@@ -42,8 +42,7 @@ GoonBase.ModFiles = {
 	"mods/mod_shop.lua",
 	"mods/mutators.lua",
 	"mods/push_to_interact.lua",
-	"mods/trading.lua",
-	"mods/train_heist_plans.lua",
+	-- "mods/trading.lua",
 	"mods/weapon_customization.lua",
 	"mods/weapon_customization_menus.lua",
 	"mods/weapon_customization_part_data.lua",
