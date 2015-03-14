@@ -4,7 +4,7 @@ if not _G.GoonBase then
 	_G.GoonBase = {}
 
 	GoonBase.Version = 100
-	GoonBase.GameVersion = "1.28.0"
+	GoonBase.GameVersion = "1.29.0"
 	GoonBase.SupportedVersion = true
 
 	GoonBase.Path = ""
