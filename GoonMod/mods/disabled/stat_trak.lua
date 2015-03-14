@@ -185,7 +185,7 @@ function StatTrak:CycleMode()
 
 end
 
-Hooks:Add("FPCameraBaseStanceEnteredCallback", "FPCameraBaseStanceEnteredCallback_" .. Mod:ID(), function(camera, new_shoulder_stance, new_head_stance, new_vel_overshot, new_fov, new_shakers, stance_mod, duration_multiplier, duration)
+Hooks:Add("FPCameraPlayerBaseStanceEnteredCallback", "FPCameraPlayerBaseStanceEnteredCallback_" .. Mod:ID(), function(camera, new_shoulder_stance, new_head_stance, new_vel_overshot, new_fov, new_shakers, stance_mod, duration_multiplier, duration)
 
 	local psuccess, perror = pcall(function()
 		
