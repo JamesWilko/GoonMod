@@ -26,16 +26,16 @@ function RedeemCodeDialog:init(manager, data)
 		end
 	end
 	self._ws = self._data.ws or manager:_get_ws()
-	-- TODO: Remove this \n spam and find a way to set the height properly
-	self._panel_script = _G.TextBoxGui:new(self._ws, self._data.title or "", (self._data.text or "") .. "\n\n\n\n ", self._data, {
+	self._panel_script = _G.ScalableTextBoxGui:new(self._ws, self._data.title or "", (self._data.text or ""), self._data, {
 		no_close_legend = true,
 		use_indicator = data.indicator or data.no_buttons,
 		is_title_outside = is_title_outside,
 	})
 	self._panel_script:add_background()
 	self._panel_script:set_layer(tweak_data.gui.DIALOG_LAYER)
-	self._panel_script:set_centered()
 	self._panel_script:set_fade(0)
+	self._panel_script:set_size( 540, 360 )
+	self._panel_script:set_centered()
 	self._controller = self._data.controller or manager:_get_controller()
 	self._confirm_func = callback(self, self, "button_pressed_callback")
 	self._cancel_func = callback(self, self, "dialog_cancel_callback")
@@ -50,7 +50,7 @@ function RedeemCodeDialog:init(manager, data)
 
 	local layer = tweak_data.gui.MOUSE_LAYER - 50
 	local w, h = self._panel_script:w() * 0.85, self._panel_script:h() * 0.3
-	local x, y = self._panel_script:w() * 0.5, self._panel_script:h() * 0.65
+	local x, y = self._panel_script:w() * 0.5, self._panel_script:h() * 0.525
 
 	self._code_rect = self._panel:rect({
 		w = w,
@@ -98,7 +98,7 @@ function RedeemCodeDialog:UpdateCodeText()
 		self._code_text:set_color( code_color_normal )
 	end
 
-	local x, y = self._panel_script:w() * 0.5, self._panel_script:h() * 0.65
+	local x, y = self._panel_script:w() * 0.5, self._panel_script:h() * 0.525
 	make_fine_text( self._code_text )
 	self._code_text:set_center( x, y )
 
@@ -148,14 +148,4 @@ function RedeemCodeDialog:close()
 	RedeemCodeDialog.super.close(self)
 	_G.GoonBase.ExtendedInventory:EnteredRedeemCode( code )
 
-end
-
-function RedeemCodeDialog:button_pressed_callback()
-	log("RedeemCodeDialog:button_pressed_callback()")
-	RedeemCodeDialog.super.button_pressed_callback(self)
-end
-
-function RedeemCodeDialog:dialog_cancel_callback()
-	log("RedeemCodeDialog:dialog_cancel_callback()")
-	RedeemCodeDialog.super.dialog_cancel_callback(self)
 end

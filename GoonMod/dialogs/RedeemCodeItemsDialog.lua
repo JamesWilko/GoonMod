@@ -4,8 +4,10 @@ require("lib/managers/dialogs/GenericDialog")
 
 RedeemCodeItemsDialog = RedeemCodeItemsDialog or class(GenericDialog)
 local tweak_data = _G.tweak_data
+local item_size = 80
 local redeem_max_items_w = 5
 local item_padding = 8
+
 local function make_fine_text(text)
 	local x, y, w, h = text:text_rect()
 	text:set_size(w, h)
@@ -31,16 +33,16 @@ function RedeemCodeItemsDialog:init(manager, data)
 		end
 	end
 	self._ws = self._data.ws or manager:_get_ws()
-	-- TODO: Remove this \n spam and find a way to set the height properly
-	self._panel_script = _G.TextBoxGui:new(self._ws, self._data.title or "", (self._data.text or "") .. "\n\n\n\n\n ", self._data, {
+	self._panel_script = _G.ScalableTextBoxGui:new(self._ws, self._data.title or "", (self._data.text or ""), self._data, {
 		no_close_legend = true,
 		use_indicator = data.indicator or data.no_buttons,
 		is_title_outside = is_title_outside,
 	})
 	self._panel_script:add_background()
 	self._panel_script:set_layer(tweak_data.gui.DIALOG_LAYER)
-	self._panel_script:set_centered()
 	self._panel_script:set_fade(0)
+	self._panel_script:set_size( 500, 340 )
+	self._panel_script:set_centered()
 	self._controller = self._data.controller or manager:_get_controller()
 	self._confirm_func = callback(self, self, "button_pressed_callback")
 	self._cancel_func = callback(self, self, "dialog_cancel_callback")
@@ -53,9 +55,9 @@ function RedeemCodeItemsDialog:init(manager, data)
 
 	self._panel = self._panel_script._panel
 	self._item_panel = self._panel:panel()
-
-	local w, h = self._panel_script:w() * 0.95, self._panel_script:h() * 0.4
-	local x, y = self._panel_script:w() * 0.5, self._panel_script:h() * 0.5
+	
+	local w, h = item_size * redeem_max_items_w + item_padding * redeem_max_items_w, item_size + item_padding * 2
+	local x, y = self._panel_script:w() * 0.5, self._panel_script:h() * 0.465
 	self._item_panel:set_size( w, h )
 	self._item_panel:set_center( x, y )
 
@@ -96,7 +98,7 @@ ExtendedInventoryCodeItem = ExtendedInventoryCodeItem or class()
 function ExtendedInventoryCodeItem:init( panel, index, data )
 	
 	local padding = item_padding
-	local w, h = panel:h() - padding * 2, panel:h() - padding * 2
+	local w, h = item_size, item_size
 	local x, y = padding * index + w * (index - 1), padding
 
 	local item_name, item_icon = _G.GoonBase.ExtendedInventory:GetDisplayDataForItem( data )
