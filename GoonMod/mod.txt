@@ -8,8 +8,7 @@
 			"identifier" : "goonmod",
 		},
 		{
-			"revision" : 0,
-			"revision_file" : "revision.txt",
+			"revision" : "revision.txt",
 			"identifier" : "goonmodwepcust",
 			"install_dir" : "assets/mod_overrides/",
 			"install_folder" : "GoonModWeaponCustomizer",
@@ -66,7 +65,7 @@
 		{ "hook_id" : "lib/tweak_data/weapontweakdata", "script_path" : "goonbase.lua" },
 		{ "hook_id" : "lib/units/beings/player/playerinventory", "script_path" : "goonbase.lua" },
 		{ "hook_id" : "lib/tweak_data/skilltreetweakdata", "script_path" : "goonbase.lua" },
-		{ "hook_id" : "lib/managers/systemmenumanager", "script_path" : "lua/SystemMenuManager.lua" },
-		{ "hook_id" : "lib/managers/challengemanager", "script_path" : "lua/ChallengeManager.lua" }
+		{ "hook_id" : "lib/managers/systemmenumanager", "script_path" : "goonbase.lua" },
+		{ "hook_id" : "lib/managers/challengemanager", "script_path" : "goonbase.lua" }
 	]
 }
