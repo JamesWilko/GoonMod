@@ -20,9 +20,24 @@ _G.GoonBase.ExtendedInventory = _G.GoonBase.ExtendedInventory or {}
 local ExtendedInv = _G.GoonBase.ExtendedInventory
 ExtendedInv.InitialLoadComplete = false
 ExtendedInv.RegisteredItems = {}
-ExtendedInv.Items = {}
-ExtendedInv.SaveFile = SavePath .. "goonbase_inventory.txt"
+ExtendedInv.SaveFile = SavePath .. "goonmod_inventory.txt"
 ExtendedInv.OldFormatSaveFile = SavePath .. "inventory.ini"
+
+ExtendedInv.Items = {}
+ExtendedInv.RedeemedCodes = {}
+
+ExtendedInv.APIRedeem = "http://api.paydaymods.com/goonmod/redeem/{1}"
+ExtendedInv.APIRedeemInfo = "http://api.paydaymods.com/goonmod/redeem_info/{1}"
+
+-- Menu Layout
+local redeem_max_items_w = 5
+local item_padding = 8
+local function make_fine_text(text)
+	local x, y, w, h = text:text_rect()
+	text:set_size(w, h)
+	text:set_position(math.round(text:x()), math.round(text:y()))
+	return text:x(), text:y(), w, h
+end
 
 -- Initialize
 Hooks:RegisterHook("ExtendedInventoryInitialized")
@@ -100,6 +115,244 @@ end
 
 function ExtendedInv:GetReserveText(item)
 	return item.reserve_text or managers.localization:text("bm_ex_inv_in_reserve")
+end
+
+-- Code Redemption
+function ExtendedInv:GetDisplayDataForItem( data )
+
+	local category = data.category
+	local name = data.item
+
+	if category == "extended_inv" then
+		local item_data = self:GetItem( name )
+		return managers.localization:text(item_data.name), item_data.texture
+	end
+
+	local item_data = tweak_data.blackmarket[category][name]
+	if not item_data then
+		return nil, nil
+	end
+
+	if category == "masks" then
+		local guis_catalog = "guis/"
+		local bundle_folder = item_data.texture_bundle_folder
+		if bundle_folder then
+			guis_catalog = guis_catalog .. "dlcs/" .. tostring(bundle_folder) .. "/"
+		end
+		local bitmap_texture = guis_catalog .. "textures/pd2/blackmarket/icons/masks/" .. name
+		return managers.localization:text(item_data.name_id), bitmap_texture
+	end
+
+end
+
+function ExtendedInv:HasUsedCode( code )
+	for k, v in pairs( ExtendedInv.RedeemedCodes ) do
+		if v == code then
+			return true
+		end
+	end
+	return false
+end
+
+function ExtendedInv:_ShowCodeRedeemWindow()
+
+	local dialog_data = {}
+	dialog_data.title = managers.localization:text("gm_ex_inv_redeem_window_title")
+	dialog_data.text = managers.localization:text("gm_ex_inv_redeem_window_message")
+	dialog_data.id = "ex_inv_redeem_window"
+
+	local ok_button = {}
+	ok_button.text = managers.localization:text("gm_ex_inv_redeem_window_accept")
+
+	dialog_data.button_list = {ok_button}
+	managers.system_menu:show_redeem_code_window( dialog_data )
+
+end
+
+function ExtendedInv:EnteredRedeemCode( code )
+
+	if code:is_nil_or_empty() then
+		return
+	end
+
+	self._code_to_redeem = code
+	self:ShowContactingServerWindow()
+
+	local api_url = ExtendedInv.APIRedeemInfo:gsub( "{1}", code:lower() )
+	dohttpreq( api_url, function(data, id) self:RetrievedServerData( data, id ) end )
+
+end
+
+function ExtendedInv:RetrievedServerData( data, id )
+
+	managers.system_menu:close("ex_inv_redeem_attempt")
+
+	if data:is_nil_or_empty() then
+		self:ShowFailedToContactServerWindow()
+		return
+	end
+
+	local code_data = json.decode( data )
+	if code_data.success then
+		if not self:HasUsedCode( code_data.code ) then
+			self:ShowRedeemInfoWindow( code_data.data )
+		else
+			self:ShowCodeRedeemFailureWindow( "already_used" )
+		end
+	else
+		self:ShowCodeRedeemFailureWindow( code_data.code )
+	end
+
+end
+
+function ExtendedInv:ShowContactingServerWindow()
+	local dialog_data = {}
+	dialog_data.title = managers.localization:text("gm_ex_inv_redeem_contact_title")
+	dialog_data.text = managers.localization:text("gm_ex_inv_redeem_contact_message")
+	dialog_data.id = "ex_inv_redeem_attempt"
+	dialog_data.no_buttons = true
+	dialog_data.indicator = true
+	managers.system_menu:show(dialog_data)
+end
+
+function ExtendedInv:ShowFailedToContactServerWindow()
+	local dialog_data = {}
+	dialog_data.title = managers.localization:text("gm_ex_inv_redeem_contact_failed_title")
+	dialog_data.text = managers.localization:text("gm_ex_inv_redeem_contact_failed_message")
+	dialog_data.id = "ex_inv_redeem_failed"
+	local ok_button = {}
+	ok_button.text = managers.localization:text("dialog_ok")
+	dialog_data.button_list = {ok_button}
+	managers.system_menu:show(dialog_data)
+end
+
+function ExtendedInv:ShowCodeRedeemFailureWindow( error )
+
+	local errors = {
+		["not_found"] = "gm_ex_inv_redeem_invalid_not_found",
+		["no_uses_remaining"] = "gm_ex_inv_redeem_invalid_no_uses_left",
+		["already_used"] = "gm_ex_inv_redeem_invalid_already_used"
+	}
+
+	local dialog_data = {}
+	dialog_data.title = managers.localization:text("gm_ex_inv_redeem_invalid_title")
+	dialog_data.text = managers.localization:text( errors[error] )
+	dialog_data.id = "ex_inv_redeem_failed"
+	local ok_button = {}
+	ok_button.text = managers.localization:text("dialog_ok")
+	dialog_data.button_list = {ok_button}
+	managers.system_menu:show(dialog_data)
+
+end
+
+function ExtendedInv:ShowRedeemInfoWindow( data )
+		
+	data = json.decode( data )
+
+	local dialog_data = {}
+	dialog_data.title = managers.localization:text("gm_ex_inv_redeem_info_title")
+	dialog_data.text = managers.localization:text("gm_ex_inv_redeem_info_message")
+	dialog_data.id = "ex_inv_redeem_attempt"
+
+	local ok_button = {}
+	ok_button.text = managers.localization:text("gm_ex_inv_redeem_info_accept")
+	ok_button.callback_func = callback(self, self, "RedeemCode")
+
+	local cancel_button = {}
+	cancel_button.text = managers.localization:text("gm_ex_inv_redeem_info_cancel")
+	cancel_button.cancel_button = true
+
+	dialog_data.button_list = {ok_button, cancel_button}
+	dialog_data.items = data
+	managers.system_menu:show_redeem_code_items_window( dialog_data )
+
+end
+
+function ExtendedInv:RedeemCode()
+
+	if not self._code_to_redeem then
+		return
+	end
+
+	local code = self._code_to_redeem
+	self._code_to_redeem = nil
+
+	self:ShowContactingServerWindow()
+
+	local api_url = ExtendedInv.APIRedeem:gsub( "{1}", code:lower() )
+	dohttpreq( api_url, function(data, id) self:RedeemedCode( data, id ) end )
+
+end
+
+function ExtendedInv:RedeemedCode( data, id )
+
+	managers.system_menu:close("ex_inv_redeem_attempt")
+
+	if data:is_nil_or_empty() then
+		self:ShowFailedToContactServerWindow()
+		return
+	end
+
+	local code_data = json.decode( data )
+	code_data.data = json.decode( code_data.data )
+
+	if code_data.success then
+
+		table.insert( ExtendedInv.RedeemedCodes, code_data.code )
+		self:Save()
+
+		self:AddRedeemedItemsToInventory( code_data.data )
+		self:ShowRedeemedCodeWindow( code_data.data )
+
+	else
+		self:ShowCodeRedeemFailureWindow( code_data.code )
+	end
+
+end
+
+function ExtendedInv:ShowRedeemedCodeWindow( data )
+
+	local dialog_data = {}
+	dialog_data.title = managers.localization:text("gm_ex_inv_redeemed_confirm_title")
+	dialog_data.text = managers.localization:text("gm_ex_inv_redeemed_confirm_message")
+	dialog_data.id = "ex_inv_redeemed_items"
+
+	local ok_button = {}
+	ok_button.text = managers.localization:text("gm_ex_inv_redeemed_confirm_accept")
+	ok_button.cancel_button = true
+
+	dialog_data.button_list = {ok_button}
+	dialog_data.items = data
+	managers.system_menu:show_redeem_code_items_window( dialog_data )
+
+end
+
+function ExtendedInv:AddRedeemedItemsToInventory( data )
+
+	PrintTable( data )
+
+	for k, v in pairs( data ) do
+
+		local name = v.item
+		local category = v.category
+		local quantity = v.quantity
+
+		if category == "extended_inv" then
+			self:AddItem(name, quantity)
+		else
+
+			local entry = tweak_data:get_raw_value("blackmarket", category, name)
+			if entry then
+				for i = 1, quantity or 1 do
+					local global_value = entry.infamous and "infamous" or entry.global_value or entry.dlc or entry.dlcs and entry.dlcs[math.random(#entry.dlcs)] or "normal"
+					managers.blackmarket:add_to_inventory(global_value, category, name)
+				end
+			end
+
+		end
+
+	end
+
 end
 
 -- Hooks
@@ -214,6 +467,55 @@ Hooks:Add("BlackMarketGUIUpdateInfoText", "BlackMarketGUIUpdateInfoText_Extended
 
 end)
 
+Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_" .. Mod:ID(), function(menu_manager, menu_nodes)
+
+	-- Menu
+	MenuCallbackHandler.extended_inv_open_redeem_code = function(this, item)
+		ExtendedInv:_ShowCodeRedeemWindow()
+	end
+
+	MenuHelper:AddDivider({
+		id = "gm_ex_inv_divider",
+		menu_id = "goonbase_options_menu",
+		size = 16,
+		priority = -99,
+	})
+
+	MenuHelper:AddButton({
+		id = "gm_ex_inv_redeem_button",
+		title = "gm_ex_inv_redeem_code",
+		desc = "gm_ex_inv_redeem_code_desc",
+		callback = "extended_inv_open_redeem_code",
+		menu_id = "goonbase_options_menu",
+		priority = -100,
+	})
+
+end)
+
+Hooks:Add("GenericSystemMenuManagerPostInit", "GenericSystemMenuManagerPostInit_" .. Mod:ID(), function( menu_manager )
+
+	local dialog_path = GoonBase.Path .. "dialogs/"
+	dofile( dialog_path .. "RedeemCodeDialog.lua" )
+	dofile( dialog_path .. "RedeemCodeItemsDialog.lua" )
+
+	SystemMenuManager.GenericSystemMenuManager.GENERIC_REDEEM_CODE_DIALOG = SystemMenuManager.RedeemCodeDialog
+	SystemMenuManager.GenericSystemMenuManager.REDEEM_CODE_CLASS = SystemMenuManager.RedeemCodeDialog
+
+	SystemMenuManager.GenericSystemMenuManager.GENERIC_REDEEM_CODE_ITEMS_DIALOG = SystemMenuManager.RedeemCodeItemsDialog
+	SystemMenuManager.GenericSystemMenuManager.REDEEM_CODE_ITEMS_CLASS = SystemMenuManager.RedeemCodeItemsDialog
+
+	SystemMenuManager.GenericSystemMenuManager.show_redeem_code_window = function( self, data )
+		local success = self:_show_class(data, self.GENERIC_REDEEM_CODE_DIALOG, self.REDEEM_CODE_CLASS, data.force)
+		self:_show_result(success, data)
+	end
+
+	SystemMenuManager.GenericSystemMenuManager.show_redeem_code_items_window = function( self, data )
+		local success = self:_show_class(data, self.GENERIC_REDEEM_CODE_ITEMS_DIALOG, self.REDEEM_CODE_ITEMS_CLASS, data.force)
+		self:_show_result(success, data)
+	end
+
+end)
+
 -- Saving and Loading
 function ExtendedInv:Save( file_name )
 
@@ -221,8 +523,16 @@ function ExtendedInv:Save( file_name )
 		file_name = ExtendedInv.SaveFile
 	end
 
+	local save_data = {
+		["items"] = ExtendedInv.Items,
+		["codes"] = ExtendedInv.RedeemedCodes,
+	}
+	if #ExtendedInv.RedeemedCodes < 1 then
+		save_data["codes"] = nil
+	end
+
 	local file = io.open(file_name, "w+")
-	local data = json.encode( ExtendedInv.Items )
+	local data = json.encode( save_data )
 	data = GoonBase.Utils.Base64:Encode( data )
 	file:write( data )
 	file:close()
@@ -235,13 +545,17 @@ function ExtendedInv:Load( file_name )
 	local file = io.open(file_name, "r")
 	if not file then
 		Print( "Could not open GoonMod Extended Inventory save file, attempting to load old format..." )
-		ExtendedInv:LoadOldFormat()
+		if ExtendedInv:LoadOldFormat() then
+			self:Save()
+		end
 		return 
 	end
 
 	local file_data = file:read("*all")
 	file_data = GoonBase.Utils.Base64:Decode( file_data )
-	ExtendedInv.Items = json.decode( file_data )
+	local loaded_data = json.decode( file_data )
+	ExtendedInv.Items = loaded_data["items"] or {}
+	ExtendedInv.RedeemedCodes = loaded_data["codes"] or {}
 
 end
 
@@ -253,7 +567,7 @@ function ExtendedInv:LoadOldFormat( file_name )
 
 	if not file then
 		Print( "Could not open old format save file (" .. file_name .. ")! Does it exist?" )
-		return
+		return false
 	end
 
 	local key
@@ -294,5 +608,6 @@ function ExtendedInv:LoadOldFormat( file_name )
 	end
 
 	file:close()
+	return true
 
 end

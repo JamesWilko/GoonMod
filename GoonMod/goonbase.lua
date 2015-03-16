@@ -75,6 +75,8 @@ GoonBase.HookFiles = {
 	["lib/units/beings/player/playerinventory"] = "PlayerInventory.lua",
 	["lib/tweak_data/skilltreetweakdata"] = "SkillTreeTweakData.lua",
 	-- ["lib/managers/gameplaycentralmanager"] = "GameplayCentralManager.lua",
+	["lib/managers/systemmenumanager"] = "SystemMenuManager.lua",
+	-- ["lib/managers/challengemanager"] = "ChallengeManager.lua",
 
 }
 

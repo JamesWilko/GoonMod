@@ -43,6 +43,35 @@
 	"bm_ex_inv_in_reserve" : "IN RESERVE",
 	"bm_menu_amount_locked" : "NONE IN STOCK",
 
+	"gm_ex_inv_redeem_code" : "Redeem Code",
+	"gm_ex_inv_redeem_code_desc" : "Redeem a unique codes for in-game rewards.",
+	"gm_ex_inv_redeem_code_default" : "Enter Code",
+
+	"gm_ex_inv_redeem_window_title" : "Redeem Code",
+	"gm_ex_inv_redeem_window_message" : "Here you can redeem unique codes for in-game rewards. Codes are given out for events, and under special circumstances, keep an eye out for them.",
+	"gm_ex_inv_redeem_window_accept" : "Redeem",
+	"gm_ex_inv_redeem_window_cancel" : "Cancel",
+
+	"gm_ex_inv_redeem_contact_title" : "Contacting Server",
+	"gm_ex_inv_redeem_contact_message" : "Attempting to contact server and redeem your code...",
+
+	"gm_ex_inv_redeem_contact_failed_title" : "Failed to Contact Server",
+	"gm_ex_inv_redeem_contact_failed_message" : "A connection could not be established to the code redemption server, please try again shortly.",
+
+	"gm_ex_inv_redeem_info_title" : "Redeeming Code",
+	"gm_ex_inv_redeem_info_message" : "You're about to redeem these items:",
+	"gm_ex_inv_redeem_info_accept" : "Redeem Now",
+	"gm_ex_inv_redeem_info_cancel" : "Redeem Later",
+
+	"gm_ex_inv_redeemed_confirm_title" : "Redeemed Code",
+	"gm_ex_inv_redeemed_confirm_message" : "These have been added to your inventory:",
+	"gm_ex_inv_redeemed_confirm_accept" : "OK",
+
+	"gm_ex_inv_redeem_invalid_title" : "Invalid Code",
+	"gm_ex_inv_redeem_invalid_not_found" : "This code does not exist!",
+	"gm_ex_inv_redeem_invalid_already_used" : "You've already used this code!",
+	"gm_ex_inv_redeem_invalid_no_uses_left" : "This code has already been used!",
+
 	"gm_exinv_gage_coin" : "Gage-Coin",
 	"gm_exinv_gage_coin_desc" : "A single coin of an electronic cryptro-currency designed by Gage himself. When he launched it though, it fell flat and became worthless. However with the rise of Crime.net he's has been selling them to heisters at super inflated prices.\nGage gives one of these to every person who brings him a complete courier assignment.",
 	"gm_exinv_gage_coin_reserve" : " IN WALLET",
@@ -244,4 +273,5 @@
 	"Options_WorldLaserRainbowDesc" : "Enable rainbow instead of the set Hue",
 	"Options_WorldLaserRainbowSpeedTitle" : "Rainbow Speed",
 	"Options_WorldLaserRainbowSpeedDesc" : "Set the speed of the rainbow effect",
+
 }
