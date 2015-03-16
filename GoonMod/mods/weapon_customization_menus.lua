@@ -232,6 +232,10 @@ end)
 
 Hooks:Add("BlackMarketGUIPostSetup", "BlackMarketGUIPostSetup_WeaponCustomization", function(gui, is_start_page, component_data)
 
+	if Utils:IsInGameState() then
+		return
+	end
+
 	gui.customize_weapon_visuals = function(gui, data)
 		WeaponCustomization.weapon_visual_customization_callback(gui, data)
 	end

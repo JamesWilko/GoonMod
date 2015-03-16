@@ -495,6 +495,7 @@ end)
 Hooks:Add("GenericSystemMenuManagerPostInit", "GenericSystemMenuManagerPostInit_" .. Mod:ID(), function( menu_manager )
 
 	local dialog_path = GoonBase.Path .. "dialogs/"
+	dofile( dialog_path .. "ScalableTextBoxGUI.lua" )
 	dofile( dialog_path .. "RedeemCodeDialog.lua" )
 	dofile( dialog_path .. "RedeemCodeItemsDialog.lua" )
 
