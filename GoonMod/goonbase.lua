@@ -77,6 +77,8 @@ GoonBase.HookFiles = {
 	-- ["lib/managers/gameplaycentralmanager"] = "GameplayCentralManager.lua",
 	["lib/managers/systemmenumanager"] = "SystemMenuManager.lua",
 	-- ["lib/managers/challengemanager"] = "ChallengeManager.lua",
+	["lib/managers/menu/playerprofileguiobject"] = "PlayerProfileGUIObject.lua",
+	["lib/managers/menu/walletguiobject"] = "WalletGUIObject.lua",
 
 }
 
