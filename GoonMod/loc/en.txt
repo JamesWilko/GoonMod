@@ -73,6 +73,7 @@
 	"gm_ex_inv_redeem_invalid_no_uses_left" : "This code has already been used!",
 
 	"gm_exinv_gage_coin" : "Gage-Coin",
+	"gm_exinv_gage_coin_plural" : "Gage-Coins",
 	"gm_exinv_gage_coin_desc" : "A single coin of an electronic cryptro-currency designed by Gage himself. When he launched it though, it fell flat and became worthless. However with the rise of Crime.net he's has been selling them to heisters at super inflated prices.\nGage gives one of these to every person who brings him a complete courier assignment.",
 	"gm_exinv_gage_coin_reserve" : " IN WALLET",
 
@@ -80,15 +81,11 @@
 	"OptionsMenu_GrenadeMarkerDesc" : "Show a HUD marker when a flashbang is deployed",
 
 	"gm_gms_purchase" : "Buy with Gage Coins",
-	"gm_gms_purchase_window_title" : "Purchase",
-	"gm_gms_purchase_window_message" : "You are about to purchase {1}. This will cost you {2} Gage Coin/s.\n\nPurchasing:\n            {1}, {2} GC/s\nBalance before purchase:\n            {3} GC\nBalance after purchase:\n            {4} GC",
-	"gm_gms_purchase_window_accept" : "Purchase",
-	"gm_gms_purchase_window_cancel" : "Cancel",
+	"gm_gms_purchase_window_title" : "Are you sure?",
+	"gm_gms_purchase_window_message" : "Do you really want to buy '{1}'?\n\nIt will cost you {2} {3}.",
 	"gm_gms_purchase_failed" : "Cannot Purchase",
 	"gm_gms_free_of_charge_message" : "{1} is free of charge and can be applied to as many weapons as you wish.",
-	"gm_gms_free_of_charge_accept" : "OK",
-	"gm_gms_cannot_afford_message" : "You cannot purchase {1}, as you do not have enough Gage Coins to afford it. To purchase {1}, you need {2} GC/s.",
-	"gm_gms_cannot_afford_accept" : "OK",
+	"gm_gms_cannot_afford_message" : "You cannot purchase {1}, as you do not have enough {3} to afford it. To purchase {1}, you need {2} {3}",
 
 	"Trading_OptionsMenuTitle" : "Crime.net Cargo",
 	"Trading_OptionsMenuMessage" : "Modify Crime.net Cargo Settings",
