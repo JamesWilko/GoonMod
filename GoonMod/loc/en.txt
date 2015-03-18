@@ -210,13 +210,6 @@
 	"gm_options_wc_clear_melee_data_title" : "Clear Melee Weapons Customization",
 	"gm_options_wc_clear_melee_data_desc" : "Erase all of your customization data from all of your melee weapons",
 
-	"WeaponCustomization_ClearDataTitle" : "Clear Weapon Customization Data",
-	"WeaponCustomization_ClearDataMessage" : "This will erase all weapon customization data from your save game.\nYou will lose all of your modified weapon visuals, but you will not lose the weapons themselves.\n\nYou may need to restart your game, or load a mission, to fully clear your texture cache.",
-	"WeaponCustomization_ClearDataAccept" : "Clear Data",
-	"WeaponCustomization_ClearDataCancel" : "Cancel",
-	"WeaponCustomization_PrintAllPartNames" : "Output All Weapon Part Names",
-	"WeaponCustomization_PrintAllPartNamesDesc" : "Outputs all weapon part names to a CSV file",
-
 	"bm_mtl_no_material" : "No Material",
 	"WeaponCustomization_MenuItem" : "Customize Weapon",
 	"bm_menu_customize_weapon_title" : "Customize Weapon: $weapon_name",
@@ -248,14 +241,29 @@
 	"Options_EnemyLaserRainbowSpeedTitle" : "Rainbow Speed",
 	"Options_EnemyLaserRainbowSpeedDesc" : "Set the speed of the rainbow effect",
 
-	"Options_WeaponLightName" : "Weapon Flashlight Color",
-	"Options_WeaponLightDesc" : "Modify the color of weapon flashlights",
-	"Options_WeaponLightEnableTitle" : "Enable Custom Weapon Flashlight Color",
-	"Options_WeaponLightEnableDesc" : "Use the custom set color for Weapon Flashlights",
-	"Options_WeaponLightRainbowTitle" : "Enable Rainbow Light",
-	"Options_WeaponLightRainbowDesc" : "Enable rainbow instead of the set Hue",
-	"Options_WeaponLightRainbowSpeedTitle" : "Rainbow Speed",
-	"Options_WeaponLightRainbowSpeedDesc" : "Set the speed of the rainbow effect",
+	"gm_options_custom_use_hue_title" : "Use HSV Colour Space",
+	"gm_options_custom_use_hue_desc" : "Use the HSV colour space instead of the RGB",
+	"gm_options_custom_rh_title" : "Red/Hue",
+	"gm_options_custom_rh_desc" : "The amount of red in, or the hue of the colour",
+	"gm_options_custom_gs_title" : "Green/Saturation",
+	"gm_options_custom_gs_desc" : "The amount of green in, or the saturation of the colour",
+	"gm_options_custom_bv_title" : "Blue/Value",
+	"gm_options_custom_bv_desc" : "The amount of blue in, or the value of the colour",
+
+	"gm_options_custom_rainbow_title" : "Enable Rainbow Effect",
+	"gm_options_custom_rainbow_desc" : "Enable cycling rainbow colour effect",
+	"gm_options_custom_rainbow_speed_title" : "Rainbow Effect Speed",
+	"gm_options_custom_rainbow_speed_desc" : "Sets the speed of the rainbow effect",
+
+	"gm_options_cfc_menu_title" : "Weapon Flashlight Color",
+	"gm_options_cfc_menu_desc" : "Modify the color of weapon flashlights",
+	"gm_options_cfc_enabled_title" : "Enable Custom Weapon Flashlight Color",
+	"gm_options_cfc_enabled_desc" : "Use the custom set color for Weapon Flashlights",
+
+	"gm_options_cwl_menu_title" : "World Laser Colour",
+	"gm_options_cwl_menu_desc" : "Modify the color of lasers that appear in the world like on mines and sensors",
+	"gm_options_cwl_enabled_title" : "Enable Custom World Laser Colour",
+	"gm_options_cwl_enabled_desc" : "Use the custom set color for lasers in the world",
 
 	"Options_WeaponLaserName" : "Weapon Laser Color",
 	"Options_WeaponLaserDesc" : "Modify the color of weapon lasers",
@@ -270,14 +278,5 @@
 	"Options_TeammateLaser_Same" : "Use My Colour",
 	"Options_TeammateLaser_Theirs" : "Use Their Colour",
 	"Options_TeammateLaser_Unique" : "Unique per Person",
-
-	"Options_WorldLaserName" : "World Laser Color",
-	"Options_WorldLaserDesc" : "Modify the color of lasers that appear in the world",
-	"Options_WorldLaserEnableTitle" : "Enable Custom World Laser Color",
-	"Options_WorldLaserEnableDesc" : "Use the custom set color for World Lasers",
-	"Options_WorldLaserRainbowTitle" : "Enable Rainbow Laser",
-	"Options_WorldLaserRainbowDesc" : "Enable rainbow instead of the set Hue",
-	"Options_WorldLaserRainbowSpeedTitle" : "Rainbow Speed",
-	"Options_WorldLaserRainbowSpeedDesc" : "Set the speed of the rainbow effect",
 
 }
