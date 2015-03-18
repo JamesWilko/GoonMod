@@ -480,6 +480,7 @@ Hooks:Add("MenuUpdate", "MenuUpdate_WeaponCustomization", function(t, dt)
 end)
 
 Hooks:Add("BlackMarketGUIOnPopulateWeapons", "BlackMarketGUIOnPopulateWeapons_WeaponCustomization", function(gui, category, data)
+	managers.blackmarket._customizing_weapon_data = nil
 	WeaponCustomization:RestoreMenuColourGrading()
 end)
 
@@ -610,7 +611,7 @@ function WeaponCustomization:LeftMouseReleased_Advanced(gui, button, x, y)
 		local adv_option = self._advanced_menu_options[ line ]
 		
 		if adv_option and adv_option.func then
-			self[ adv_option.func ]()
+			self[ adv_option.func ](self)
 			managers.menu_component:post_event("menu_enter")
 		end
 
@@ -753,8 +754,7 @@ function WeaponCustomization:AdvancedClearWeaponCheck()
 	local menuOptions = {}
 	menuOptions[1] = {
 		text = managers.localization:text("wc_clear_weapon_accept"),
-		callback = WeaponCustomization.AdvancedClearWeaponAccept,
-		is_cancel_button = true
+		callback = callback(self, self, "_AdvancedClearWeaponAccept")
 	}
 	menuOptions[2] = {
 		text = managers.localization:text("wc_clear_weapon_cancel"),
@@ -764,29 +764,29 @@ function WeaponCustomization:AdvancedClearWeaponCheck()
 
 end
 
-function WeaponCustomization.AdvancedClearWeaponAccept()
+function WeaponCustomization:_AdvancedClearWeaponAccept()
 
 	if managers.blackmarket._customizing_weapon_data then
+		return
+	end
 
-		local category = managers.blackmarket._customizing_weapon_data.category
-		local weapon = WeaponCustomization:GetWeaponTableFromInventory( managers.blackmarket._customizing_weapon_data )
+	local category = managers.blackmarket._customizing_weapon_data.category
+	local weapon = self:GetWeaponTableFromInventory( managers.blackmarket._customizing_weapon_data )
 
-		-- Rebuild weapon parts list
-		if category ~= "melee_weapons" then
-			WeaponCustomization:CreateCustomizablePartsList( weapon )
-		end
+	-- Rebuild weapon parts list
+	if category ~= "melee_weapons" then
+		self:CreateCustomizablePartsList( weapon )
+	end
 
-		-- Clear selected parts
-		managers.blackmarket._selected_weapon_parts = clone( WeaponCustomization._default_part_visual_blueprint )
+	-- Clear selected parts
+	managers.blackmarket._selected_weapon_parts = clone( WeaponCustomization._default_part_visual_blueprint )
 
-		-- Save
-		WeaponCustomization:UpdateWeaponPartsWithMod( nil, nil, managers.blackmarket._customizing_weapon_parts, category ~= "melee_weapons" )
+	-- Save
+	self:UpdateWeaponPartsWithMod( nil, nil, managers.blackmarket._customizing_weapon_parts, category ~= "melee_weapons" )
 
-		-- Clear data on slot
-		if weapon.visual_blueprint then
-			weapon.visual_blueprint = nil
-		end
-		
+	-- Clear data on slot
+	if weapon.visual_blueprint then
+		weapon.visual_blueprint = nil
 	end
 
 end
@@ -815,62 +815,4 @@ function WeaponCustomization:ShowControllerAdvancedOptions()
 
 	local menu = QuickMenu:new(title, message, menuOptions, true)
 	
-end
-
--- Temporary Popup
-function WeaponCustomization:Temp_CheckOverridesInstalled()
-
-	local file_name = "assets/mod_overrides/GoonModWeaponCustomizer/units/payday2/weapons/wpn_fps_ass_74_pts/wpn_fps_ass_74_b_standard.material_config"
-	file_name = Application:base_path() .. file_name
-
-	local f= io.open(file_name, "r")
-	if f ~= nil then
-		io.close(f)
-	else
-		if GoonBase.Options.WeaponCustomization and not GoonBase.Options.WeaponCustomization.TempShownOverridesNotInstalled then
-			WeaponCustomization:Temp_ShowOverridesNotInstalledWindow()
-		end
-	end
-
-end
-
-function WeaponCustomization:Temp_ShowOverridesNotInstalledWindow()
-
-	local title = managers.localization:text("wc_mod_overrides_not_installed_title")
-	local message = managers.localization:text("wc_mod_overrides_not_installed_desc")
-	local menuOptions = {}
-	menuOptions[1] = {
-		text = managers.localization:text("wc_mod_overrides_not_installed_download"),
-		callback = WeaponCustomization.Temp_DownloadOverrides,
-		is_cancel_button = true
-	}
-	menuOptions[2] = {
-		text = managers.localization:text("wc_mod_overrides_not_installed_dont_show"),
-		callback = WeaponCustomization.Temp_DontShowInFuture,
-		is_cancel_button = true
-	}
-	menuOptions[3] = {
-		text = managers.localization:text("wc_mod_overrides_not_installed_cancel"),
-		is_cancel_button = true
-	}
-	local menu = QuickMenu:new(title, message, menuOptions, true)
-
-end
-
-function WeaponCustomization:Temp_DownloadOverrides()
-
-	if SystemInfo:platform() == Idstring("WIN32") then
-		os.execute( "explorer " .. WeaponCustomization._mod_overrides_download_location )
-		os.execute( "explorer " .. Application:base_path() .. "assets\\mod_overrides\\" )
-	end
-
-end
-
-function WeaponCustomization:Temp_DontShowInFuture()
-
-	if GoonBase.Options.WeaponCustomization then
-		GoonBase.Options.WeaponCustomization.TempShownOverridesNotInstalled = true
-		GoonBase.Options:Save()
-	end
-
 end

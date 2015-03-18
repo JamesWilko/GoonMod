@@ -195,12 +195,21 @@
 	"gm_options_normalized_sensitivity_title" : "Enabled Ironsight Normalized Sensitivity",
 	"gm_options_normalized_sensitivity_desc" : "Lower the sensitivity when using ironsights to more accurately place your shots.",
 
-	"Options_WeaponCustomizationName" : "Weapon Customization",
-	"Options_WeaponCustomizationDesc" : "Weapon Customization Options",
-	"WeaponCustomization_DownloadModOverridesManual" : "Download Mod Overrides (Manual Install)",
-	"WeaponCustomization_DownloadModOverridesManualDesc" : "Download the required mod overrides to use the Weapon Customization mod, opens in your browser.\nPlace the 'GoonModWeaponCustomizer' folder into your mod_overrides and then restart your game.",
-	"WeaponCustomization_ClearDataButton" : "Clear Weapon Customization Data",
-	"WeaponCustomization_ClearDataButtonDesc" : "Erase all of your weapon customization data from your Payday 2 save file",
+	"gm_options_wc_title" : "Weapon Visual Customization",
+	"gm_options_wc_desc" : "Manage your weapon visual customization data",
+
+	"gm_options_wc_clear_all_data_title" : "Clear All Visual Customization Data",
+	"gm_options_wc_clear_all_data_desc" : "Erase all of your weapon visual customization data from your Payday 2 save file",
+
+	"gm_options_wc_clear_primary_data_title" : "Clear Primary Weapons Customization",
+	"gm_options_wc_clear_primary_data_desc" : "Erase all of your customization data from all of your primary weapons",
+
+	"gm_options_wc_clear_secondary_data_title" : "Clear Secondary Weapons Customization",
+	"gm_options_wc_clear_secondary_data_desc" : "Erase all of your customization data from all of your secondary weapons",
+
+	"gm_options_wc_clear_melee_data_title" : "Clear Melee Weapons Customization",
+	"gm_options_wc_clear_melee_data_desc" : "Erase all of your customization data from all of your melee weapons",
+
 	"WeaponCustomization_ClearDataTitle" : "Clear Weapon Customization Data",
 	"WeaponCustomization_ClearDataMessage" : "This will erase all weapon customization data from your save game.\nYou will lose all of your modified weapon visuals, but you will not lose the weapons themselves.\n\nYou may need to restart your game, or load a mission, to fully clear your texture cache.",
 	"WeaponCustomization_ClearDataAccept" : "Clear Data",
