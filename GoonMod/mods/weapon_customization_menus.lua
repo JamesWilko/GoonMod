@@ -25,6 +25,11 @@ WeaponCustomization._controller_index = {
 	not_modifying = 1,
 }
 
+WeaponCustomization._invalid_melee_weapons = {
+	["weapon"] = true,
+	["fists"] = true,
+}
+
 local BTN_X = utf8.char(57346)
 local BTN_Y = utf8.char(57347)
 local BTN_LT = utf8.char(57354)
@@ -169,11 +174,6 @@ function WeaponCustomization.weapon_visual_customization_callback(self, data)
 		weapon_name = data.name_localized
 	}
 
-	local params = {}
-	params.yes_func = callback(self, self, "_dialog_yes", callback(self, self, "_abort_customized_mask_callback"))
-	params.no_func = callback(self, self, "_dialog_no")
-
-	new_node_data.back_callback = callback(self, self, "_warn_abort_customized_mask_callback", params)
 	new_node_data.blur_fade = self._data.blur_fade
 	new_node_data.weapon_slot_data = data
 
@@ -182,13 +182,16 @@ function WeaponCustomization.weapon_visual_customization_callback(self, data)
 	end
 	if data.category == "melee_weapons" then
 		managers.blackmarket._customizing_weapon_data = new_node_data
-		managers.menu:open_node(self._preview_node_name, {})
 		managers.blackmarket:preview_melee_weapon(data.name)
 	end
 
 end
 
 function WeaponCustomization._open_weapon_customization_preview_node(self, data)
+
+	if not managers.blackmarket._customizing_weapon_data and not data then
+		return
+	end
 
 	managers.blackmarket._customizing_weapon = true
 	if data then
@@ -199,6 +202,10 @@ function WeaponCustomization._open_weapon_customization_preview_node(self, data)
 	end
 
 	local weapon_data = managers.blackmarket._customizing_weapon_data
+	if not weapon_data then
+		return
+	end
+
 	local category = weapon_data.category
 	local slot = weapon_data.slot
 	local weapon = WeaponCustomization:GetWeaponTableFromInventory( weapon_data )
@@ -211,10 +218,8 @@ function WeaponCustomization._open_weapon_customization_preview_node(self, data)
 		not_modifying = 1,
 	}
 
-	managers.menu:open_node("blackmarket_mask_node", data)
+	managers.menu:open_node( "blackmarket_mask_node", data )
 	WeaponCustomization:LoadCurrentWeaponCustomization( weapon_data )
-
-	-- WeaponCustomization:Temp_CheckOverridesInstalled()
 
 end
 
@@ -263,7 +268,7 @@ Hooks:Add("BlackMarketGUIOnPopulateWeaponActionList", "BlackMarketGUIOnPopulateW
 end)
 
 Hooks:Add("BlackMarketGUIOnPopulateMeleeWeaponActionList", "BlackMarketGUIOnPopulateMeleeWeaponActionList_WeaponCustomization", function(gui, data)
-	if data.unlocked then
+	if data.unlocked and not WeaponCustomization._invalid_melee_weapons[data.name] then
 		table.insert(data, "w_visual_customize")
 	end
 end)
@@ -472,6 +477,10 @@ Hooks:Add("MenuUpdate", "MenuUpdate_WeaponCustomization", function(t, dt)
 		WeaponCustomization:_UpdateControllerBindings()
 	end
 
+end)
+
+Hooks:Add("BlackMarketGUIOnPopulateWeapons", "BlackMarketGUIOnPopulateWeapons_WeaponCustomization", function(gui, category, data)
+	WeaponCustomization:RestoreMenuColourGrading()
 end)
 
 function WeaponCustomization:_UpdateControllerBindings()
@@ -729,6 +738,12 @@ function WeaponCustomization:AddvancedToggleColourGrading()
 
 	end
 
+end
+
+function WeaponCustomization:RestoreMenuColourGrading()
+	managers.environment_controller:set_default_color_grading( "color_matrix" )
+	managers.environment_controller:refresh_render_settings()
+	self._previous_colour_grading = nil
 end
 
 function WeaponCustomization:AdvancedClearWeaponCheck()
