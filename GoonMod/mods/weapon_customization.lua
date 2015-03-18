@@ -18,7 +18,7 @@ end
 -- Weapon Customization
 GoonBase.WeaponCustomization = GoonBase.WeaponCustomization or {}
 local WeaponCustomization = GoonBase.WeaponCustomization
-WeaponCustomization.MenuId = "goonbase_weapon_customization_menu"
+WeaponCustomization.MenuFile = "weapon_visual_customization.txt"
 WeaponCustomization._update_queue = {}
 WeaponCustomization._melee_save_path = SavePath .. "goonmod_weapon_customization_melee.txt"
 
@@ -51,65 +51,27 @@ if GoonBase.Options.WeaponCustomization == nil then
 end
 
 -- Menu
-Hooks:Add("MenuManagerSetupCustomMenus", "MenuManagerSetupCustomMenus_" .. Mod:ID(), function(menu_manager, menu_nodes)
-	MenuHelper:NewMenu( WeaponCustomization.MenuId )
-end)
+Hooks:Add( "MenuManagerInitialize", "MenuManagerInitialize_" .. Mod:ID(), function( menu_manager )
 
-Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_" .. Mod:ID(), function(menu_manager, menu_nodes)
-
-	-- Submenu Button
-	MenuHelper:AddButton({
-		id = "weapon_customization_menu_button",
-		title = "Options_WeaponCustomizationName",
-		desc = "Options_WeaponCustomizationDesc",
-		next_node = WeaponCustomization.MenuId,
-		menu_id = "goonbase_options_menu",
-	})
-
-	-- Menu
-	MenuCallbackHandler.wc_download_mod_overrides = function(this, item)
-		if SystemInfo:platform() == Idstring("WIN32") then
-			os.execute( "explorer " .. WeaponCustomization._mod_overrides_download_location )
-		end
+	-- Callbacks
+	MenuCallbackHandler.WeaponCustomizationClearDataAll = function(this, item)
+		WeaponCustomization:ClearDataFromSave()
 	end
 
-	MenuCallbackHandler.clear_weapon_visual_customizations = function(this, item)
-		WeaponCustomization:ShowClearDataConfirmation()
+	MenuCallbackHandler.WeaponCustomizationClearDataPrimaries = function(this, item)
+		WeaponCustomization:EraseSaveDataPrimary()
 	end
 
-	MenuHelper:AddButton({
-		id = "weapon_customization_download_mod_overrides",
-		title = "WeaponCustomization_DownloadModOverridesManual",
-		desc = "WeaponCustomization_DownloadModOverridesManualDesc",
-		callback = "wc_download_mod_overrides",
-		menu_id = WeaponCustomization.MenuId,
-		priority = 100,
-	})
+	MenuCallbackHandler.WeaponCustomizationClearDataSecondaries = function(this, item)
+		WeaponCustomization:EraseSaveDataSecondary()
+	end
 
-	MenuHelper:AddDivider({
-		id = "weapon_customization_divider1",
-		menu_id = WeaponCustomization.MenuId,
-		size = 16,
-		priority = 99,
-	})
+	MenuCallbackHandler.WeaponCustomizationClearDataMelee = function(this, item)
+		WeaponCustomization:EraseSaveDataMelee()
+	end
 
-	MenuHelper:AddButton({
-		id = "weapon_customization_clear_data",
-		title = "WeaponCustomization_ClearDataButton",
-		desc = "WeaponCustomization_ClearDataButtonDesc",
-		callback = "clear_weapon_visual_customizations",
-		menu_id = WeaponCustomization.MenuId,
-		priority = 98,
-	})
+	MenuHelper:LoadFromJsonFile( GoonBase.MenusPath .. WeaponCustomization.MenuFile, GoonBase.WeaponCustomization, GoonBase.Options.WeaponCustomization )
 
-end)
-
-Hooks:Add("MenuManagerBuildCustomMenus", "MenuManagerBuildCustomMenus_" .. Mod:ID(), function(menu_manager, mainmenu_nodes)
-	local menu_id = WeaponCustomization.MenuId
-	local data = {
-		area_bg = "none"
-	}
-	mainmenu_nodes[menu_id] = MenuHelper:BuildMenu( menu_id, data )
 end)
 
 -- Hooks
@@ -135,8 +97,18 @@ Hooks:Add("MenuSceneManagerSpawnedItemWeapon", "MenuSceneManagerSpawnedItemWeapo
 end)
 
 Hooks:Add("MenuSceneManagerSpawnedMeleeWeapon", "MenuSceneManagerSpawnedMeleeWeapon_" .. Mod:ID(), function(menu, melee_weapon_id, spawned_unit)
+
 	WeaponCustomization._menu_weapon_preview_unit = spawned_unit
-	WeaponCustomization:_open_weapon_customization_preview_node()
+	WeaponCustomization:LoadCurrentWeaponCustomization({
+		name = melee_weapon_id,
+		category = "melee_weapons",
+		slot = 0
+	})
+
+	if managers.blackmarket._customizing_weapon_data then
+		WeaponCustomization:_open_weapon_customization_preview_node()
+	end
+
 end)
 
 Hooks:Add("NewRaycastWeaponBasePostAssemblyComplete", "NewRaycastWeaponBasePostAssemblyComplete_WeaponCustomization", function(weapon, clbk, parts, blueprint)
@@ -742,7 +714,7 @@ function WeaponCustomization:ShowClearDataConfirmation()
 	local menuOptions = {}
 	menuOptions[1] = {
 		text = managers.localization:text("WeaponCustomization_ClearDataAccept"),
-		callback = WeaponCustomization.ClearDataFromSave,
+		callback = callback(self, self, "ClearDataFromSave"),
 		is_cancel_button = true
 	}
 	menuOptions[2] = {
@@ -753,29 +725,48 @@ function WeaponCustomization:ShowClearDataConfirmation()
 
 end
 
-function WeaponCustomization.ClearDataFromSave()
+function WeaponCustomization:ClearDataFromSave()
 
 	if not managers.blackmarket then
 		return
 	end
 
-	-- Erase primary weapons
+	self:EraseSaveDataPrimary()
+	self:EraseSaveDataSecondary()
+	self:EraseSaveDataMelee()
+
+end
+
+function WeaponCustomization:EraseSaveDataPrimary()
+
+	Print(" Clearing weapon customization data from primary weapons")
 	for k, v in pairs( managers.blackmarket._global.crafted_items["primaries"] ) do
 		if v.visual_blueprint then
+			log("\tClearing visual blueprint: " .. tostring(v.weapon_id))
 			v.visual_blueprint = nil
 		end
 	end
 
-	-- Erase secondary weapons
+end
+
+function WeaponCustomization:EraseSaveDataSecondary()
+
+	Print(" Clearing weapon customization data from secondary weapons")
 	for k, v in pairs( managers.blackmarket._global.crafted_items["secondaries"] ) do
 		if v.visual_blueprint then
+			log("\tClearing visual blueprint: " .. tostring(v.weapon_id))
 			v.visual_blueprint = nil
 		end
 	end
 
-	-- Erase melee weapons
+end
+
+function WeaponCustomization:EraseSaveDataMelee()
+
+	Print(" Clearing weapon customization data from melee weapons")
 	for k, v in pairs( managers.blackmarket._global["melee_weapons"] ) do
 		if v.visual_blueprint then
+			log("\tClearing visual blueprint: " .. tostring(k))
 			v.visual_blueprint = nil
 		end
 	end
