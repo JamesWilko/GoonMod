@@ -43,7 +43,7 @@ Hooks:Add("MenuManagerBuildCustomMenus", "MenuManagerBuildCustomMenus_OptionsMen
 	local mod_options_menu = LuaModManager.Constants._lua_mod_options_menu_id
 	if mainmenu_nodes[mod_options_menu] then
 
-		mainmenu_nodes[options_menu_id] = MenuHelper:BuildMenu( options_menu_id )
+		mainmenu_nodes[options_menu_id] = MenuHelper:BuildMenu( options_menu_id )	
 		MenuHelper:AddMenuItem( mainmenu_nodes[mod_options_menu], options_menu_id, "gm_options_menu", "gm_options_menu_desc" )
 		
 		Hooks:Call( "MenuManagerPostSetupGoonBaseMenu", menu_manager, mainmenu_nodes )
