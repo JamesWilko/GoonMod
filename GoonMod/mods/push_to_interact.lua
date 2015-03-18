@@ -66,7 +66,6 @@ Hooks:Add("MenuManagerInitialize", "MenuManagerInitialize_" .. Mod:ID(), functio
 	end
 
 	MenuHelper:LoadFromJsonFile( GoonBase.MenusPath .. PushToInteract.MenuFile, PushToInteract, GoonBase.Options.PushToInteract )
-
 end)
 
 -- Hooks

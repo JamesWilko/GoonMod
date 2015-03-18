@@ -321,9 +321,8 @@ function BaseMod:SetupMenu()
 		desc = self:DescKey(),
 		callback = menu_name,
 		value = self:IsEnabled(),
-		disabled_color = Color( 0.8, 0.3, 0.3, 0.3 ),
+		disabled_color = Color( 1.0, 0.3, 0.3, 0.3 ),
 		menu_id = Mods.MenuID,
-		priority = self.Priority or 0
 	})
 
 end

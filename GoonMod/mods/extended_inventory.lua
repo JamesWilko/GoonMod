@@ -474,20 +474,20 @@ Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_" .. Mod
 		ExtendedInv:_ShowCodeRedeemWindow()
 	end
 
-	MenuHelper:AddDivider({
-		id = "gm_ex_inv_divider",
-		menu_id = "goonbase_options_menu",
-		size = 16,
-		priority = -99,
-	})
-
 	MenuHelper:AddButton({
 		id = "gm_ex_inv_redeem_button",
 		title = "gm_ex_inv_redeem_code",
 		desc = "gm_ex_inv_redeem_code_desc",
 		callback = "extended_inv_open_redeem_code",
 		menu_id = "goonbase_options_menu",
-		priority = -100,
+		priority = 100,
+	})
+
+	MenuHelper:AddDivider({
+		id = "gm_ex_inv_divider",
+		menu_id = "goonbase_options_menu",
+		size = 16,
+		priority = 0,
 	})
 
 end)
