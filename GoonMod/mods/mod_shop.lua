@@ -23,6 +23,15 @@ local ExtendedInv = _G.GoonBase.ExtendedInventory
 ModShop.PurchaseCurrency = "gage_coin"
 ModShop.CostRegular = 1
 ModShop.CostInfamous = 3
+ModShop.MaskPricing = {
+	["default"] = 5,
+	["dlc"] = 5,
+	["normal"] = 5,
+	["pd2_clan"] = 3,
+	["halloween"] = 8,
+	["infamous"] = 20,
+	["infamy"] = 20,
+}
 
 ModShop.ExclusionList = {
 	["nothing"] = true,
@@ -32,48 +41,212 @@ ModShop.ExclusionList = {
 	["character_locked"] = true,
 }
 
-ModShop.DLCAlwaysUnlocked = {
-	["halloween"] = true,
-}
-
-ModShop.MaskAllowanceList = {
+ModShop.NonDLCGlobalValues = {
 	["normal"] = true,
+	["pd2_clan"] = true,
 	["halloween"] = true,
 	["infamous"] = true,
+	["infamy"] = true,
 }
 
-ModShop.MaskPricing = {
-	["default"] = 5,
-	["dlc"] = 5,
-	["normal"] = 5,
-	["pd2_clan"] = 3,
-	["halloween"] = 8,
-	["infamous"] = 20,
-	["infamy"] = 10,
-}
+function ModShop:IsItemExluded( item )
+	return ModShop.ExclusionList[item] or false
+end
 
-ModShop.MaskModAllowanceList = {
-	["normal"] = true,
-	["halloween"] = true,
-	["infamous"] = true,
-}
+function ModShop:IsGlobalValueDLC( gv )
+	if not ModShop.NonDLCGlobalValues[gv] then
+		return true
+	end
+	return false
+end
 
--- Blackmarket Menu
+function ModShop:IsInfamyLocked( data )
+
+	local infamy_lock = data.tweak_data.infamy_lock
+	if infamy_lock then
+		local is_unlocked = managers.infamy:owned(infamy_lock)
+		if not is_unlocked then
+			return true
+		end
+	end
+
+	return false
+
+end
+
+function ModShop:GetItemPrice( data )
+
+	if data.category == "masks" then
+		local gv = self:IsGlobalValueDLC( data.global_value ) and "dlc" or data.global_value
+		return ModShop.MaskPricing[ gv ]
+	end
+
+	if data.global_value == "infamy" or data.global_value == "infamous" then
+		return ModShop.CostInfamous
+	end
+
+	return ModShop.CostRegular
+
+end
+
+function ModShop:_ReloadBlackMarket()
+	local blackmarket_gui = managers.menu_component._blackmarket_gui
+	if blackmarket_gui then
+		blackmarket_gui:reload()
+		blackmarket_gui:on_slot_selected( blackmarket_gui._selected_slot )
+	end
+end
+
+function ModShop:AttemptItemPurchase( data, weapon_part )
+
+	if not data then
+		return
+	end
+
+	local verified, purchase_data = self:VerifyItemPurchase( data, weapon_part )
+	if verified then
+		self:ShowItemPurchaseMenu( purchase_data )
+	end
+
+end
+
+function ModShop:VerifyItemPurchase( data, weapon_part )
+
+	local name = data.name
+	local category = weapon_part and "parts" or data.category
+
+	local entry
+	if weapon_part then
+		entry = tweak_data:get_raw_value("weapon", "factory", category, name)
+	else
+		entry = tweak_data:get_raw_value("blackmarket", category, name)
+	end
+
+	if not entry then
+		local str = "[Error] Could not retrieve tweak_data for {1} item '{2}', weapon_part: {3}"
+		str = str:gsub("{1}", tostring(category))
+		str = str:gsub("{2}", tostring(name))
+		str = str:gsub("{3}", tostring(weapon_part or false))
+		Print(str)
+		return
+	end
+
+	local global_value = entry.infamous and "infamous" or entry.global_value or entry.dlc or entry.dlcs and entry.dlcs[math.random(#entry.dlcs)] or "normal"
+	local purchase_data = {
+		name = data.name,
+		name_localized = data.name_localized,
+		category = weapon_part and "weapon_mods" or data.category,
+		is_weapon_part = weapon_part,
+		bitmap_texture = data.bitmap_texture,
+		global_value = global_value,
+		tweak_data = entry,
+		price = 1,
+	}
+	purchase_data.price = self:GetItemPrice( purchase_data )
+
+	if self:IsItemExluded( purchase_data.name ) then
+		return false
+	end
+
+	if self:IsGlobalValueDLC( purchase_data.global_value ) and not managers.dlc:is_dlc_unlocked( purchase_data.global_value ) then
+		return false
+	end
+
+	if self:IsInfamyLocked( purchase_data ) then
+		return false
+	end
+
+	for k, v in pairs( tweak_data.dlc ) do
+		if v.achievement_id ~= nil and v.content ~= nil and v.content.loot_drops ~= nil then
+			for i, loot in pairs( v.content.loot_drops ) do
+				if loot.item_entry ~= nil and loot.item_entry == purchase_data.name then
+
+					if not managers.achievment.handler:has_achievement(v.achievement_id) then
+
+						local achievement_tracker = tweak_data.achievement[ purchase_data.is_weapon_part and "weapon_part_tracker" or "mask_tracker" ]
+						local achievement_progress = achievement_tracker[purchase_data.name]
+						if achievement_progress then
+							return false
+						end
+
+						if not purchase_data.is_weapon_part then
+							return false
+						end
+						
+					end
+
+				end
+			end
+		end
+	end
+
+	if purchase_data.tweak_data.is_a_unlockable then
+		return false
+	end
+
+	return true, purchase_data
+
+end
+
+function ModShop:ShowItemPurchaseMenu( purchase_data )
+
+	local currency_name = GoonBase.ExtendedInventory:GetItem( ModShop.PurchaseCurrency ).name
+	local title = managers.localization:text("gm_gms_purchase_window_title")
+	local message = managers.localization:text("gm_gms_purchase_window_message")
+	message = message:gsub("{1}", purchase_data.name_localized)
+	message = message:gsub("{2}", tostring(purchase_data.price))
+	message = message:gsub("{3}", managers.localization:text(currency_name) .. (purchase_data.price > 1 and "s" or ""))
+
+	local dialog_data = {}
+	dialog_data.title = title
+	dialog_data.text = message
+	dialog_data.id = "gms_purchase_item_window"
+
+	local ok_button = {}
+	ok_button.text = managers.localization:text("dialog_yes")
+	ok_button.callback_func = callback( self, self, "_PurchaseItem", purchase_data )
+
+	local cancel_button = {}
+	cancel_button.text = managers.localization:text("dialog_no")
+	cancel_button.cancel_button = true
+
+	dialog_data.button_list = {ok_button, cancel_button}
+	dialog_data.purchase_data = purchase_data
+	managers.system_menu:show( dialog_data )
+
+end
+
+function ModShop:_PurchaseItem( purchase_data )
+
+	if not purchase_data then
+		return
+	end
+
+	Print("Purchased item with gage-coins:\n\tItem name: " .. tostring(purchase_data.name) .. "\n\tCategory: " .. tostring(purchase_data.category))
+	managers.blackmarket:add_to_inventory(purchase_data.global_value, purchase_data.category, purchase_data.name, true)
+
+	ExtendedInv:TakeItem( ModShop.PurchaseCurrency, purchase_data.price )
+
+	self:_ReloadBlackMarket()
+	if Global.wallet_panel then
+		WalletGuiObject.refresh()
+	end
+
+end
+
+-- Hooks
 Hooks:Add("BlackMarketGUIPostSetup", "BlackMarketGUIPostSetup_" .. Mod:ID(), function(gui, is_start_page, component_data)
 
-	Hooks:RegisterHook("ModShopAttemptPurchaseWeaponMod")
 	gui.modshop_purchase_weaponmod_callback = function(self, data)
-		Hooks:Call("ModShopAttemptPurchaseWeaponMod", data)
+		ModShop:AttemptItemPurchase( data, true )
 	end
 
-	Hooks:RegisterHook("ModShopAttemptPurchaseMask")
 	gui.modshop_purchase_mask_callback = function(self, data)
-		Hooks:Call("ModShopAttemptPurchaseMask", data)
+		ModShop:AttemptItemPurchase( data )
 	end
 
-	Hooks:RegisterHook("ModShopAttemptPurchaseMaskPart")
 	gui.modshop_purchase_mask_part_callback = function(self, data)
-		Hooks:Call("ModShopAttemptPurchaseMaskPart", data)
+		ModShop:AttemptItemPurchase( data )
 	end
 
 	local wm_modshop = {
@@ -108,125 +281,51 @@ Hooks:Add("BlackMarketGUIPostSetup", "BlackMarketGUIPostSetup_" .. Mod:ID(), fun
 end)
 
 Hooks:Add("BlackMarketGUIOnPopulateModsActionList", "BlackMarketGUIOnPopulateModsActionList_" .. Mod:ID(), function(gui, data)
-	if ModShop:WeaponModAllowed(data) then
+	if ModShop:VerifyItemPurchase( data, true ) then
 		table.insert(data, "wm_modshop")
 	end
 end)
 
-function ModShop:WeaponModAllowed(mod)
-
-	if mod == nil then
-		return false
-	end
-
-	if mod.free_of_charge then
-		return false
-	end
-
-	for k, v in pairs( tweak_data.dlc ) do
-		if v.achievement_id ~= nil and v.content ~= nil and v.content.loot_drops ~= nil then
-			for i, loot in pairs( v.content.loot_drops ) do
-				if loot.item_entry ~= nil and loot.item_entry == mod.name then
-					return managers.achievment.handler:has_achievement(v.achievement_id)
-				end
-			end
-		end
-	end
-
-	local gv = mod.global_value
-	if gv == nil or gv == "normal" then
-		return true
-	end
-
-	if not managers.dlc:is_dlc_unlocked(gv) then
-		return false
-	end
-
-	return true
-
-end
-
 Hooks:Add("BlackMarketGUIOnPopulateBuyMasksActionList", "BlackMarketGUIOnPopulateBuyMasksActionList_" .. Mod:ID(), function(gui, data)
-	if ModShop:IsMaskOrModAllowed(data, ModShop.MaskAllowanceList) then
+	if ModShop:VerifyItemPurchase( data, false ) then
 		table.insert(data, "bm_modshop")
 	end
 end)
 
 Hooks:Add("BlackMarketGUIOnPopulateMaskModsActionList", "BlackMarketGUIOnPopulateMaskModsActionList_" .. Mod:ID(), function(gui, data)
-	if ModShop:IsMaskOrModAllowed(data, ModShop.MaskModAllowanceList) then
+	if ModShop:VerifyItemPurchase( data, false ) then
 		table.insert(data, "mp_modshop")
 	end
 end)
 
-function ModShop:IsMaskOrModAllowed(mod, allowance_list)
-
-	if mod == nil then
-		return false
-	end
-
-	local gv = mod.global_value
-	if gv == nil then
-		return true
-	end
-
-	if ModShop.ExclusionList[mod.name] == true or ModShop.ExclusionList[gv] == true then
-		return false
-	end
-
-	for k, v in pairs( tweak_data.dlc ) do
-		if v.achievement_id ~= nil and v.content ~= nil and v.content.loot_drops ~= nil then
-			for i, loot in pairs( v.content.loot_drops ) do
-				if loot.item_entry ~= nil and loot.item_entry == mod.name then
-					return managers.achievment.handler:has_achievement(v.achievement_id)
-				end
-			end
-		end
-	end
-
-	local infamy_lock = tweak_data.blackmarket[mod.category][mod.name].infamy_lock
-	if infamy_lock ~= nil or gv == "infamy" then
-		local is_unlocked = managers.infamy:owned(infamy_lock) or infamy_lock == nil
-		if not is_unlocked then
-			return false
-		end
-	end
-
-	if allowance_list and allowance_list[gv] then
-		return true
-	end
-
-	if gv ~= "infamy" and not managers.dlc:is_dlc_unlocked(gv) then
-		return false
-	end
-
-	return true
-
-end
-
 Hooks:Add("BlackMarketManagerModifyGetInventoryCategory", "BlackMarketManagerModifyGetInventoryCategory_" .. Mod:ID(), function(blackmarket, category, data)
 
+	local blackmarket_table = {}
 	for k, v in pairs( tweak_data.blackmarket[category] ) do
 
-		local already_in_table = false
+		local already_in_table = blackmarket_table[v.id]
 		for x, y in pairs( data ) do
+			blackmarket_table[y.id] = true
 			if y.id == k then
 				already_in_table = true
 			end
 		end
 
-		local gv = v.dlc or v.global_value or "normal"
-		if not already_in_table and ModShop.ExclusionList[k] ~= true then
+		local global_value = v.infamous and "infamous" or v.global_value or v.dlc or v.dlcs and v.dlcs[math.random(#v.dlcs)] or "normal"
+		if not already_in_table and not ModShop:IsItemExluded(k) then
 			
-			if v.infamous then
-				gv = "infamous"
+			local add_item = true
+			if ModShop:IsGlobalValueDLC( global_value ) and not managers.dlc:is_dlc_unlocked( global_value ) then
+				add_item = false
 			end
 
-			if gv == "normal" or gv == "infamous" or gv == "infamy" or ( (gv ~= "normal" and managers.dlc:is_dlc_unlocked(gv)) or ModShop.DLCAlwaysUnlocked[gv] == true ) then
-				table.insert(data, {
+			if add_item then
+				local item_data = {
 					id = k,
-					global_value = gv,
+					global_value = global_value,
 					amount = 0
-				})
+				}
+				table.insert(data, item_data)
 			end
 
 		end
@@ -234,253 +333,3 @@ Hooks:Add("BlackMarketManagerModifyGetInventoryCategory", "BlackMarketManagerMod
 	end
 
 end)
-
--- Purchase Hooks
-Hooks:Add("ModShopAttemptPurchaseWeaponMod", "ModShopAttemptPurchaseWeaponMod_" .. Mod:ID(), function(data)
-	ModShop:SetWeaponModPurchaseData(data)
-	ModShop:ShowPurchaseMenu()
-end)
-
-Hooks:Add("ModShopAttemptPurchaseMask", "ModShopAttemptPurchaseMask_" .. Mod:ID(), function(data)
-	ModShop:SetMaskPurchaseData(data)
-	ModShop:ShowPurchaseMenu()
-end)
-
-Hooks:Add("ModShopAttemptPurchaseMaskPart", "ModShopAttemptPurchaseMaskPart_" .. Mod:ID(), function(data)
-	ModShop:SetMaskPartPurchaseData(data)
-	ModShop:ShowPurchaseMenu()
-end)
-
--- Purchase Menu
-function ModShop:SetPurchaseData( data )
-
-	self._purchase_data = {}
-	self._purchase_data.name = data.name
-	self._purchase_data.name_localized = data.name_localized
-	self._purchase_data.category = data.category
-	self._purchase_data.global_value = data.global_value
-	self._purchase_data.cost = ModShop.CostRegular
-
-end
-
-function ModShop:SetWeaponModPurchaseData( data )
-
-	if data then
-
-		self:SetPurchaseData( data )
-
-		if self:IsWeaponMod( data.category ) then
-			if data.free_of_charge == true then
-				self._purchase_data.free_of_charge = true
-			end
-		end	
-
-	end
-
-end
-
-function ModShop:SetMaskPurchaseData( data )
-
-	if data then
-
-		self:SetPurchaseData( data )
-
-		if self:IsMask( data.category ) then
-
-			local price = ModShop.MaskPricing[ data.global_value ] or ModShop.MaskPricing["default"]
-			if data.dlc then
-				price = ModShop.MaskPricing["dlc"]
-			end
-			if data.infamy_lock then
-				price = ModShop.MaskPricing["infamy"]
-			end
-
-			self._purchase_data.cost = price
-
-		end
-
-	end
-
-end
-
-function ModShop:SetMaskPartPurchaseData( data )
-
-	if data then
-
-		self:SetPurchaseData( data )
-
-		if self:IsMaskPart( data.category ) then
-
-			local mod_data = tweak_data.blackmarket[data.category][data.name]
-			if mod_data then
-
-				if mod_data.infamous == true then
-					self._purchase_data.cost = ModShop.CostInfamous
-				end
-
-				if mod_data.global_value == "infamy" or mod_data.infamy_lock then
-					self._purchase_data.cost = ModShop.CostInfamous
-				end
-
-			end
-
-		end
-
-	end
-
-end
-
-function ModShop:ShowPurchaseMenu()
-
-	if not ExtendedInv then
-		Print("[Error] Attempting to show purchase menu with no Extended Inventory...")
-		return
-	end
-
-	local gage_coins = ExtendedInv:GetItem( ModShop.PurchaseCurrency )
-	local purchase_cost = self._purchase_data.cost
-
-	if not gage_coins.amount or type(gage_coins.amount) == "string" then
-		Print("[Error] Attempting to show purchase menu with no coin amount, or a string as the amount")
-		return
-	end
-	if not purchase_cost or type(purchase_cost) == "string" then
-		Print("[Error] Attmpting to show purchase menu with a string as the purchasing cost")
-		return
-	end
-
-	-- Check if item is free of charge
-	if self._purchase_data.free_of_charge == true then
-		self:ShowFreeOfCharge()
-		return
-	end
-
-	-- Check if we can afford this
-	if gage_coins.amount < purchase_cost or purchase_cost <= 0 then
-		self:ShowNotEnoughCoins( purchase_cost )
-		return
-	end
-	
-	-- Show purchase menu
-	local title = managers.localization:text("gm_gms_purchase_window_title")
-	local message = managers.localization:text("gm_gms_purchase_window_message")
-	message = message:gsub("{1}", self._purchase_data.name_localized)
-	message = message:gsub("{2}", purchase_cost)
-	message = message:gsub("{3}", gage_coins.amount)
-	message = message:gsub("{4}", gage_coins.amount - purchase_cost)
-
-	local menuOptions = {}
-	menuOptions[1] = {
-		text = managers.localization:text("gm_gms_purchase_window_accept"),
-		callback = ModShop.PurchaseItem
-	}
-	menuOptions[2] = {
-		text = managers.localization:text("gm_gms_purchase_window_cancel"),
-		callback = nil,
-		is_cancel_button = true
-	}
-	local window = QuickMenu:new(title, message, menuOptions, true)
-
-end
-
-function ModShop:ShowFreeOfCharge()
-
-	local title = managers.localization:text("gm_gms_purchase_failed")
-	local message = managers.localization:text("gm_gms_free_of_charge_message")
-	message = message:gsub("{1}", self._purchase_data.name_localized)
-	local menuOptions = {}
-	menuOptions[1] = {
-		text = managers.localization:text("gm_gms_free_of_charge_accept"),
-		is_cancel_button = true
-	}
-	local window = QuickMenu:new(title, message, menuOptions, true)
-
-end
-
-function ModShop:ShowNotEnoughCoins(cost)
-
-	local title = managers.localization:text("gm_gms_purchase_failed")
-	local message = managers.localization:text("gm_gms_cannot_afford_message")
-	message = message:gsub("{1}", self._purchase_data.name_localized)
-	message = message:gsub("{2}", cost)
-	local menuOptions = {}
-	menuOptions[1] = {
-		text = managers.localization:text("gm_gms_cannot_afford_accept"),
-		is_cancel_button = true
-	}
-	local window = QuickMenu:new(title, message, menuOptions, true)
-
-end
-
-function ModShop:PurchaseItem()
-
-	if not ExtendedInv then
-		Print("[Error] Attempting to purchase item with no Extended Inventory...")
-		return
-	end
-	
-	local purchase_data = ModShop._purchase_data
-	local item = purchase_data.name
-	local category = purchase_data.category
-	local cost = purchase_data.cost
-	local global_value = purchase_data.global_value
-
-	Print("Purchasing ", item, " from category ", category, " at cost: ", cost, " coins")
-
-	-- Add to weapon inventory
-	if ModShop:IsWeaponMod(category) then
-		managers.blackmarket:add_to_inventory(global_value, "weapon_mods", item, true)
-		ModShop:ReloadBlackMarketAfterPurchase()
-	end
-
-	-- Add to mask inventory
-	if ModShop:IsMaskPart(category) then
-		
-		managers.blackmarket:add_traded_mask_part_to_inventory(item, category)
-
-		-- Temporary measure to reload mask mods inventory
-		local blackmarket_gui = managers.menu_component._blackmarket_gui
-		if blackmarket_gui then
-			blackmarket_gui:_abort_customized_mask_callback()
-		end
-
-	end
-
-	-- Add mask to inventory
-	if ModShop:IsMask(category) then
-		managers.blackmarket:add_to_inventory(global_value, "masks", item, true)
-		ModShop:ReloadBlackMarketAfterPurchase()
-	end
-
-	-- Remove coins
-	ExtendedInv:TakeItem( ModShop.PurchaseCurrency, cost )
-
-end
-
-function ModShop:ReloadBlackMarketAfterPurchase()
-	local blackmarket_gui = managers.menu_component._blackmarket_gui
-	if blackmarket_gui then
-		blackmarket_gui:reload()
-	end
-end
-
-function ModShop:IsWeaponMod(category)
-	if category == "primaries" or category == "secondaries" then
-		return true
-	end
-	return false
-end
-
-function ModShop:IsMask(category)
-	if category == "masks" then
-		return true
-	end
-	return false
-end
-
-function ModShop:IsMaskPart(category)
-	if category == "colors" or category == "textures" or category == "materials" then
-		return true
-	end
-	return false
-end
