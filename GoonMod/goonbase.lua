@@ -10,7 +10,10 @@ if not _G.GoonBase then
 	GoonBase.Path = ""
 	GoonBase.LuaPath = "lua/"
 	GoonBase.RequiresFolder = "req/"
-	GoonBase.ModsFolder = "mods/"
+	GoonBase.ModsFolders = {
+		"mods/",
+		"mods/custom_colours/"
+	}
 	GoonBase.MenusPath = "menus/"
 	GoonBase.LocalizationFolder = "loc/"
 
@@ -148,7 +151,6 @@ if not GoonBase.HasLoadedScripts then
 
 	GoonBase.LuaPath = ModPath .. GoonBase.LuaPath
 	GoonBase.RequiresFolder = ModPath .. GoonBase.RequiresFolder
-	GoonBase.ModsFolder = ModPath .. GoonBase.ModsFolder
 	GoonBase.MenusPath = ModPath .. GoonBase.MenusPath
 	GoonBase.LocalizationFolder = ModPath .. GoonBase.LocalizationFolder
 

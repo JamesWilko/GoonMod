@@ -97,10 +97,16 @@ function Mods:LoadMods()
 
 	if GoonBase.SupportedVersion then
 
-		GoonBase.ModFiles = file.GetFiles( GoonBase.ModsFolder )
+		GoonBase.ModFiles = {}
+		for k, v in pairs( GoonBase.ModsFolders ) do
+			local path = GoonBase.Path .. v
+			for x, y in pairs( file.GetFiles(path) ) do
+				table.insert( GoonBase.ModFiles, path .. y )
+			end
+		end
 
 		for k, v in pairs( GoonBase.ModFiles ) do
-			SafeDoFile( GoonBase.ModsFolder .. v )
+			SafeDoFile( v )
 		end
 
 	end
