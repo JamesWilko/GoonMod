@@ -191,15 +191,19 @@ end)
 
 Hooks:Add("WalletGuiObjectSetObjectVisible", "WalletGuiObjectSetObjectVisible_" .. Mod:ID(), function()
 
-	local gage_coins_icon = Global.wallet_panel:child("gage_coins_icon")
-	local gage_coins_text = Global.wallet_panel:child("gage_coins_text")
-	local money_icon = Global.wallet_panel:child("wallet_money_icon")
+	if Global.wallet_panel then
 
-	if gage_coins_icon then
-		gage_coins_icon:set_visible( money_icon:visible() )
-	end
-	if gage_coins_text then
-		gage_coins_text:set_visible( money_icon:visible() )
+		local gage_coins_icon = Global.wallet_panel:child("gage_coins_icon")
+		local gage_coins_text = Global.wallet_panel:child("gage_coins_text")
+		local money_icon = Global.wallet_panel:child("wallet_money_icon")
+
+		if gage_coins_icon then
+			gage_coins_icon:set_visible( money_icon:visible() )
+		end
+		if gage_coins_text then
+			gage_coins_text:set_visible( money_icon:visible() )
+		end
+
 	end
 
 end)
