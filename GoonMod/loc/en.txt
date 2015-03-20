@@ -260,6 +260,17 @@
 	"gm_options_cfc_enabled_title" : "Enable Custom Weapon Flashlight Color",
 	"gm_options_cfc_enabled_desc" : "Use the custom set color for Weapon Flashlights",
 
+	"gm_options_cpwl_menu_title" : "Weapon Laser Colour",
+	"gm_options_cpwl_menu_desc" : "Modify the color of your own, and your teammates weapon lasers",
+	"gm_options_cpwl_enabled_title" : "Enable Custom Weapon Laser Colour",
+	"gm_options_cpwl_enabled_desc" : "Use the custom set color for lasers on your own weapons",
+	"gm_options_cpwl_teammate_lasers_title" : "Teammates Lasers",
+	"gm_options_cpwl_teammate_lasers_desc" : "Sets how teammate lasers appear in the world",
+	"gm_options_cpwl_teammate_lasers_off" : "Unchanged",
+	"gm_options_cpwl_teammate_lasers_same" : "Use My Colour",
+	"gm_options_cpwl_teammate_lasers_network" : "Networked Colour",
+	"gm_options_cpwl_teammate_lasers_unique" : "Unique per Person",
+
 	"gm_options_cwl_menu_title" : "World Laser Colour",
 	"gm_options_cwl_menu_desc" : "Modify the color of lasers that appear in the world like on mines and sensors",
 	"gm_options_cwl_enabled_title" : "Enable Custom World Laser Colour",
