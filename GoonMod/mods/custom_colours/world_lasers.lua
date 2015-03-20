@@ -3,7 +3,7 @@
 local Mod = class( BaseMod )
 Mod.id = "CustomWorldLaserColour"
 Mod.Name = "Custom World Laser Colour"
-Mod.Desc = "Set a custom colour for lasers that appear in the game world"
+Mod.Desc = "Modify the colour of lasers that appear in the game world"
 Mod.Requirements = {}
 Mod.Incompatibilities = {}
 Mod.Priority = 1
@@ -184,7 +184,7 @@ Hooks:Add("GameSetupUpdate", "GameSetupUpdate_" .. Mod:ID(), function(t, dt)
 	end
 end)
 
-Hooks:Add("ElementLaserTriggerPostInit", "ElementLaserTriggerPostInit_WorldLaser", function(laser)
+Hooks:Add("ElementLaserTriggerPostInit", "ElementLaserTriggerPostInit_" .. Mod:ID(), function(laser)
 
 	if not Lasers:IsEnabled() then
 		return
@@ -194,7 +194,7 @@ Hooks:Add("ElementLaserTriggerPostInit", "ElementLaserTriggerPostInit_WorldLaser
 
 end)
 
-Hooks:Add("ElementLaserTriggerUpdateDraw", "ElementLaserTriggerUpdateDraw_WorldLaser", function(laser, t, dt)
+Hooks:Add("ElementLaserTriggerUpdateDraw", "ElementLaserTriggerUpdateDraw_" .. Mod:ID(), function(laser, t, dt)
 
 	if not Lasers:IsEnabled() then
 		return

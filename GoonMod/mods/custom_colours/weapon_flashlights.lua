@@ -3,7 +3,7 @@
 local Mod = class( BaseMod )
 Mod.id = "CustomWeaponFlashlight"
 Mod.Name = "Custom Weapon Flashlight Colour"
-Mod.Desc = "Set a custom colour for flashlights attached to your weapons"
+Mod.Desc = "Modify the color of flashlights attached to your weapons"
 Mod.Requirements = {}
 Mod.Incompatibilities = {}
 Mod.Priority = 1
@@ -166,7 +166,7 @@ Hooks:Add("GameSetupUpdate", "GameSetupUpdate_" .. Mod:ID(), function(t, dt)
 	end
 end)
 
-Hooks:Add("WeaponFlashLightInit", "WeaponFlashLightInit_CustomLight", function(flashlight, unit)
+Hooks:Add("WeaponFlashLightInit", "WeaponFlashLightInit_" .. Mod:ID(), function(flashlight, unit)
 
 	if not Light:IsEnabled() then
 		Hooks:Remove("WeaponFlashLightInit_CustomLight")
@@ -177,7 +177,7 @@ Hooks:Add("WeaponFlashLightInit", "WeaponFlashLightInit_CustomLight", function(f
 
 end)
 
-Hooks:Add("WeaponFlashLightCheckState", "WeaponFlashLightCheckState_CustomLight", function(flashlight)
+Hooks:Add("WeaponFlashLightCheckState", "WeaponFlashLightCheckState_" .. Mod:ID(), function(flashlight)
 
 	if flashlight._on then
 
@@ -196,7 +196,7 @@ Hooks:Add("WeaponFlashLightCheckState", "WeaponFlashLightCheckState_CustomLight"
 
 end)
 
-Hooks:Add("WeaponFlashLightUpdate", "WeaponFlashLightUpdate_Rainbow", function(flashlight, unit, t, dt)
+Hooks:Add("WeaponFlashLightUpdate", "WeaponFlashLightUpdate_" .. Mod:ID(), function(flashlight, unit, t, dt)
 
 	if not Light:IsEnabled() then
 		return
