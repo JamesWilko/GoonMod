@@ -766,7 +766,7 @@ end
 
 function WeaponCustomization:_AdvancedClearWeaponAccept()
 
-	if managers.blackmarket._customizing_weapon_data then
+	if not managers.blackmarket._customizing_weapon_data then
 		return
 	end
 
