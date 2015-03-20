@@ -68,12 +68,51 @@ Hooks:Add("MenuManagerBuildCustomMenus", "MenuManagerBuildCustomMenus_ModsMenu",
 
 	if menu_nodes.main ~= nil or menu_nodes.lobby ~= nil then
 
-		menu_nodes[Mods.MenuID] = MenuHelper:BuildMenu( Mods.MenuID )
+		MenuCallbackHandler.GoonModFocusModsMenu = function( node, focus )
+			if focus then
+				Mods:ShowModManagerMenu()
+			else
+				Mods:HideModManagerMenu()
+			end
+		end
+
+		local menu_data = {
+			focus_changed_callback = "GoonModFocusModsMenu"
+		}
+		menu_nodes[Mods.MenuID] = MenuHelper:BuildMenu( Mods.MenuID, menu_data )
 		Mods:VerifyAllRequirements()
 
 	end
 
 end)
+
+function Mods:ShowModManagerMenu()
+
+	if not managers.menu_component or not managers.gui_data then
+		return
+	end
+	if managers.menu_component._contract_gui then
+		managers.menu_component:close_contract_gui()
+	end
+
+	self._fullscreen_ws = self._fullscreen_ws or managers.gui_data:create_fullscreen_16_9_workspace()
+	if not self._darken_bg then
+		self._darken_bg = self._fullscreen_ws:panel():rect({
+			color = Color.black:with_alpha(0.4),
+			layer = 50
+		})
+	end
+	self._darken_bg:set_alpha(1)
+
+end
+
+function Mods:HideModManagerMenu()
+
+	if self._darken_bg then
+		self._darken_bg:set_alpha(0)
+	end
+
+end
 
 function Mods:ShowHelpMenu()
 
