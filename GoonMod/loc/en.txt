@@ -290,4 +290,14 @@
 	"Options_TeammateLaser_Theirs" : "Use Their Colour",
 	"Options_TeammateLaser_Unique" : "Unique per Person",
 
+	"gm_options_choose_any_character_title" : "Enable Multiple Characters",
+	"gm_options_choose_any_character_desc" : "Allow players to join as any character they want, even with multiple of the same character",
+
+	"gm_options_infamy_outliner_menu_title" : "Infamy Outliner",
+	"gm_options_infamy_outliner_menu_desc" : "Customize the colour and manage your saved infamous skill tree data",
+	"gm_options_infamy_outliner_enabled_title" : "Enable Infamy Outliner",
+	"gm_options_infamy_outliner_enabled_desc" : "Show the infamy outliner on the skill tree screen",
+	"gm_options_infamy_outliner_clear_data_title" : "Clear Infamy Data",
+	"gm_options_infamy_outliner_clear_data_desc" : "Clear Infamy Outliner Data",
+
 }

@@ -83,6 +83,9 @@ GoonBase.HookFiles = {
 	["lib/managers/menu/playerprofileguiobject"] = "PlayerProfileGUIObject.lua",
 	["lib/managers/menu/walletguiobject"] = "WalletGUIObject.lua",
 	["lib/managers/experiencemanager"] = "ExperienceManager.lua",
+	["lib/managers/skilltreemanager"] = "SkillTreeManager.lua",
+	["lib/managers/menu/skilltreegui"] = "SkillTreeGUI.lua",
+	["lib/network/networkgame"] = "NetworkGame.lua",
 
 }
 

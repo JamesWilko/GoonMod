@@ -34,7 +34,7 @@ Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_" .. Mod
 		callback = "toggle_zoom_sensitivity",
 		value = GoonBase.Options.IronsightSensitivity.Enabled,
 		menu_id = "goonbase_options_menu",
-		priority = 101,
+		priority = 1,
 	})
 
 end)
