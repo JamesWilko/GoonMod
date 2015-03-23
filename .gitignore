@@ -1,3 +1,5 @@
 GoonMod/mods/akimbo_autoaim.lua
 GoonMod/mods/riot_shields.lua
 GoonMod/mods/perkdeck_jacket.lua
+GoonMod/mods/choose_any_character.lua
+GoonMod/loc/pd_jacket_en.txt
