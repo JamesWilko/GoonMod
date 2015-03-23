@@ -2,11 +2,10 @@
 -- Mod Definition
 local Mod = class( BaseMod )
 Mod.id = "CustomWeaponFlashlight"
-Mod.Name = "Custom Weapon Flashlight Colour"
+Mod.Name = "Custom Flashlight Colour - Players"
 Mod.Desc = "Modify the color of flashlights attached to your weapons"
 Mod.Requirements = {}
 Mod.Incompatibilities = {}
-Mod.Priority = 1
 
 Hooks:Add("GoonBaseRegisterMods", "GoonBaseRegisterMutators_" .. Mod.id, function()
 	GoonBase.Mods:RegisterMod( Mod )

@@ -2,11 +2,10 @@
 -- Mod Definition
 local Mod = class( BaseMod )
 Mod.id = "CustomWeaponLaserColour"
-Mod.Name = "Custom Weapon Laser Colour"
+Mod.Name = "Custom Laser Colour - Players"
 Mod.Desc = "Modify the color of your own, and your teammates weapon lasers"
 Mod.Requirements = {}
 Mod.Incompatibilities = {}
-Mod.Priority = 1
 
 Hooks:Add("GoonBaseRegisterMods", "GoonBaseRegisterMutators_" .. Mod.id, function()
 	GoonBase.Mods:RegisterMod( Mod )
@@ -46,23 +45,6 @@ Lasers.UniquePlayerColours = Lasers.UniquePlayerColours or {
 }
 
 -- Functions
-function Lasers:IsEnabled()
-	return GoonBase.Options.WeaponLasers.Enabled
-end
-
-function Lasers:IsRainbow()
-	return GoonBase.Options.UseRainbow.Rainbow
-end
-
-function Lasers:GetColor(alpha)
-	if Lasers.Color == nil then
-		Lasers.Color = ColorHSVRGB:new()
-		Lasers.Color:SetOptionsTable( "WeaponLasers" )
-	end
-	return Lasers.Color:GetColor( alpha ) or Color( alpha or 1, 1, 0, 0 )
-end
-
-
 function Lasers:IsEnabled()
 	return GoonBase.Options.WeaponLasers.Enabled
 end

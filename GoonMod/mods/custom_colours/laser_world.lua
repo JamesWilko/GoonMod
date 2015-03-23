@@ -2,11 +2,10 @@
 -- Mod Definition
 local Mod = class( BaseMod )
 Mod.id = "CustomWorldLaserColour"
-Mod.Name = "Custom World Laser Colour"
+Mod.Name = "Custom Laser Colour - World"
 Mod.Desc = "Modify the colour of lasers that appear in the game world"
 Mod.Requirements = {}
 Mod.Incompatibilities = {}
-Mod.Priority = 1
 
 Hooks:Add("GoonBaseRegisterMods", "GoonBaseRegisterMutators_" .. Mod.id, function()
 	GoonBase.Mods:RegisterMod( Mod )
@@ -36,23 +35,6 @@ GoonBase.Options.WorldLasers.RainbowSpeed 	= GoonBase.Options.WorldLasers.Rainbo
 Lasers.Color = ColorHSVRGB:new( GoonBase.Options.WorldLasers, Color.red:with_alpha(0.6) )
 
 -- Functions
-function Lasers:IsEnabled()
-	return GoonBase.Options.WorldLasers.Enabled
-end
-
-function Lasers:IsRainbow()
-	return GoonBase.Options.UseRainbow.Rainbow
-end
-
-function Lasers:GetColor(alpha)
-	if Lasers.Color == nil then
-		Lasers.Color = ColorHSVRGB:new()
-		Lasers.Color:SetOptionsTable( "WorldLasers" )
-	end
-	return Lasers.Color:GetColor( alpha ) or Color( alpha or 1, 1, 0, 0 )
-end
-
-
 function Lasers:IsEnabled()
 	return GoonBase.Options.WorldLasers.Enabled
 end
