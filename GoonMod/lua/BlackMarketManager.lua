@@ -39,6 +39,24 @@ function BlackMarketManager.get_inventory_category(self, category)
 
 end
 
+Hooks:Call("BlackMarketManagerGotAnyNewDrop")
+function BlackMarketManager.got_any_new_drop(self)
+	local r = Hooks:ReturnCall("BlackMarketManagerGotAnyNewDrop", self)
+	if r ~= nil then
+		return r
+	end
+	return self.orig.got_any_new_drop(self)
+end
+
+Hooks:Call("BlackMarketManagerGotNewDrop")
+function BlackMarketManager.got_new_drop(self, global_value, category, id)
+	local r = Hooks:ReturnCall("BlackMarketManagerGotNewDrop", self, global_value, category, id)
+	if r ~= nil then
+		return r
+	end
+	return self.orig.got_new_drop(self, global_value, category, id)
+end
+
 function BlackMarketManager:get_mods_on_weapon(category, slot)
 	local _global = Global.blackmarket_manager
 	if not _global.crafted_items[category] or not _global.crafted_items[category][slot] then

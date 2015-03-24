@@ -1,5 +1,6 @@
 
 CloneClass( BlackMarketGui )
+CloneClass( BlackMarketGuiSlotItem )
 CloneClass( BlackMarketGuiButtonItem )
 
 local is_win32 = SystemInfo:platform() == Idstring("WIN32")
@@ -2017,4 +2018,10 @@ Hooks:RegisterHook("BlackMarketGUIOnPreviewWeapon")
 function BlackMarketGui._preview_weapon(self, data)
 	self.orig._preview_weapon(self, data)
 	Hooks:Call("BlackMarketGUIOnPreviewWeapon", self, data)
+end
+
+Hooks:RegisterHook("BlackMarketGUISlotItemOnRefresh")
+function BlackMarketGuiSlotItem.refresh(self)
+	self.orig.refresh(self)
+	Hooks:Call("BlackMarketGUISlotItemOnRefresh", self)
 end
