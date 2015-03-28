@@ -17,6 +17,9 @@
 	"gm_mods_menu_disabled" : "All Modifications Disabled",
 	"gm_mods_menu_disabled_desc" : "All GoonMod modifications have been disabled due to a game update. Either wait for a game update, or bypass the update-lock from the options menu at your own risk.",
 
+	"gm_mods_version_bypass_title" : "Force Load Mods",
+	"gm_mods_version_bypass_desc" : "Bypass the version check that prevents mods from loading after an update, and force mods to load.\nThis may cause errors and crashes, use this at your own risk!",
+
 	"gm_options_corpse_menu_title" : "Corpses",
 	"gm_options_corpse_menu_desc" : "Change settings for the ingame corpses",
 	"gm_options_corpse_custom_title" : "Use Custom Corpse Amount",

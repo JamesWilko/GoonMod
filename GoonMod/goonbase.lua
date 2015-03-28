@@ -4,7 +4,7 @@ if not _G.GoonBase then
 	_G.GoonBase = {}
 
 	GoonBase.Version = 100
-	GoonBase.GameVersion = "1.29.0"
+	GoonBase.GameVersion = "1.30.0"
 	GoonBase.SupportedVersion = true
 
 	GoonBase.Path = ""
@@ -169,7 +169,7 @@ if not GoonBase.HasLoadedScripts then
 			SafeDoFile( GoonBase.RequiresFolder .. v )
 		end
 
-		GoonBase.SupportedVersion = GoonBase.Utils:GameUpdateVersionCheck()
+		GoonBase.SupportedVersion = GoonBase.Updates:GameUpdateVersionCheck()
 
 		-- Run hooks
 		if GoonBase.SupportedVersion and Hooks ~= nil then

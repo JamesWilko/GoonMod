@@ -1,25 +1,6 @@
 
 _G.GoonBase.Utils = _G.GoonBase.Utils or {}
 
-function GoonBase.Utils:GameUpdateVersionCheck()
-
-	local mod_version = GoonBase.GameVersion:split("[.]")
-	local game_version = Application:version():split("[.]")
-
-	if not mod_version or not game_version then
-		return false
-	end
-
-	for i = 1, 2, 1 do
-		if mod_version[i] < game_version[i] then
-			return false
-		end
-	end
-
-	return true
-
-end
-
 -- Custom "Base64" Implementation
 _G.GoonBase.Utils.Base64 = _G.GoonBase.Utils.Base64 or {}
 local Base64 = _G.GoonBase.Utils.Base64
