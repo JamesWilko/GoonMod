@@ -191,10 +191,7 @@
 	"OptionsMenu_InspectWeaponDesc" : "Key to press to inspect your weapon while in-game",
 	"OptionsMenu_CycleStattrakMode" : "Cycle Stat-trak Modes",
 	"OptionsMenu_CycleStattrakModeDesc" : "Key to cycle through available kill modes on your weapons",
-
-	"TrainHeist_PlansInv" : "Train Intel",
-	"TrainHeist_PlansInvDesc" : "Details of a train transporting an experimental turret. This unlocks the Train Transport heist in Crime.net while you have intel in reserve.\n\nFound in an Armoured Transport. Will be consumed upon successful completion of the heist.",
-
+	
 	"gm_options_normalized_sensitivity_title" : "Enabled Ironsight Normalized Sensitivity",
 	"gm_options_normalized_sensitivity_desc" : "Lower the sensitivity when using ironsights to more accurately place your shots.",
 
@@ -214,7 +211,7 @@
 	"gm_options_wc_clear_melee_data_desc" : "Erase all of your customization data from all of your melee weapons",
 
 	"bm_mtl_no_material" : "No Material",
-	"WeaponCustomization_MenuItem" : "Customize Weapon",
+	"bm_menu_customize_weapon" : "Customize Weapon",
 	"bm_menu_customize_weapon_title" : "Customize Weapon: $weapon_name",
 	"wc_modifying_parts" : "Modifying Parts",
 	"wc_not_modifying_parts" : "Not Modifying Parts",
@@ -234,15 +231,6 @@
 	"wc_mod_overrides_not_installed_download" : "Download Now",
 	"wc_mod_overrides_not_installed_dont_show" : "I Know, Don't Show This Again",
 	"wc_mod_overrides_not_installed_cancel" : "Later",
-
-	"Options_EnemyLaserName" : "Enemy Laser Color",
-	"Options_EnemyLaserDesc" : "Modify the color of enemy's weapons lasers",
-	"Options_EnemyLaserEnableTitle" : "Enable Custom Enemy Laser Color",
-	"Options_EnemyLaserEnableDesc" : "Use the custom set color for enemy's weapons Lasers",
-	"Options_EnemyLaserRainbowTitle" : "Enable Rainbow Laser",
-	"Options_EnemyLaserRainbowDesc" : "Enable rainbow instead of the set Hue",
-	"Options_EnemyLaserRainbowSpeedTitle" : "Rainbow Speed",
-	"Options_EnemyLaserRainbowSpeedDesc" : "Set the speed of the rainbow effect",
 
 	"gm_options_custom_use_hue_title" : "Use HSV Colour Space",
 	"gm_options_custom_use_hue_desc" : "Use the HSV colour space instead of the RGB",
