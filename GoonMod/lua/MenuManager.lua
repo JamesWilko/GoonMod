@@ -13,8 +13,8 @@ Hooks:RegisterHook("MenuCallbackHandlerPreStartTheGame")
 function MenuCallbackHandler.start_the_game(self)
 
 	if not self._start_the_game then
-		self._start_the_game = function()
-			self.orig.start_the_game()
+		self._start_the_game = function(self)
+			self.orig.start_the_game(self)
 		end
 	end
 
@@ -24,7 +24,8 @@ function MenuCallbackHandler.start_the_game(self)
 		return nil
 	end
 
-	self.orig.start_the_game(self)
+	return self.orig.start_the_game(self)
+
 end
 
 function MenuCallbackHandler:_process_start_game_delay( t, dt )
