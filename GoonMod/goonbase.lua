@@ -86,6 +86,8 @@ GoonBase.HookFiles = {
 	["lib/managers/skilltreemanager"] = "SkillTreeManager.lua",
 	["lib/managers/menu/skilltreegui"] = "SkillTreeGUI.lua",
 	["lib/network/networkgame"] = "NetworkGame.lua",
+	["lib/tweak_data/upgradestweakdata"] = "UpgradesTweakData.lua",
+	["lib/network/base/networkmanager"] = "NetworkManager.lua",
 
 }
 
