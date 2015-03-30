@@ -24,6 +24,7 @@ Mutators.LoadedMutators = Mutators.LoadedMutators or {}
 Mutators.ActiveMutators = Mutators.ActiveMutators or {}
 Mutators.ClientMutatorCheck = Mutators.ClientMutatorCheck or {}
 Mutators.NetworkTimeoutTime = 3
+Mutators.MutatorUnreportedStatus = "unreported"
 
 -- Network
 Mutators.Network = {}
@@ -35,34 +36,7 @@ Mutators.Network.MutatorCheckSuccess = "CheckMutatorSuccess"
 Mutators.Network.MutatorCheckFailure = "CheckMutatorFailure"
 
 -- Paths
-Mutators.MutatorsPath = "/"
-Mutators.MutatorsList = {
-	-- #POPULATE mutators
-	-- #DEBUG_ONLY
-	"mutators/base_mutator.lua",
-	"mutators/mutator_all_cloakers.lua",
-	"mutators/mutator_all_shields.lua",
-	"mutators/mutator_all_tazers.lua",
-	"mutators/mutator_all_bulldozers.lua",
-	-- "mutators/mutator_all_gangsters.lua",
-	"mutators/mutator_lightning_speed.lua",
-	"mutators/mutator_insane_spawnrate.lua",
-	"mutators/mutator_insane_spawnrate_cops.lua",
-	"mutators/mutator_suicidal_spawnrate.lua",
-	"mutators/mutator_suicidal_spawnrate_cops.lua",
-	"mutators/mutator_shielddozers.lua",
-	-- "mutators/mutator_tank_cloakers.lua",
-	"mutators/mutator_realism_mode.lua",
-	"mutators/mutator_exploding_bullets.lua",
-	"mutators/mutator_unbreakable.lua",
-	"mutators/mutator_suicide_cloakers.lua",
-	"mutators/mutator_instagib.lua",
-	"mutators/mutator_jamming_weapons.lua",
-	"mutators/mutator_addicts.lua",
-	"mutators/mutator_floating_bodies.lua",
-	"mutators/mutator_no_ammo_pickups.lua",
-	-- #END
-}
+Mutators.MutatorsPath = GoonBase.Path .. "mutators/"
 Mutators.MenuPrefix = "toggle_mutator_"
 
 -- Options
@@ -128,7 +102,6 @@ Hooks:Add("MenuManagerSetupCustomMenus", "MenuManagerSetupCustomMenus_MutatorsMe
 		priority = 1000,
 	})
 
-
 	-- Add mutators to menu
 	Mutators:AddLoadedMutatorsToMenu()
 	
@@ -136,9 +109,20 @@ end)
 
 Hooks:Add("MenuManagerBuildCustomMenus", "MenuManagerBuildCustomMenus_MutatorsMenu", function(menu_manager, menu_nodes)
 
+	MenuCallbackHandler.GoonModFocusMutatorsMenu = function( node, focus )
+		if focus then
+			Mutators:ShowMutatorsMenu()
+		else
+			Mutators:HideMutatorsMenu()
+		end
+	end
+
 	-- Build menu
 	local menu_id = Mutators.MenuID
-	menu_nodes[menu_id] = MenuHelper:BuildMenu( menu_id )
+	local menu_data = {
+		focus_changed_callback = "GoonModFocusMutatorsMenu"
+	}
+	menu_nodes[menu_id] = MenuHelper:BuildMenu( menu_id, menu_data )
 
 	-- Add to main menu and lobby only
 	if menu_nodes.main ~= nil then
@@ -159,6 +143,34 @@ Hooks:Add("MenuManagerBuildCustomMenus", "MenuManagerBuildCustomMenus_MutatorsMe
 end)
 
 -- Mutators Functions
+function Mutators:ShowMutatorsMenu()
+
+	if not managers.menu_component or not managers.gui_data then
+		return
+	end
+	if managers.menu_component._contract_gui then
+		managers.menu_component:close_contract_gui()
+	end
+
+	self._fullscreen_ws = self._fullscreen_ws or managers.gui_data:create_fullscreen_16_9_workspace()
+	if not self._darken_bg then
+		self._darken_bg = self._fullscreen_ws:panel():rect({
+			color = Color.black:with_alpha(0.4),
+			layer = 50
+		})
+	end
+	self._darken_bg:set_alpha(1)
+
+end
+
+function Mutators:HideMutatorsMenu()
+
+	if self._darken_bg then
+		self._darken_bg:set_alpha(0)
+	end
+
+end
+
 function Mutators:ShowHelpMenu()
 
 	local title = managers.localization:text("Mutators_HelpTitle")
@@ -171,8 +183,11 @@ end
 
 function Mutators:LoadMutators()
 	
-	for k, v in pairs( self.MutatorsList ) do
-		SafeDoFile( GoonBase.Path .. self.MutatorsPath .. v )		
+	local files = file.GetFiles( Mutators.MutatorsPath )
+	if files then
+		for k, v in pairs( files ) do
+			SafeDoFile( Mutators.MutatorsPath .. v )
+		end
 	end
 
 end
@@ -188,9 +203,30 @@ function Mutators:SetupMutatorsLocalization()
 	end
 end
 
+function Mutators:RegisterLocalization( key, text )
+
+	if not Mutators._cached_localization then
+		Mutators._cached_localization = {}
+	end
+	Mutators._cached_localization[key] = text
+
+end
+
+Hooks:Add("LocalizationManagerPostInit", "LocalizationManagerPostInit_" .. Mod:ID(), function(loc)
+
+	for k, v in pairs( Mutators._cached_localization ) do
+		loc:add_localized_strings({
+			[k] = v,
+		})
+	end
+
+	Mutators._cached_localization = {}
+
+end)
+
 function Mutators:SetupMutators()
 
-	if Global.game_settings and Global.game_settings.active_mutators then
+	if Global and Global.game_settings and Global.game_settings.active_mutators then
 
 		for k, v in pairs( Global.game_settings.active_mutators ) do
 			if v and Mutators.LoadedMutators[k] then
@@ -198,7 +234,6 @@ function Mutators:SetupMutators()
 			end
 		end
 
-		return
 	else
 
 		for k, v in pairs( Mutators.LoadedMutators ) do
@@ -487,15 +522,15 @@ Hooks:Add( "MenuCallbackHandlerPreStartTheGame", "MenuCallbackHandlerPreStartThe
 		end
 	end
 
-	if not GoonBase.Network:IsMultiplayer() or ( GoonBase.Network:IsMultiplayer() and GoonBase.Network:IsHost() ) then
+	if not LuaNetworking:IsMultiplayer() or ( LuaNetworking:IsMultiplayer() and LuaNetworking:IsHost() ) then
 		Mutators:AddRandomizedMutations()
 	end
 
-	if Global.game_settings then
+	if Global and Global.game_settings then
 
 		Global.game_settings.active_mutators = {}
 		for k, v in pairs( Mutators.ActiveMutators ) do
-			Global.game_settings.active_mutators[k] = v
+			Global.game_settings.active_mutators[k] = true
 		end
 
 	end
@@ -511,7 +546,13 @@ Hooks:Add( "MenuCallbackHandlerPreStartTheGame", "MenuCallbackHandlerPreStartThe
 		Mutators:ShowNetworkingMutatorsWindow()
 
 		for k, v in pairs( Mutators.ActiveMutators ) do
+
 			Mutators.ClientMutatorCheck[k] = {}
+			for x, y in pairs( LuaNetworking:GetPeers() ) do
+				local client_id = y:id()
+				Mutators.ClientMutatorCheck[k][client_id] = Mutators.MutatorUnreportedStatus
+			end
+
 			Mutators:SendNetworkedMutatorToClients( k, true )
 			Mutators:CheckIfClientsHaveMutator( k )
 		end
@@ -524,7 +565,7 @@ end )
 
 function Mutators:CheckNetworkMutators( callback_handler )
 	if Global.game_settings and not Global.game_settings.single_player then
-		if GoonBase.Network:IsMultiplayer() and GoonBase.Network:IsHost() and GoonBase.Network:GetNumberOfPeers() > 0 then
+		if LuaNetworking:IsMultiplayer() and LuaNetworking:IsHost() and LuaNetworking:GetNumberOfPeers() > 0 then
 			return true
 		end
 	end
@@ -535,23 +576,14 @@ function Mutators:ShowNetworkingMutatorsWindow()
 
 	local title = managers.localization:text("NetworkedMutators_SendingData_Title")
 	local message = managers.localization:text("NetworkedMutators_SendingData_Message")
-	local menuOptions = {}
-	menuOptions[1] = {
+	local options = {}
+	options[1] = {
 		text = managers.localization:text("NetworkedMutators_SendingData_Cancel"),
 		callback = Mutators.NetworkingMutatorsCancel,
 		is_cancel_button = true
 	}
-	-- #DEBUG_ONLY
-	menuOptions[2] = {
-		text = managers.localization:text("NetworkedMutators_SendingData_DebugForce"),
-		callback = Mutators.DebugForceStartGame,
-	}
-	menuOptions[3] = {
-		text = managers.localization:text("NetworkedMutators_SendingData_DebugRelease"),
-		callback = Mutators.DebugReleaseStartDelay,
-	}
-	-- #END
-	local menu = QuickMenu:new(title, message, menuOptions)
+
+	local menu = QuickMenu:new( title, message, options )
 	menu.dialog_data.indicator = true
 	menu:Show()
 
@@ -645,25 +677,25 @@ Hooks:Add("NetworkReceivedData", "NetworkReceivedData_" .. Mod:ID(), function(se
 end)
 
 function Mutators:ClearClientsNetworkedMutators()
-	GoonBase.Network:SendToPeers( Mutators.Network.ClearMutators, "" )
+	LuaNetworking:SendToPeers( Mutators.Network.ClearMutators, "" )
 end
 
 function Mutators:ClearNetworkedMutators()
-	if Global.game_settings then
+	if Global and Global.game_settings then
 		Global.game_settings.active_mutators = {}
 	end
 end
 
 function Mutators:SendNetworkedMutatorToClients( mutator_id, enabled )
 	if enabled then
-		GoonBase.Network:SendToPeers( Mutators.Network.EnableMutator, mutator_id )
+		LuaNetworking:SendToPeers( Mutators.Network.EnableMutator, mutator_id )
 	else
-		GoonBase.Network:SendToPeers( Mutators.Network.DisableMutator, mutator_id )
+		LuaNetworking:SendToPeers( Mutators.Network.DisableMutator, mutator_id )
 	end
 end
 
 function Mutators:SetNetworkedMutator( mutator_id, enable )
-	if Global.game_settings then
+	if Global and Global.game_settings then
 		if not Global.game_settings.active_mutators then
 			Global.game_settings.active_mutators = {}
 		end
@@ -672,15 +704,15 @@ function Mutators:SetNetworkedMutator( mutator_id, enable )
 end
 
 function Mutators:CheckIfClientsHaveMutator( mutator_id )
-	GoonBase.Network:SendToPeers( Mutators.Network.MutatorCheck, mutator_id )
+	LuaNetworking:SendToPeers( Mutators.Network.MutatorCheck, mutator_id )
 end
 
 function Mutators:CheckIfHasMutator( sender, mutator_id )
 
 	if Mutators.LoadedMutators[ mutator_id ] == nil then
-		GoonBase.Network:SendToPeer( sender, Mutators.Network.MutatorCheckFailure, mutator_id )
+		LuaNetworking:SendToPeer( sender, Mutators.Network.MutatorCheckFailure, mutator_id )
 	else
-		GoonBase.Network:SendToPeer( sender, Mutators.Network.MutatorCheckSuccess, mutator_id )
+		LuaNetworking:SendToPeer( sender, Mutators.Network.MutatorCheckSuccess, mutator_id )
 	end
 
 end
@@ -699,6 +731,21 @@ function Mutators:MarkClientHasMutator( client, mutator_id, has_mutator )
 
 end
 
+function Mutators:CheckAllClientsHaveReported()
+
+	for mutator_id, mutator in pairs( self.ClientMutatorCheck ) do
+		for k, v in pairs( LuaNetworking:GetPeers() ) do
+			local client_id = v:id()
+			if mutator[ client_id ] == Mutators.MutatorUnreportedStatus then
+				return false
+			end
+		end
+	end
+
+	return true
+
+end
+
 Hooks:Add("MenuUpdate", "MenuUpdate_" .. Mod:ID(), function(t, dt)
 	Mutators:CheckMutatorTimeout()
 end)
@@ -710,11 +757,14 @@ end)
 function Mutators:CheckMutatorTimeout()
 
 	if self._game_delay_time then
+
 		local t = Application:time() - self._game_delay_time
-		if t > self.NetworkTimeoutTime then
+
+		if t > self.NetworkTimeoutTime or self:CheckAllClientsHaveReported() then
 			self:CheckAllClientsHaveMutators()
 			self._game_delay_time = nil
 		end
+
 	end
 
 end
@@ -741,27 +791,27 @@ function Mutators:CheckAllClientsHaveMutators()
 
 					if not string.is_nil_or_empty( added_missing_mutator_text ) then
 						missing_mutator_text = missing_mutator_text .. "\n" .. added_missing_mutator_text .. ": "
-						missing_mutator_text = missing_mutator_text .. GoonBase.Network:GetNameFromPeerID(client_id)
+						missing_mutator_text = missing_mutator_text .. LuaNetworking:GetNameFromPeerID(client_id)
 						added_missing_mutator_text = ""
 					else
-						missing_mutator_text = missing_mutator_text .. ", " .. GoonBase.Network:GetNameFromPeerID(client_id)
+						missing_mutator_text = missing_mutator_text .. ", " .. LuaNetworking:GetNameFromPeerID(client_id)
 					end
 
 				end
 
 			end
-			for k, v in pairs( GoonBase.Network:GetPeers() ) do
+			for k, v in pairs( LuaNetworking:GetPeers() ) do
 				local client_id = v:id()
-				if not mutator[ client_id ] then
+				if not mutator[ client_id ] or mutator[ client_id ] == Mutators.MutatorUnreportedStatus then
 
 					missing_mutator = true
 
 					if not string.is_nil_or_empty( added_missing_mutator_text ) then
 						missing_mutator_text = missing_mutator_text .. "\n" .. added_missing_mutator_text .. ": "
-						missing_mutator_text = missing_mutator_text .. GoonBase.Network:GetNameFromPeerID(client_id)
+						missing_mutator_text = missing_mutator_text .. LuaNetworking:GetNameFromPeerID(client_id)
 						added_missing_mutator_text = ""
 					else
-						missing_mutator_text = missing_mutator_text .. ", " .. GoonBase.Network:GetNameFromPeerID(client_id)
+						missing_mutator_text = missing_mutator_text .. ", " .. LuaNetworking:GetNameFromPeerID(client_id)
 					end
 
 				end
