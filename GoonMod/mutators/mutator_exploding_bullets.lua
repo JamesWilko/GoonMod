@@ -37,6 +37,7 @@ function Mutator:OnEnabled()
 			InstantExplosiveBulletBase.on_collision(bullet, col_ray, weapon_unit, user_unit, damage, blank)
 		end
 		InstantBulletBase.on_collision_client = InstantExplosiveBulletBase.on_collision_client
+		InstantBulletBase.on_collision_server = InstantExplosiveBulletBase.on_collision_server
 
 	end)
 
