@@ -60,15 +60,16 @@ function Mutator:OnEnabled()
 
 		end
 
-
 	end)
 
 	Hooks:Add("PlayerDamageOnPostInit", self._playerDamageOnPostInitHook, function(ply, unit)
-		Queue:Add("AddictsSpawnFreeDrugs", function()
+
+		DelayedCalls:Add("AddictsSpawnFreeDrugs", 1, function()
 			local loot = self._drug_spawns[math.random(1, #self._drug_spawns)]
 			managers.player:force_verify_carry()
 			self:SpawnMutatorLoot( loot )
-		end, 1)
+		end)
+		
 	end)
 
 end
@@ -80,37 +81,30 @@ end
 
 function Mutator:SpawnMutatorLoot(loot_id, zipline_unit)
 
-	local psuccess, perror = pcall(function()
+	local carry_data = tweak_data.carry[loot_id]
+	if not carry_data then
+		return
+	end
 
-		local carry_data = tweak_data.carry[loot_id]
-		if not carry_data then
-			return
-		end
+	local player = managers.player:player_unit()
+	if player then
+		player:sound():play("Play_bag_generic_throw", nil, false)
+	else
+		return
+	end
 
-		local player = managers.player:player_unit()
-		if player then
-			player:sound():play("Play_bag_generic_throw", nil, false)
-		else
-			return
-		end
+	local camera_ext = player:camera()
+	local dye_initiated = carry_data.dye_initiated
+	local has_dye_pack = carry_data.has_dye_pack
+	local dye_value_multiplier = carry_data.dye_value_multiplier
+	local throw_distance_multiplier_upgrade_level = managers.player:upgrade_level("carry", "throw_distance_multiplier", 0)
 
-		local camera_ext = player:camera()
-		local dye_initiated = carry_data.dye_initiated
-		local has_dye_pack = carry_data.has_dye_pack
-		local dye_value_multiplier = carry_data.dye_value_multiplier
-		local throw_distance_multiplier_upgrade_level = managers.player:upgrade_level("carry", "throw_distance_multiplier", 0)
+	local pos = camera_ext:position()
+	local rot = camera_ext:rotation()
+	local peer_id = managers.network:session():local_peer() or 0
 
-		local pos = camera_ext:position()
-		local rot = camera_ext:rotation()
-		local peer_id = managers.network:session():local_peer() or 0
-
-		if not Network:is_client() then
-			managers.player:server_drop_carry(loot_id, carry_data.multiplier, dye_initiated, has_dye_pack, dye_value_multiplier, pos, rot, player:camera():forward(), throw_distance_multiplier_upgrade_level, zipline_unit, managers.network:session():local_peer():id())
-		end
-
-	end)
-	if not psuccess then
-		Print("[Error] " .. perror)
+	if not Network:is_client() then
+		managers.player:server_drop_carry(loot_id, carry_data.multiplier, dye_initiated, has_dye_pack, dye_value_multiplier, pos, rot, player:camera():forward(), throw_distance_multiplier_upgrade_level, zipline_unit, managers.network:session():local_peer():id())
 	end
 
 end
