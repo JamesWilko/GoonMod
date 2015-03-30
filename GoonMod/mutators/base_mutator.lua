@@ -184,17 +184,20 @@ end
 function BaseMutator:IsEnabled()
 	
 	local Net = _G.LuaNetworking
-	if Net:IsMultiplayer() and not Net:IsHost() then
-		return false
-	end
+	if Global and Global.game_settings then
 
-	if Global.game_settings ~= nil then
 		if Net:IsMultiplayer() and Global.game_settings.permission == "public" then
 			return false
 		end
+
 		if Global.game_settings.active_mutators then
-			return Global.game_settings.active_mutators[self.Id] or false
+			return Global.game_settings.active_mutators[ self:ID() ] or false
+		else
+			if Net:IsMultiplayer() and not Net:IsHost() then
+				return false
+			end
 		end
+
 	end
 
 	return false
@@ -238,9 +241,7 @@ function BaseMutator:OnDisabled()
 end
 
 function BaseMutator:_UpdateMatchmaking()
-	local psuccess, perror = pcall(function()
-		if MenuCallbackHandler then
-			MenuCallbackHandler:update_matchmake_attributes()
-		end
-	end)
+	if MenuCallbackHandler and MenuCallbackHandler.update_matchmake_attributes then
+		MenuCallbackHandler:update_matchmake_attributes()
+	end
 end

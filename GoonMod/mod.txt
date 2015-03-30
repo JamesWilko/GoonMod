@@ -66,7 +66,6 @@
 		{ "hook_id" : "lib/units/beings/player/playerinventory", "script_path" : "goonbase.lua" },
 		{ "hook_id" : "lib/tweak_data/skilltreetweakdata", "script_path" : "goonbase.lua" },
 		{ "hook_id" : "lib/managers/systemmenumanager", "script_path" : "goonbase.lua" },
-		{ "hook_id" : "lib/managers/challengemanager", "script_path" : "goonbase.lua" },
 		{ "hook_id" : "lib/managers/menu/playerprofileguiobject", "script_path" : "goonbase.lua" },
 		{ "hook_id" : "lib/managers/menu/walletguiobject", "script_path" : "goonbase.lua" },
 		{ "hook_id" : "lib/managers/experiencemanager", "script_path" : "goonbase.lua" },
