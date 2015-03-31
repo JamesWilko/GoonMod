@@ -9,6 +9,8 @@ BaseMutator.IsAllowedInRandomizer = false
 Mutator._RWChkID = "NewRaycastWeaponBase_" .. Mutator.Id
 Mutator._RWChkIDPost = "NewRaycastWeaponBase_PostHook_" .. Mutator.Id
 Mutator._NPChkID = "NPCRaycastWeaponBase_" .. Mutator.Id
+Mutator._SGChkID = "SentryGunWeaponOnPostSetup_" .. Mutator.Id
+Mutator._SGWepChkID = "SentryGunWeaponOnApplyDamageMultiplier_" .. Mutator.Id
 
 Hooks:Add("GoonBaseRegisterMutators", "GoonBaseRegisterMutators_" .. Mutator.Id, function()
 	GoonBase.Mutators:RegisterMutator( Mutator )
@@ -28,6 +30,14 @@ function Mutator:OnEnabled()
 		weapon._damage = math.huge
 	end)
 
+	Hooks:Add("SentryGunWeaponOnPostSetup", self._SGChkID, function(sentry, setup_data, damage_multiplier)
+		sentry._damage = math.huge
+	end)
+
+	Hooks:Add("SentryGunWeaponOnApplyDamageMultiplier", self._SGWepChkID, function(sentry, damage, col_ray, from_pos)
+		return math.huge
+	end)
+
 end
 
 function Mutator:OnDisabled()
@@ -35,5 +45,7 @@ function Mutator:OnDisabled()
 	Hooks:Remove(self._RWChkID)
 	Hooks:RemovePostHook(self._RWChkIDPost)
 	Hooks:Remove(self._NPChkID)
+	Hooks:Remove(self._SGChkID)
+	Hooks:Remove(self._SGWepChkID)
 
 end
