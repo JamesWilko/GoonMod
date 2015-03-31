@@ -43,7 +43,7 @@ end
 
 function Mutator:CheckSpawnAmmoBag(unit)
 
-	if GoonBase.Network:IsMultiplayer() and GoonBase.Network:IsHost() then
+	if LuaNetworking:IsMultiplayer() and LuaNetworking:IsHost() then
 
 		self.DozersKilledSinceAmmo = self.DozersKilledSinceAmmo + 1
 		local dozers = self.DozersKilledSinceAmmo
