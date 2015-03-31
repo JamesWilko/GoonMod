@@ -1,0 +1,45 @@
+{
+	"menu_id" : "gm_options_weapon_customization_menu",
+	"parent_menu_id" : "goonbase_options_menu",
+	"title" : "gm_options_wc_title",
+	"description" : "gm_options_wc_desc",
+	"back_callback" : "ClosedGoonModOptions",
+	"items" : [
+
+		{
+			"type" : "button",
+			"id" : "gm_wc_clear_customization",
+			"title" : "gm_options_wc_clear_all_data_title",
+			"description" : "gm_options_wc_clear_all_data_desc",
+			"callback" : "WeaponCustomizationClearDataAll",
+		},
+		{
+			"type" : "divider",
+			"size" : 16,
+		},
+
+		{
+			"type" : "button",
+			"id" : "gm_wc_clear_customization_primary",
+			"title" : "gm_options_wc_clear_primary_data_title",
+			"description" : "gm_options_wc_clear_primary_data_desc",
+			"callback" : "WeaponCustomizationClearDataPrimaries",
+		},
+		{
+			"type" : "button",
+			"id" : "gm_wc_clear_customization_secondary",
+			"title" : "gm_options_wc_clear_secondary_data_title",
+			"description" : "gm_options_wc_clear_secondary_data_desc",
+			"callback" : "WeaponCustomizationClearDataSecondaries",
+		},
+		{
+			"type" : "button",
+			"id" : "gm_wc_clear_customization_melee",
+			"title" : "gm_options_wc_clear_melee_data_title",
+			"description" : "gm_options_wc_clear_melee_data_desc",
+			"callback" : "WeaponCustomizationClearDataMelee",
+		}
+
+	]
+
+}

@@ -1,0 +1,80 @@
+{
+	"menu_id" : "gm_options_corpse_menu",
+	"parent_menu_id" : "goonbase_options_menu",
+	"title" : "gm_options_corpse_menu_title",
+	"description" : "gm_options_corpse_menu_desc",
+	"back_callback" : "ClosedGoonModOptions",
+	"items" : [
+
+		{
+			"type" : "toggle",
+			"id" : "gm_cm_toggle_corpse_limit",
+			"title" : "gm_options_corpse_custom_title",
+			"description" : "gm_options_corpse_custom_desc",
+			"callback" : "ToggleCorpseLimit",
+			"value" : "UseCustomCorpseLimit",
+			"default_value" : true,
+		},
+		{
+			"type" : "slider",
+			"id" : "gm_cm_slider_corpse_limit",
+			"title" : "gm_options_corpse_amount_title",
+			"description" : "gm_options_corpse_amount_desc",
+			"callback" : "SetMaximumCorpseAmount",
+			"value" : "MaxCorpses",
+			"default_value" : 256,
+			"min" : 8,
+			"max" : 1024,
+			"step" : 8,
+		},
+		{
+			"type" : "divider",
+			"size" : 16,
+		},
+
+		{
+			"type" : "toggle",
+			"id" : "gm_cm_toggle_shield_despawn",
+			"title" : "gm_options_corpse_shields_title",
+			"description" : "gm_options_corpse_shields_desc",
+			"callback" : "ToggleDespawnShields",
+			"value" : "RemoveShields",
+			"default_value" : false,
+		},
+		{
+			"type" : "slider",
+			"id" : "gm_cm_slider_shield_despawn_time",
+			"title" : "gm_options_corpse_shields_timer_title",
+			"description" : "gm_options_corpse_shields_timer_desc",
+			"callback" : "SetShieldDespawnTime",
+			"value" : "RemoveShieldsTime",
+			"default_value" : 180,
+			"min" : 10,
+			"max" : 600,
+			"step" : 10,
+		},
+		{
+			"type" : "divider",
+			"size" : 16,
+		},
+
+		{
+			"type" : "keybind",
+			"id" : "gm_cm_keybind_remove_all",
+			"title" : "gm_options_corpse_keybind_remove_all_title",
+			"description" : "gm_options_corpse_keybind_remove_all_desc",
+			"keybind_id" : "BodyCountModRemoveAll",
+			"func" : "DoRemoveAllCorpses",
+		},
+		{
+			"type" : "keybind",
+			"id" : "gm_cm_keybind_remove_shields",
+			"title" : "gm_options_corpse_keybind_remove_shields_title",
+			"description" : "gm_options_corpse_keybind_remove_shields_desc",
+			"keybind_id" : "BodyCountModRemoveShields",
+			"func" : "DoRemoveAllShields",
+		}
+
+	]
+
+}

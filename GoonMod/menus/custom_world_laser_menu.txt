@@ -1,0 +1,99 @@
+{
+	"menu_id" : "gm_options_cwl_menu",
+	"parent_menu_id" : "goonbase_options_menu",
+	"title" : "gm_options_cwl_menu_title",
+	"description" : "gm_options_cwl_menu_desc",
+	"focus_changed_callback" : "CustomWorldLaserMenuChangeFocus",
+	"back_callback" : "ClosedGoonModOptions",
+	"area_bg" : "half",
+	"items" : [
+
+		{
+			"type" : "toggle",
+			"id" : "gm_cwl_toggle_custom_laser",
+			"title" : "gm_options_cwl_enabled_title",
+			"description" : "gm_options_cwl_enabled_desc",
+			"callback" : "ToggleEnableCustomWorldLaser",
+			"value" : "Enabled",
+			"default_value" : true,
+		},
+		{
+			"type" : "divider",
+			"size" : 8,
+		},
+
+		{
+			"type" : "toggle",
+			"id" : "gm_cwl_toggle_custom_use_hue",
+			"title" : "gm_options_custom_use_hue_title",
+			"description" : "gm_options_custom_use_hue_desc",
+			"callback" : "CustomWorldLaserToggleUseHue",
+			"value" : "UseHSV",
+			"default_value" : false,
+		},
+		{
+			"type" : "slider",
+			"id" : "gm_cwl_colour_slider_rh",
+			"title" : "gm_options_custom_rh_title",
+			"description" : "gm_options_custom_rh_desc",
+			"callback" : "CustomWorldLaserSetRedHue",
+			"value" : "RH",
+			"default_value" : 1,
+			"min" : 0,
+			"max" : 1,
+			"step" : 0.01,
+		},
+		{
+			"type" : "slider",
+			"id" : "gm_cwl_colour_slider_gs",
+			"title" : "gm_options_custom_gs_title",
+			"description" : "gm_options_custom_gs_desc",
+			"callback" : "CustomWorldLaserSetGreenSaturation",
+			"value" : "GS",
+			"default_value" : 1,
+			"min" : 0,
+			"max" : 1,
+			"step" : 0.01,
+		},
+		{
+			"type" : "slider",
+			"id" : "gm_cwl_colour_slider_bv",
+			"title" : "gm_options_custom_bv_title",
+			"description" : "gm_options_custom_bv_desc",
+			"callback" : "CustomWorldLaserSetBlueValue",
+			"value" : "BV",
+			"default_value" : 1,
+			"min" : 0,
+			"max" : 1,
+			"step" : 0.01,
+		},
+		{
+			"type" : "divider",
+			"size" : 64,
+		},
+
+		{
+			"type" : "toggle",
+			"id" : "gm_cwl_toggle_rainbow",
+			"title" : "gm_options_custom_rainbow_title",
+			"description" : "gm_options_custom_rainbow_desc",
+			"callback" : "CustomWorldLaserSetUseRainbow",
+			"value" : "UseRainbow",
+			"default_value" : false,
+		},
+		{
+			"type" : "slider",
+			"id" : "gm_cwl_slider_rainbow_speed",
+			"title" : "gm_options_custom_rainbow_speed_title",
+			"description" : "gm_options_custom_rainbow_speed_desc",
+			"callback" : "CustomWorldLaserSetRainbowSpeed",
+			"value" : "RainbowSpeed",
+			"default_value" : 1,
+			"min" : 1,
+			"max" : 100,
+			"step" : 1,
+		}
+
+	]
+
+}

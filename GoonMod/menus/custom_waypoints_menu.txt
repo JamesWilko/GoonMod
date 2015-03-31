@@ -1,0 +1,42 @@
+{
+	"menu_id" : "gm_options_custom_waypoints_menu",
+	"parent_menu_id" : "goonbase_options_menu",
+	"title" : "gm_options_custom_waypoints_menu_title",
+	"description" : "gm_options_custom_waypoints_menu_desc",
+	"back_callback" : "ClosedGoonModOptions",
+	"items" : [
+
+		{
+			"type" : "keybind",
+			"id" : "gm_cw_keybind_place_waypoint",
+			"title" : "gm_options_custom_waypoints_place",
+			"description" : "gm_options_custom_waypoints_place",
+			"keybind_id" : "CustomWaypointsPlaceWaypoint",
+			"func" : "DoPlaceWaypoint",
+		},
+		{
+			"type" : "keybind",
+			"id" : "gm_cw_keybind_remove_waypoint",
+			"title" : "gm_options_custom_waypoints_remove",
+			"description" : "gm_options_custom_waypoints_remove",
+			"keybind_id" : "CustomWaypointsRemoveWaypoint",
+			"func" : "DoRemoveWaypoint",
+		},
+		{
+			"type" : "divider",
+			"size" : 16,
+		},
+
+		{
+			"type" : "toggle",
+			"id" : "gm_cm_toggle_shield_despawn",
+			"title" : "gm_options_custom_waypoints_distance_title",
+			"description" : "gm_options_custom_waypoints_distance_desc",
+			"callback" : "ToggleWaypointShowDistance",
+			"value" : "ShowDistance",
+			"default_value" : false,
+		}
+
+	]
+
+}
