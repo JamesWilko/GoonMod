@@ -86,6 +86,7 @@ GoonBase.HookFiles = {
 	["lib/network/networkgame"] = "NetworkGame.lua",
 	["lib/tweak_data/upgradestweakdata"] = "UpgradesTweakData.lua",
 	["lib/network/base/networkmanager"] = "NetworkManager.lua",
+	["lib/units/weapons/sentrygunweapon"] = "SentryGunWeapon.lua"
 
 }
 

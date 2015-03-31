@@ -46,7 +46,7 @@ function Mutator:Detonate(spooc)
 	})
 	managers.explosion:play_sound_and_effects(pos, math.UP, range, explosion_params)
 
-	if GoonBase.Network:IsMultiplayer() and GoonBase.Network:IsHost() then
+	if LuaNetworking:IsMultiplayer() and LuaNetworking:IsHost() then
 		
 		local grenade_type = "launcher_frag"
 		local unit_name = Idstring(tweak_data.blackmarket.grenades[grenade_type].unit)
