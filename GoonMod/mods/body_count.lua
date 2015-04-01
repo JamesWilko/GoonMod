@@ -41,11 +41,11 @@ Hooks:Add("CopInventoryDropShield", "CopInventoryDropShield_BodyCount", function
 		local id = "CopInventoryDropShield_" .. tostring(shield_timer_id)
 		shield_timer_id = shield_timer_id + 1
 
-		Queue:Add(id, function()
+		DelayedCalls:Add(id, GoonBase.Options.BodyCount.RemoveShieldsTime, function()
 			if inventory ~= nil then
 				inventory:destroy_all_items()
 			end
-		end, GoonBase.Options.BodyCount.RemoveShieldsTime)
+		end)
 
 	end
 
