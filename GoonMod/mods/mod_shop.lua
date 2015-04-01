@@ -105,7 +105,11 @@ function ModShop:AttemptItemPurchase( data, weapon_part )
 
 	local verified, purchase_data = self:VerifyItemPurchase( data, weapon_part )
 	if verified then
-		self:ShowItemPurchaseMenu( purchase_data )
+		if purchase_data.price <= GoonBase.ExtendedInventory:GetItem( ModShop.PurchaseCurrency ).amount then
+			self:ShowItemPurchaseMenu( purchase_data )
+		else
+			self:ShowItemCannotAffordMenu( purchase_data )
+		end
 	end
 
 end
@@ -215,6 +219,30 @@ function ModShop:ShowItemPurchaseMenu( purchase_data )
 	managers.system_menu:show( dialog_data )
 
 end
+
+function ModShop:ShowItemCannotAffordMenu( purchase_data )
+
+	local currency_name = GoonBase.ExtendedInventory:GetItem( ModShop.PurchaseCurrency ).name
+	local title = managers.localization:text("gm_gms_purchase_failed")
+	local message = managers.localization:text("gm_gms_cannot_afford_message")
+	message = message:gsub("{1}", purchase_data.name_localized)
+	message = message:gsub("{2}", tostring(purchase_data.price))
+	message = message:gsub("{3}", managers.localization:text(currency_name) .. (purchase_data.price > 1 and "s" or ""))
+
+	local dialog_data = {}
+	dialog_data.title = title
+	dialog_data.text = message
+	dialog_data.id = "gms_purchase_item_window"
+
+	local cancel_button = {}
+	cancel_button.text = managers.localization:text("dialog_ok")
+	cancel_button.cancel_button = true
+
+	dialog_data.button_list = { cancel_button }
+	managers.system_menu:show( dialog_data )
+
+end
+
 
 function ModShop:_PurchaseItem( purchase_data )
 
