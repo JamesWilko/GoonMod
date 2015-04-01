@@ -29,7 +29,9 @@ GoonBase.Options.BodyCount.RemoveShieldsTime 		= GoonBase.Options.BodyCount.Remo
 
 -- Stop bodies from despawning
 Hooks:Add("EnemyManagerPreUpdateCorpseDisposal", "EnemyManagerPreUpdateCorpseDisposal_BodyCount", function(enemy_manager)
-	enemy_manager._MAX_NR_CORPSES = GoonBase.Options.BodyCount.UseCustomCorpseLimit and GoonBase.Options.BodyCount.MaxCorpses or 8
+	if enemy_manager then
+		enemy_manager._MAX_NR_CORPSES = GoonBase.Options.BodyCount.UseCustomCorpseLimit and GoonBase.Options.BodyCount.MaxCorpses or 8
+	end
 end)
 
 -- Despawn shields after time
@@ -41,11 +43,11 @@ Hooks:Add("CopInventoryDropShield", "CopInventoryDropShield_BodyCount", function
 		local id = "CopInventoryDropShield_" .. tostring(shield_timer_id)
 		shield_timer_id = shield_timer_id + 1
 
-		Queue:Add(id, function()
-			if inventory ~= nil then
+		DelayedCalls:Add(id, GoonBase.Options.BodyCount.RemoveShieldsTime, function()
+			if inventory and inventory.alive and inventory:alive() then
 				inventory:destroy_all_items()
 			end
-		end, GoonBase.Options.BodyCount.RemoveShieldsTime)
+		end)
 
 	end
 
