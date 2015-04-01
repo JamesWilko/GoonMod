@@ -1,9 +1,9 @@
 
 local Hooks = Hooks
+local CloneClass = CloneClass
 core:module("SystemMenuManager")
 
-GenericSystemMenuManager.orig = {}
-GenericSystemMenuManager.orig.init = GenericSystemMenuManager.init
+CloneClass( GenericSystemMenuManager )
 
 Hooks:RegisterHook("GenericSystemMenuManagerPostInit")
 function GenericSystemMenuManager.init( self )
