@@ -28,6 +28,12 @@ function MenuCallbackHandler.start_the_game(self)
 
 end
 
+Hooks:RegisterHook("MenuCallbackHandlerPreIncreaseInfamous")
+function MenuCallbackHandler._increase_infamous( self )
+	Hooks:Call("MenuCallbackHandlerPreIncreaseInfamous", self)
+	return self.orig._increase_infamous( self )
+end
+
 function MenuCallbackHandler:_process_start_game_delay( t, dt )
 
 	if self._delayed_start_game and #self._start_delays == 0 then

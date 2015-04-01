@@ -193,12 +193,6 @@ Hooks:Add("MenuManagerInitialize", "MenuManagerInitialize_" .. Mod:ID(), functio
 
 	InfamyOutliner:LoadInfamySkillData()
 
-	InfamyOutliner._increase_infamous_orig = MenuCallbackHandler._increase_infamous
-	MenuCallbackHandler._increase_infamous = function(self)
-		InfamyOutliner:SaveInfamySkillData()
-		InfamyOutliner._increase_infamous_orig(self)
-	end
-
 	-- Callbacks
 	MenuCallbackHandler.InfamyOutlinerChangedFocus = function( node, focus )
 		if focus then
@@ -239,6 +233,10 @@ Hooks:Add("MenuManagerInitialize", "MenuManagerInitialize_" .. Mod:ID(), functio
 
 	MenuHelper:LoadFromJsonFile( GoonBase.MenusPath .. InfamyOutliner.MenuFile, GoonBase.InfamyOutliner, GoonBase.Options.InfamyOutliner )
 
+end)
+
+Hooks:Add("MenuCallbackHandlerPreIncreaseInfamous", "MenuCallbackHandlerPreIncreaseInfamous_" .. Mod:ID(), function(self)
+	InfamyOutliner:SaveInfamySkillData()
 end)
 
 Hooks:Add("SkillTreeSkillItemPostInit", "SkillTreeSkillItemPostInit_" .. Mod:ID(), function(gui, skill_id, tier_panel, num_skills, i, tree, tier, w, h, skill_refresh_skills)

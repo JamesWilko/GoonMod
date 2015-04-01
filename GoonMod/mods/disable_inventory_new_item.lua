@@ -39,6 +39,6 @@ Hooks:Add("BlackMarketManagerGotNewDrop", "BlackMarketManagerGotNewDrop_" .. Mod
 	return false
 end)
 
-Hooks:Add("GenericSystemMenuManagerPreShowNewUnlock", "GenericSystemMenuManagerPreShowNewUnlock_" .. Mod:ID(), function(self, data)
-	return false
-end)
+-- Hooks:Add("GenericSystemMenuManagerPreShowNewUnlock", "GenericSystemMenuManagerPreShowNewUnlock_" .. Mod:ID(), function(self, data)
+	-- return false
+-- end)
