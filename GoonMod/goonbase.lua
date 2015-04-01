@@ -1,67 +1,37 @@
-----------
--- Payday 2 GoonMod, Public Release Beta 2, built on 1/23/2015 10:01:12 PM
--- Copyright 2014, James Wilkinson, Overkill Software
-----------
 
 if not _G.GoonBase then
+
 	_G.GoonBase = {}
-	GoonBase.Version = 31
-	GoonBase.GameVersion = "1.28.0"
-	GoonBase.LogFile = "GoonBase.log"
-	GoonBase.Path = "GoonBase/"
-	GoonBase.LuaPath = "GoonBase/lua/"
-	GoonBase.SafeMode = true
+
+	GoonBase.Version = 100
+	GoonBase.GameVersion = "1.30.0"
+	GoonBase.SupportedVersion = true
+
+	GoonBase.Path = ""
+	GoonBase.LuaPath = "lua/"
+	GoonBase.RequiresFolder = "req/"
+	GoonBase.ModsFolders = {
+		"mods/",
+		"mods/custom_colours/"
+	}
+	GoonBase.MenusPath = "menus/"
+	GoonBase.LocalizationFolder = "loc/"
+
+	GoonBase.LogFile = "GoonMod.txt"
+	GoonBase.SavePath = SavePath .. "goonmod_options.txt"
+
+	GoonBase.LogTag = "[GoonMod]"
+
 end
 
-GoonBase.RequireScripts = {
-	"req/autils.lua",
-	"req/hooks.lua",
-	"req/hooks_command_queue.lua",
-	"req/localization.lua",
-	"req/menus.lua",
-	"req/mods.lua",
-	"req/network.lua",
-	"req/options.lua",
-	"req/SimpleMenu.lua",
-	"req/updates.lua",
-}
-
-GoonBase.ModFiles = {
-	"mods/colors/color_hsvrgb.lua",
-	"mods/colors/enemy_weapon_laser.lua",
-	"mods/colors/weapon_flashlight.lua",
-	"mods/colors/weapon_laser.lua",
-	"mods/colors/world_laser_colors.lua",
-	"mods/body_count.lua",
-	"mods/colour_grading.lua",
-	"mods/custom_grenades.lua",
-	"mods/custom_waypoints.lua",
-	"mods/extended_inventory.lua",
-	"mods/gage_coins.lua",
-	"mods/grenade_indicator.lua",
-	"mods/mod_shop.lua",
-	"mods/mutators.lua",
-	"mods/push_to_interact.lua",
-	"mods/trading.lua",
-	"mods/train_heist_plans.lua",
-	"mods/weapon_customization.lua",
-	"mods/weapon_customization_menus.lua",
-	"mods/weapon_customization_part_data.lua",
-	"mods/weapon_remember_gadget.lua",
-	"mods/zoom_sensitivity.lua",
-}
-
 GoonBase.RequireHookFiles = {
-	"lib/managers/localizationmanager",
 	"lib/managers/menumanager",
 	"lib/setups/menusetup"
 }
 
 GoonBase.HookFiles = {
 
-	["lib/managers/localizationmanager"] = "LocalizationManager.lua",
 	["lib/managers/menumanager"] = "MenuManager.lua",
-	["lib/managers/chatmanager"] = "ChatManager.lua",
 	["lib/managers/enemymanager"] = "EnemyManager.lua",
 	["lib/units/weapons/grenades/quicksmokegrenade"] = "QuickSmokeGrenade.lua",
 	["lib/managers/hudmanager"] = "HUDManager.lua",
@@ -75,7 +45,6 @@ GoonBase.HookFiles = {
 	["lib/managers/gageassignmentmanager"] = "GageAssignmentManager.lua",
 	["lib/managers/achievmentmanager"] = "AchievementManager.lua",
 	["lib/tweak_data/infamytweakdata"] = "InfamyTweakData.lua",
-	-- ["lib/setups/setup"] = "Setup.lua",
 	["lib/setups/gamesetup"] = "GameSetup.lua",
 	["lib/setups/menusetup"] = "MenuSetup.lua",
 	["lib/managers/menu/blackmarketgui"] = "BlackMarketGUI.lua",
@@ -90,13 +59,9 @@ GoonBase.HookFiles = {
 	["lib/tweak_data/levelstweakdata"] = "LevelsTweakData.lua",
 	["lib/tweak_data/assetstweakdata"] = "AssetsTweakData.lua",
 	["lib/tweak_data/narrativetweakdata"] = "NarrativeTweakData.lua",
-	["lib/managers/menu/menunodegui"] = "MenuNodeGUI.lua",
-	["lib/managers/menu/items/menuitemcustomizecontroller"] = "MenuItemCustomizeController.lua",
-	-- ["lib/network/networkgame"] = "NetworkGame.lua",
 	["lib/managers/criminalsmanager"] = "CriminalsManager.lua",
 	["lib/units/weapons/newraycastweaponbase"] = "NewRaycastWeaponBase.lua",
 	["lib/units/weapons/npcraycastweaponbase"] = "NPCRaycastWeaponBase.lua",
-	-- ["lib/units/beings/player/playerinventory"] = "PlayerInventory.lua",
 	["lib/units/cameras/fpcameraplayerbase"] = "FPCameraPlayerBase.lua",
 	["core/lib/managers/menu/items/coremenuitemslider"] = "CoreMenuItemSlider.lua",
 	["lib/utils/game_state_machine/gamestatemachine"] = "GameStateMachine.lua",
@@ -106,23 +71,38 @@ GoonBase.HookFiles = {
 	["lib/managers/menu/menucomponentmanager"] = "MenuComponentManager.lua",
 	["lib/managers/menu/missionbriefinggui"] = "MissionBriefingGUI.lua",
 	["lib/network/matchmaking/networkmatchmakingsteam"] = "NetworkMatchMakingSteam.lua",
-	-- ["lib/units/maskext"] = "MaskExt.lua",
 	["lib/managers/menu/menuscenemanager"] = "MenuSceneManager.lua",
-
 	["lib/units/enemies/cop/actions/full_body/copactionhurt"] = "CopActionHurt.lua",
+	["lib/units/equipment/ecm_jammer/ecmjammerbase"] = "ECMJammerBase.lua",
+	["lib/tweak_data/weapontweakdata"] = "WeaponTweakData.lua",
+	["lib/units/beings/player/playerinventory"] = "PlayerInventory.lua",
+	["lib/tweak_data/skilltreetweakdata"] = "SkillTreeTweakData.lua",
+	["lib/managers/systemmenumanager"] = "SystemMenuManager.lua",
+	["lib/managers/menu/playerprofileguiobject"] = "PlayerProfileGUIObject.lua",
+	["lib/managers/menu/walletguiobject"] = "WalletGUIObject.lua",
+	["lib/managers/experiencemanager"] = "ExperienceManager.lua",
+	["lib/managers/skilltreemanager"] = "SkillTreeManager.lua",
+	["lib/managers/menu/skilltreegui"] = "SkillTreeGUI.lua",
+	["lib/network/networkgame"] = "NetworkGame.lua",
+	["lib/tweak_data/upgradestweakdata"] = "UpgradesTweakData.lua",
+	["lib/network/base/networkmanager"] = "NetworkManager.lua",
+	["lib/units/weapons/sentrygunweapon"] = "SentryGunWeapon.lua"
 
 }
 
 -- Required Global Functions
 function _G.Print( ... )
 
-	local str = ""
+	local str = GoonBase.LogTag
 	for k, v in ipairs( arg ) do
 		str = str .. tostring(v)
 	end
-	str = str .. "\n"
-	io.stderr:write( str )
 
+	-- Write to console
+	log( str )
+
+	-- Write to log file
+	str = str .. "\n"
 	local file = io.open( GoonBase.LogFile, "a+" )
 	if file ~= nil then
 
@@ -140,7 +120,7 @@ function _G.Print( ... )
 
 	else
 
-		io.stderr:write( "[Error] Could not write to file, caching print string: '" .. str .. "'" )
+		log( "[Error] Could not write to file, caching print string: '" .. str .. "'" )
 		if GoonBase._print_cache == nil then
 			GoonBase._print_cache = {}
 		end
@@ -148,15 +128,6 @@ function _G.Print( ... )
 
 	end
 
-end
-
-function io.file_is_readable( fname )
-	local file = io.open(fname, "r" )
-	if file ~= nil then
-		io.close(file)
-		return true
-	end
-	return false
 end
 
 function _G.SafeDoFile( fileName )
@@ -180,36 +151,36 @@ local unsupported = true
 -- Load Require and Mod Scripts
 if not GoonBase.HasLoadedScripts then
 
+	GoonBase.Path = ModPath
+	GoonBase.LogFile = LogsPath .. GoonBase.LogFile
+
+	GoonBase.LuaPath = ModPath .. GoonBase.LuaPath
+	GoonBase.RequiresFolder = ModPath .. GoonBase.RequiresFolder
+	GoonBase.MenusPath = ModPath .. GoonBase.MenusPath
+	GoonBase.LocalizationFolder = ModPath .. GoonBase.LocalizationFolder
+
 	-- Check required classes exist now
 	if class and Application and string.split then
 
 		GoonBase.HasLoadedScripts = true
 
 		-- Load required files
-		for k, v in pairs( GoonBase.RequireScripts ) do
-			SafeDoFile( GoonBase.Path .. v )
+		local required_files = file.GetFiles( GoonBase.RequiresFolder )
+		for k, v in ipairs( required_files ) do
+			SafeDoFile( GoonBase.RequiresFolder .. v )
 		end
 
-		-- Check if version is supported
-		if GoonBase.Updates ~= nil then
-			GoonBase.SupportedVersion = GoonBase.Updates:IsSupportedVersion()
-		end
+		GoonBase.SupportedVersion = GoonBase.Updates:GameUpdateVersionCheck()
 
 		-- Run hooks
-		if Hooks ~= nil then
+		if GoonBase.SupportedVersion and Hooks ~= nil then
 
-			Hooks:RegisterHook("GoonBasePostLoadMods")
-			Hooks:Call("GoonBasePostLoadMods")
-
-			-- Load default options
-			local Options = GoonBase.Options
-			if Options:UsingDefaults() then
-				Options:LoadDefaults()
-			end
+			Hooks:RegisterHook("GoonBaseLoadMods")
+			Hooks:Call("GoonBaseLoadMods")
 
 			Hooks:RegisterHook("GoonBasePostLoadedMods")
 			Hooks:Call("GoonBasePostLoadedMods")
-			
+
 		end
 
 	end
@@ -217,18 +188,12 @@ if not GoonBase.HasLoadedScripts then
 end
 
 -- Load Hook Scripts
-if not _G.RegisteredScripts and RegisterScript then
-	RegisterScript("GoonBase/goonbase.lua", 2, "*")
-	_G.RegisteredScripts = true
-end
-
 if RequiredScript then
 
 	local requiredScript = RequiredScript:lower()
 	if GoonBase.HookFiles[requiredScript] then
 
-
-		if GoonBase.SupportedVersion or (not GoonBase.SupportedVersion and table.contains(GoonBase.RequireHookFiles, requiredScript)) then
+		if GoonBase.SupportedVersion or table.contains(GoonBase.RequireHookFiles, requiredScript) then
 		
 			if type( GoonBase.HookFiles[requiredScript] ) == "table" then
 				for k, v in pairs( GoonBase.HookFiles[requiredScript] ) do
@@ -243,4 +208,3 @@ if RequiredScript then
 	end
 
 end
--- END OF FILE

@@ -57,12 +57,49 @@ function BlackMarketManager.got_new_drop(self, global_value, category, id)
 	return self.orig.got_new_drop(self, global_value, category, id)
 end
 
-function BlackMarketManager:get_mods_on_weapon(category, slot)
-	local _global = Global.blackmarket_manager
-	if not _global.crafted_items[category] or not _global.crafted_items[category][slot] then
-		return
+-- Custom functions
+function BlackMarketManager:is_mod_shop_running()
+	if GoonBase and GoonBase.ModShop then
+		return true
 	end
-	return _global.crafted_items[category][slot].blueprint
+	return false
+end
+
+function BlackMarketManager:get_item_tweak_entry( item, category )
+
+	if category == "primaries" or category == "secondaries" then
+		return tweak_data.weapon[ item ]
+	end
+
+	if category == "parts" then
+		return tweak_data:get_raw_value("weapon", "factory", category, item)
+	end
+
+	return tweak_data:get_raw_value("blackmarket", category, item)
+
+end
+
+function BlackMarketManager:add_item_to_inventory( item, category )
+
+	local entry = tweak_data:get_raw_value("blackmarket", category, item)
+	if entry then
+		local global_value = entry.infamous and "infamous" or entry.global_value or entry.dlc or entry.dlcs and entry.dlcs[math.random(#entry.dlcs)] or "normal"
+		managers.blackmarket:add_to_inventory(global_value, category, item)
+	end
+
+end
+
+function BlackMarketManager:get_mods_on_weapon(category, slot)
+
+	if Global and Global.blackmarket_manager and Global.blackmarket_manager.crafted_items then
+		local items = Global.blackmarket_manager.crafted_items
+		if items[category] and items[category][slot] then
+			return items[category][slot].blueprint
+		end
+	end
+
+	return nil
+
 end
 
 function BlackMarketManager:on_traded_weapon(category, slot, remove_mods, skip_verification)
@@ -294,25 +331,8 @@ function BlackMarketManager:has_all_dlc_for_mask_and_parts(mask_id, material, pa
 
 end
 
-function BlackMarketManager:add_traded_mask_to_inventory(mask_id)
-	self:add_traded_mask_part_to_inventory(mask_id, "masks")
-end
-
-function BlackMarketManager:add_traded_mask_part_to_inventory(part_id, category)
-
-	-- Get part data
-	local part_data = tweak_data.blackmarket[category][part_id]
-	if part_data == nil then
-		return
-	end
-	local part_global_value = part_data.global_value or part_data.dlc or "normal"
-	if part_data.infamous then
-		part_global_value = "infamous"
-	end
-
-	-- Add it to inventory
-	self:add_to_inventory(part_global_value, category, part_id, false)
-
+function BlackMarketManager:add_traded_mask_to_inventory( mask_id )
+	self:add_item_to_inventory( mask_id, "masks" )
 end
 
 function BlackMarketManager:add_traded_mask_to_free_slot(mask_id)

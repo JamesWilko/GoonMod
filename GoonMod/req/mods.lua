@@ -1,36 +1,16 @@
-----------
--- Payday 2 GoonMod, Weapon Customizer Beta, built on 12/30/2014 6:10:13 PM
--- Copyright 2014, James Wilkinson, Overkill Software
-----------
 
 _G.GoonBase.Mods = _G.GoonBase.Mods or {}
 local Mods = _G.GoonBase.Mods
 Mods.MenuID = "goonbase_mods_menu"
 Mods.LoadedMods = Mods.LoadedMods or {}
 Mods.EnabledMods = Mods.EnabledMods or {}
-
--- Localization
-local Localization = GoonBase.Localization
-Localization.ModsMenu_Button = "Modifications"
-Localization.ModsMenu_ButtonDesc = "Control which modifications are loaded"
-Localization.ModsMenu_ButtonInfoButton = "Help"
-Localization.ModsMenu_ButtonInfoButtonDesc = "Show the modifications menu help"
-Localization.ModsMenu_ButtonInfoButtonTitle = "Modifications"
-Localization.ModsMenu_ButtonInfoButtonMessage = [[This menu allows you to enable and disable specific modifications in GoonMod. If a modification is enabled, it will load itself when Payday 2 is launched.
-
-Modifications highlighted in red require another modification to be enabled before they can be loaded, these modifications will be shown at the top of the screen.
-
-Once a modification is enabled/disabled, you will be required to restart your game to ensure that the modifications fully and successfully load or unload.]]
-Localization.ModsMenu_ButtonInfoButtonAccept = "Close"
-
-Localization.ModsMenu_ButtonDisabledUpdates = "Mods Disabled Due To Updates"
-Localization.ModsMenu_ButtonDisabledUpdatesHelp = "All mods have been disabled due to a game update. You can select \"Ignore Unsupported Version\" from the options menu to circumvent this at your own risk!"
+Mods._cached_localization = Mods._cached_localization or {}
 
 -- Menus
 Hooks:Add("MenuManagerSetupCustomMenus", "MenuManagerSetupCustomMenus_ModsMenu", function( menu_manager, menu_nodes )
 
 	if menu_nodes.main ~= nil or menu_nodes.lobby ~= nil then
-		GoonBase.MenuHelper:NewMenu( Mods.MenuID )
+		MenuHelper:NewMenu( Mods.MenuID )
 	end
 
 end)
@@ -40,20 +20,20 @@ Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_ModsMenu
 	if menu_nodes.main ~= nil or menu_nodes.lobby ~= nil then
 
 		-- Options menu
-		GoonBase.MenuHelper:AddButton({
+		MenuHelper:AddButton({
 			id = "goonbase_mods_menu_button",
-			title = "ModsMenu_Button",
-			desc = "ModsMenu_ButtonDesc",
+			title = "gm_mods_menu",
+			desc = "gm_mods_menu_desc",
 			next_node = Mods.MenuID,
 			menu_id = "goonbase_options_menu",
-			priority = 901,
+			priority = 1002,
 		})
 
-		GoonBase.MenuHelper:AddDivider({
+		MenuHelper:AddDivider({
 			id = "goonbase_mods_menu_divider",
 			menu_id = "goonbase_options_menu",
 			size = 16,
-			priority = 900,
+			priority = 1001,
 		})
 
 		-- Mods Menu
@@ -61,20 +41,20 @@ Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_ModsMenu
 			Mods:ShowHelpMenu()
 		end
 
-		GoonBase.MenuHelper:AddButton({
+		MenuHelper:AddButton({
 			id = "goonbase_mods_menu_help_button",
-			title = "ModsMenu_ButtonInfoButton",
-			desc = "ModsMenu_ButtonInfoButtonDesc",
+			title = "gm_mods_menu_info",
+			desc = "gm_mods_menu_info_desc",
 			callback = "open_mods_menu_help",
 			menu_id = Mods.MenuID,
-			priority = 1000,
+			priority = 1004,
 		})
 
-		GoonBase.MenuHelper:AddDivider({
+		MenuHelper:AddDivider({
 			id = "goonbase_mods_menu_help_divider",
 			menu_id = Mods.MenuID,
 			size = 16,
-			priority = 999,
+			priority = 1003,
 		})
 
 		-- Add mods
@@ -88,21 +68,62 @@ Hooks:Add("MenuManagerBuildCustomMenus", "MenuManagerBuildCustomMenus_ModsMenu",
 
 	if menu_nodes.main ~= nil or menu_nodes.lobby ~= nil then
 
-		menu_nodes[Mods.MenuID] = GoonBase.MenuHelper:BuildMenu( Mods.MenuID )
+		MenuCallbackHandler.GoonModFocusModsMenu = function( node, focus )
+			if focus then
+				Mods:ShowModManagerMenu()
+			else
+				Mods:HideModManagerMenu()
+			end
+		end
+
+		local menu_data = {
+			focus_changed_callback = "GoonModFocusModsMenu"
+		}
+		menu_nodes[Mods.MenuID] = MenuHelper:BuildMenu( Mods.MenuID, menu_data )
 		Mods:VerifyAllRequirements()
 
 	end
 
 end)
 
+function Mods:ShowModManagerMenu()
+
+	if not managers.menu_component or not managers.gui_data then
+		return
+	end
+	if managers.menu_component._contract_gui then
+		managers.menu_component:close_contract_gui()
+	end
+
+	self._fullscreen_ws = self._fullscreen_ws or managers.gui_data:create_fullscreen_16_9_workspace()
+	if not self._darken_bg then
+		self._darken_bg = self._fullscreen_ws:panel():rect({
+			color = Color.black:with_alpha(0.4),
+			layer = 50
+		})
+	end
+	self._darken_bg:set_alpha(1)
+
+end
+
+function Mods:HideModManagerMenu()
+
+	if self._darken_bg then
+		self._darken_bg:set_alpha(0)
+	end
+
+end
+
 function Mods:ShowHelpMenu()
 
-	local title = managers.localization:text("ModsMenu_ButtonInfoButtonTitle")
-	local message = managers.localization:text("ModsMenu_ButtonInfoButtonMessage")
+	local title = managers.localization:text("gm_mods_info_popup_title")
+	local message = managers.localization:text("gm_mods_info_popup_message")
 	local menu_options = {}
-	menu_options[1] = { text = managers.localization:text("ModsMenu_ButtonInfoButtonAccept"), is_cancel_button = true }
-	local tradeMenu = SimpleMenu:New(title, message, menu_options)
-	tradeMenu:Show()
+	menu_options[1] = {
+		text = managers.localization:text("gm_mods_info_popup_accept"),
+		is_cancel_button = true
+	}
+	local help_menu = QuickMenu:new( title, message, menu_options, true )
 
 end
 
@@ -114,9 +135,19 @@ end
 function Mods:LoadMods()
 
 	if GoonBase.SupportedVersion then
-		for k, v in pairs( GoonBase.ModFiles ) do
-			SafeDoFile( GoonBase.Path .. v )
+
+		GoonBase.ModFiles = {}
+		for k, v in pairs( GoonBase.ModsFolders ) do
+			local path = GoonBase.Path .. v
+			for x, y in pairs( file.GetFiles(path) ) do
+				table.insert( GoonBase.ModFiles, path .. y )
+			end
 		end
+
+		for k, v in pairs( GoonBase.ModFiles ) do
+			SafeDoFile( v )
+		end
+
 	end
 
 end
@@ -138,16 +169,14 @@ function Mods:AddLoadedModsToMenu()
 	end
 
 	if not GoonBase.SupportedVersion then
-
-		GoonBase.MenuHelper:AddButton({
-			id = "goonbase_mods_menu_disabled_updates",
-			title = "ModsMenu_ButtonDisabledUpdates",
-			desc = "ModsMenu_ButtonDisabledUpdatesHelp",
+		MenuHelper:AddButton({
+			id = "goonbase_mods_menu_mods_disabled",
+			title = "gm_mods_menu_disabled",
+			desc = "gm_mods_menu_disabled_desc",
 			disabled = true,
 			menu_id = Mods.MenuID,
-			priority = 998,
+			priority = 1000,
 		})
-
 	end
 
 end
@@ -184,7 +213,7 @@ end
 
 -- Hooks
 Hooks:RegisterHook("GoonBaseRegisterMods")
-Hooks:Add("GoonBasePostLoadMods", "GoonBasePostLoadMods_Mods", function()
+Hooks:Add("GoonBaseLoadMods", "GoonBaseLoadMods_ModLoader", function()
 
 	Print("[Mods] Loading Mods")
 	Mods:LoadEnabledMods()
@@ -197,12 +226,43 @@ Hooks:Add("GoonBasePostLoadMods", "GoonBasePostLoadMods_Mods", function()
 
 end)
 
+Hooks:Add("LocalizationManagerPostInit", "LocalizationManagerPostInit_ModLoader", function(loc)
+
+	for k, v in pairs( Mods._cached_localization ) do
+		for x, y in pairs( v ) do
+			loc:add_localized_strings({
+				[x] = y,
+			})
+		end
+	end
+
+	Mods._cached_localization = {}
+
+end)
+
+Hooks:Add("MenuManagerOnOpenMenu", "MenuManagerOnOpenMenu_GoonMod", function( menu_manager, menu, position )
+
+	if menu == "menu_main" then
+		if not GoonBase.SupportedVersion then
+
+			local id = "goonmod_mod_disabled_game_update"
+			local title = managers.localization:text("gm_notify_disable_game_update")
+			local message = managers.localization:text("gm_notify_disable_game_update_message")
+			local priority = 901
+
+			NotificationsManager:AddNotification( id, title, message, priority )
+
+		end
+	end
+
+end)
+
 -- Base Mod Definition
 BaseMod = class()
 BaseMod.id = "BaseMod"
 BaseMod.Name = "Base Modification"
 BaseMod.Desc = "The Base Modification"
-BaseMod.MenuPrefix = "toggle_mod_"
+BaseMod.MenuPrefix = "gm_mods_toggle_"
 BaseMod.MenuSuffix = ""
 BaseMod.HideInOptionsMenu = false
 BaseMod.Requirements = {}
@@ -264,10 +324,12 @@ function BaseMod:Setup()
 end
 
 function BaseMod:SetupLocalization()
-	local Localization = _G.GoonBase.Localization
-	Localization[ self:NameKey() ] = self:GetName()
 	self.DescOrig = self.Desc
-	Localization[ self:DescKey() ] = self:GetDesc()
+	local tbl = {
+		[ self:NameKey() ] = self:GetName(),
+		[ self:DescKey() ] = self:GetDesc()
+	}
+	table.insert( Mods._cached_localization, tbl )
 end
 
 function BaseMod:SetupMenu()
@@ -298,15 +360,14 @@ function BaseMod:SetupMenu()
 	end
 
 	-- Add to menu
-	GoonBase.MenuHelper:AddToggle({
+	MenuHelper:AddToggle({
 		id = menu_name,
 		title = self:NameKey(),
 		desc = self:DescKey(),
 		callback = menu_name,
 		value = self:IsEnabled(),
-		disabled_color = Color( 0.8, 0.3, 0.3, 0.3 ),
+		disabled_color = Color( 1.0, 0.3, 0.3, 0.3 ),
 		menu_id = Mods.MenuID,
-		priority = self.Priority or 0
 	})
 
 end
@@ -323,6 +384,9 @@ function BaseMod:VerifyRequirements()
 	self:ResetLocalization()
 	local enabled = (self:IncompatibilitiesAreDisabled() and self:RequirementsAreEnabled()) and true or false
 	self:SetEnabledModMenuItem( enabled )
+	if not enabled and self:IsEnabled() then
+		Mods:EnableMod( self, false )
+	end
 end
 
 function BaseMod:RequirementsAreEnabled()
@@ -354,8 +418,9 @@ function BaseMod:IncompatibilitiesAreDisabled()
 end
 
 function BaseMod:ResetLocalization()
-	local Localization = _G.GoonBase.Localization
-	Localization[ self:DescKey() ] = self.DescOrig
+	managers.localization:add_localized_strings({
+		[ self:DescKey()  ] = self.DescOrig,
+	})
 end
 
 function BaseMod:ModifyLocalizationDescWithRequirements(enabled)
@@ -364,9 +429,7 @@ function BaseMod:ModifyLocalizationDescWithRequirements(enabled)
 		return
 	end
 
-	local Localization = _G.GoonBase.Localization
 	local str = self.DescOrig
-
 	local reqsStr = ""
 	for k, v in pairs( self:GetRequirements() ) do
 		if not Mods.LoadedMods[v]:IsEnabled() then
@@ -376,11 +439,12 @@ function BaseMod:ModifyLocalizationDescWithRequirements(enabled)
 			reqsStr = reqsStr .. Mods.LoadedMods[v]:GetName()
 		end
 	end
-
 	str = str .. "\n"
 	str = str .. "Requires: " .. reqsStr
 
-	Localization[ self:DescKey() ] = str
+	managers.localization:add_localized_strings({
+		[ self:DescKey()  ] = str
+	})
 
 end
 
@@ -390,9 +454,7 @@ function BaseMod:ModifyLocalizationDescWithIncompatibilities(enabled)
 		return
 	end
 
-	local Localization = _G.GoonBase.Localization
 	local str = self.DescOrig
-
 	local reqsStr = ""
 	for k, v in pairs( self:GetIncompatibilities() ) do
 		if Mods.LoadedMods[v]:IsEnabled() then
@@ -402,17 +464,18 @@ function BaseMod:ModifyLocalizationDescWithIncompatibilities(enabled)
 			reqsStr = reqsStr .. Mods.LoadedMods[v]:GetName()
 		end
 	end
-
 	str = str .. "\n"
 	str = str .. "Incompatible with: " .. reqsStr
 
-	Localization[ self:DescKey() ] = str
+	managers.localization:add_localized_strings({
+		[ self:DescKey()  ] = str
+	})
 
 end
 
 function BaseMod:SetEnabledModMenuItem(enabled)
 
-	local menu = GoonBase.MenuHelper:GetMenu( Mods.MenuID )
+	local menu = MenuHelper:GetMenu( Mods.MenuID )
 	for k, v in pairs( menu["_items"] ) do
 		local menu_name = v["_parameters"]["name"]:gsub(self.MenuPrefix, "")
 		if menu_name == self:ID() then
@@ -425,4 +488,3 @@ function BaseMod:SetEnabledModMenuItem(enabled)
 	end
 	
 end
--- END OF FILE

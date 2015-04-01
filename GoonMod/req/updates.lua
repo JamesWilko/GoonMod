@@ -31,7 +31,7 @@ function Updates:GameUpdateVersionCheck()
 			end
 		end
 
-		return true
+		return true, nil
 
 	end
 
@@ -53,22 +53,26 @@ Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_GoonModU
 		GoonBase.Options:Save()
 	end
 
-	MenuHelper:AddToggle({
-		id = "gm_updates_bypass_version",
-		title = "gm_mods_version_bypass_title",
-		desc = "gm_mods_version_bypass_desc",
-		callback = "goonmod_bypass_version_check",
-		menu_id = "goonbase_options_menu",
-		value = GoonBase.Options.Updates.BypassVersion,
-		default_value = false,
-		priority = Updates.MenuPriority + 2,
-	})
+	if not Updates:GameUpdateVersionCheck() or Updates:IsBypassingVersionCheck() then
 
-	MenuHelper:AddDivider({
-		size = 16,
-		menu_id = "goonbase_options_menu",
-		priority = Updates.MenuPriority + 1
-	})
+		MenuHelper:AddToggle({
+			id = "gm_updates_bypass_version",
+			title = "gm_mods_version_bypass_title",
+			desc = "gm_mods_version_bypass_desc",
+			callback = "goonmod_bypass_version_check",
+			menu_id = "goonbase_options_menu",
+			value = GoonBase.Options.Updates.BypassVersion,
+			default_value = false,
+			priority = Updates.MenuPriority + 2,
+		})
+
+		MenuHelper:AddDivider({
+			size = 16,
+			menu_id = "goonbase_options_menu",
+			priority = Updates.MenuPriority + 1
+		})
+
+	end
 
 end)
 

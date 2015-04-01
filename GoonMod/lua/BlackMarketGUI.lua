@@ -1,9 +1,7 @@
-----------
--- Payday 2 GoonMod, Public Release Beta 2, built on 1/9/2015 9:30:33 PM
--- Copyright 2014, James Wilkinson, Overkill Software
-----------
 
 CloneClass( BlackMarketGui )
+CloneClass( BlackMarketGuiSlotItem )
+CloneClass( BlackMarketGuiButtonItem )
 
 local is_win32 = SystemInfo:platform() == Idstring("WIN32")
 local NOT_WIN_32 = not is_win32
@@ -18,9 +16,7 @@ local massive_font_size = tweak_data.menu.pd2_massive_font_size
 local large_font_size = tweak_data.menu.pd2_large_font_size
 local medium_font_size = tweak_data.menu.pd2_medium_font_size
 local small_font_size = tweak_data.menu.pd2_small_font_size
-
-local Localization = GoonBase.Localization
-Localization.bm_menu_amount_locked = "NONE IN STOCK"
+local tiny_font_size = tweak_data.menu.pd2_small_font_size * 0.75
 
 function BlackMarketGui.init(self, ws, fullscreen_ws, node)
 
@@ -53,24 +49,290 @@ function BlackMarketGui.init(self, ws, fullscreen_ws, node)
 	end
 	self:set_enabled(true)
 
+	BlackMarketGui._instance = self
+	self:on_slot_selected( self._selected_slot )
+	self:show_btns( self._selected_slot )
+	self:_update_borders()
+
 end
 
 Hooks:RegisterHook("BlackMarketGUIPreSetup")
 Hooks:RegisterHook("BlackMarketGUIPostSetup")
 function BlackMarketGui._setup(self, is_start_page, component_data)
+	Hooks:Call("BlackMarketGUIPreSetup", self, is_start_page, component_data)
+	self.orig._setup(self, is_start_page, component_data)
+	Hooks:Call("BlackMarketGUIPostSetup", self, is_start_page, component_data)
+end
 
-	local psuccess, perror = pcall(function()
-		
-		Hooks:Call("BlackMarketGUIPreSetup", self, is_start_page, component_data)
-		self.orig._setup(self, is_start_page, component_data)
-		Hooks:Call("BlackMarketGUIPostSetup", self, is_start_page, component_data)
-		self:on_slot_selected( self._selected_slot )
+function BlackMarketGuiButtonItem.init(self, main_panel, data, x)
+	self.orig.init(self, main_panel, data, x)
+	self._main_panel = main_panel
+	self._initial_x = x
+end
 
-	end)
-	if not psuccess then
-		Print("[Error] " .. perror)
+function BlackMarketGuiButtonItem:set_order( prio )
+
+	BlackMarketGuiButtonItem._default_w = BlackMarketGuiButtonItem._default_w or self._panel:w()
+	BlackMarketGuiButtonItem._highlight_w = BlackMarketGuiButtonItem._highlight_w or self._panel:w() / 2
+	BlackMarketGuiButtonItem._padding = BlackMarketGuiButtonItem._padding or 8
+	BlackMarketGuiButtonItem._max_btn_height = BlackMarketGuiButtonItem._max_btn_height or 5
+	local btn_h = BlackMarketGuiButtonItem._max_btn_height
+	local num = BlackMarketGui._instance and BlackMarketGui._instance._button_count or 0
+	local overflowed = num and num > btn_h
+
+	if overflowed then
+
+		self:check_overflow_font_size()
+		self._panel:set_w( BlackMarketGuiButtonItem._highlight_w )
+		self._btn_text:set_font_size( small_font_size )
+
+		if prio > btn_h then
+			self._panel:set_y( (prio % btn_h - 1) * small_font_size )
+			self._panel:set_left( self._main_panel:left() + BlackMarketGuiButtonItem._padding )
+		else
+			self._panel:set_y( (prio % btn_h) * small_font_size )
+			self._panel:set_right( self._main_panel:right() - BlackMarketGuiButtonItem._padding )
+		end
+
+	else
+		self._panel:set_w( BlackMarketGuiButtonItem._default_w )
+		self._panel:set_y( (prio - 1) * small_font_size )
+		self._panel:set_left( self._initial_x or 0 )
+		self._btn_text:set_font_size( small_font_size )
 	end
+
+	self._btn_text:set_right( self._panel:w() )
+
+end
+
+Hooks:RegisterHook("BlackMarketGUIButtonPreSetTextParameters")
+Hooks:RegisterHook("BlackMarketGUIButtonPostSetTextParameters")
+function BlackMarketGuiButtonItem.set_text_params(self, params)
+	Hooks:Call("BlackMarketGUIButtonPreSetTextParameters", self, params)
+	self._btn_text:set_font_size(small_font_size)
+	self.orig.set_text_params(self, params)
+	Hooks:Call("BlackMarketGUIButtonPostSetTextParameters", self, params)
+end
+
+Hooks:Add("BlackMarketGUIButtonPostSetTextParameters", "BlackMarketGUIButtonPostSetTextParameters_GoonModBMGUI", function(self, params)
+
+	local btn_h = BlackMarketGuiButtonItem._max_btn_height or 5
+	local num = BlackMarketGui._instance and BlackMarketGui._instance._button_count or 0
+	local overflowed = num and num > btn_h
+	if overflowed then
+
+		self:check_overflow_font_size()
+		self._btn_text:set_font_size( small_font_size )
+		BlackMarketGui.make_fine_text(self, self._btn_text)
+
+		local _, _, w, h = self._btn_text:text_rect()
+		self._btn_text:set_size(w, h)
+		self._btn_text:set_right(self._panel:w())
+		if overflow then
+			self._btn_text:set_position( self._btn_text:x(), small_font_size / 4 - 1 )
+		else
+			self._btn_text:set_position( self._btn_text:x(), 0 )
+		end
+
+	else
+		self._btn_text:set_position( 0, 0 )
+	end
+
+end)
+
+function BlackMarketGuiButtonItem.check_overflow_font_size( self )
+	if string.len(self._btn_text:text()) > 22 then
+		self._btn_text:set_text( self._btn_text:text():lower():gsub("weapon ", ""):upper() )
+	end
+end
+
+function BlackMarketGui._update_borders( self )
+
+	local wh = self._weapon_info_panel:h()
+	local dy = self._detection_panel:y()
+	local dh = self._detection_panel:h()
+	local by = self._btn_panel:y()
+	local bh = self._btn_panel:h()
+	local btn_h = 20
+
+	self._btn_panel:set_visible(self._button_count > 0 and true or false)
+	if self._btn_panel:visible() then
+		local h = self._button_count % BlackMarketGuiButtonItem._max_btn_height
+		h = self._button_count > BlackMarketGuiButtonItem._max_btn_height and self._button_count - h or self._button_count
+		self._btn_panel:set_h(btn_h * h + 16)
+	end
+
+	local info_box_panel = self._panel:child("info_box_panel")
+	local weapon_info_height = info_box_panel:h() - (self._button_count > 0 and self._btn_panel:h() + 8 or 0) - (self._detection_panel:visible() and self._detection_panel:h() + 8 or 0)
+	self._weapon_info_panel:set_h(weapon_info_height)
+	self._info_texts_panel:set_h(weapon_info_height - btn_h)
+	if self._detection_panel:visible() then
+		self._detection_panel:set_top(self._weapon_info_panel:bottom() + 8)
+		if dh ~= self._detection_panel:h() or dy ~= self._detection_panel:y() then
+			self._detection_border:create_sides(self._detection_panel, {
+				sides = {
+					1,
+					1,
+					1,
+					1
+				}
+			})
+		end
+	end
+	self._btn_panel:set_top((self._detection_panel:visible() and self._detection_panel:bottom() or self._weapon_info_panel:bottom()) + 8)
+	if wh ~= self._weapon_info_panel:h() then
+		self._weapon_info_border:create_sides(self._weapon_info_panel, {
+			sides = {
+				1,
+				1,
+				1,
+				1
+			}
+		})
+	end
+	if bh ~= self._btn_panel:h() or by ~= self._btn_panel:y() then
+		self._button_border:create_sides(self._btn_panel, {
+			sides = {
+				1,
+				1,
+				1,
+				1
+			}
+		})
+	end
+
+	if self._info_text_first_set then
+		self._info_text_scroll_offset = self._info_text_scroll_offset or 0
+	end
+	if self._info_text_scroll_offset ~= nil then
+
+		if not self._info_texts_offsets then
+			self._info_texts_offsets = {}
+			for i = 1, #self._info_texts do
+				self._info_texts_offsets[i] = self._info_texts[i]:y()
+			end
+		end
+
+		local min_offset = -self:get_info_text_height() + self._info_texts_panel:h()
+		if self._info_text_scroll_offset < min_offset then
+			self._info_text_scroll_offset = min_offset
+		end
+		if self._info_text_scroll_offset > 0 then
+			self._info_text_scroll_offset = 0
+		end
+		if min_offset < 0 then
+			self:add_info_text_scroll_bar( min_offset, self:get_info_text_height(), self._info_text_scroll_offset )
+		end
+
+		for i = 1, #self._info_texts do
+			self._info_texts[i]:set_y( self._info_texts_offsets[i] + self._info_text_scroll_offset )
+		end
+
+	end
+
+end
+
+function BlackMarketGui:get_info_text_height()
+	local min_i = 1
+	local max_i = #self._info_texts
+	local height = self._info_texts_offsets[max_i] + self._info_texts[max_i]:h() - self._info_texts_offsets[min_i]
+	return height
+end
+
+function BlackMarketGui:add_info_text_scroll_bar( min_offset, max_height, current_offset )
 	
+	local visible = min_offset < 0
+	local scroll_up_indicator_arrow = self._info_texts_panel:child("scroll_up_indicator_arrow")
+	local scroll_down_indicator_arrow = self._info_texts_panel:child("scroll_down_indicator_arrow")
+	local scroll_bar = self._info_texts_panel:child("scroll_bar")
+	local scroll_bar_box_panel = self._info_texts_panel:child("scroll_bar_box_panel")
+	local scroll_width = 8
+	local scroll_height, scroll_position
+
+	if not scroll_up_indicator_arrow then
+
+		local texture, rect = tweak_data.hud_icons:get_icon_data("scrollbar_arrow")
+		scroll_up_indicator_arrow = self._info_texts_panel:bitmap({
+			name = "scroll_up_indicator_arrow",
+			texture = texture,
+			texture_rect = rect,
+			layer = 2,
+			color = Color.white
+		})
+		scroll_up_indicator_arrow:set_top( 0 )
+		scroll_up_indicator_arrow:set_right( self._info_texts_panel:w() )
+
+	end
+
+	if not scroll_down_indicator_arrow then
+
+		local texture, rect = tweak_data.hud_icons:get_icon_data("scrollbar_arrow")
+		scroll_down_indicator_arrow = self._info_texts_panel:bitmap({
+			name = "scroll_down_indicator_arrow",
+			texture = texture,
+			texture_rect = rect,
+			layer = 2,
+			color = Color.white,
+			rotation = 180
+		})
+		scroll_down_indicator_arrow:set_bottom( self._info_texts_panel:h() )
+		scroll_down_indicator_arrow:set_right( self._info_texts_panel:w() )
+
+	end
+
+	if not scroll_bar then
+
+		scroll_bar = self._info_texts_panel:panel({
+			name = "scroll_bar",
+			layer = 3,
+			h = bar_h,
+			w = self._info_texts_panel:w()
+		})
+
+	end
+
+	if not scroll_bar_box_panel then
+
+		scroll_bar_box_panel = scroll_bar:panel({
+			name = "scroll_bar_box_panel",
+			w = 4,
+			halign = "scale",
+			valign = "scale",
+		})
+
+	end
+
+	if self._scroll_bar_box_class then
+		self._scroll_bar_box_class:close()
+	end
+
+	scroll_height = ( scroll_down_indicator_arrow:bottom() - scroll_up_indicator_arrow:top() )
+	scroll_height = scroll_height * self._info_texts_panel:h() / max_height
+	if current_offset ~= 0 then
+		scroll_position = -current_offset * self._info_texts_panel:h() / max_height
+	else
+		scroll_position = 0
+	end
+
+	scroll_bar_box_panel:set_center_x(scroll_bar:w() / 2)
+	self._scroll_bar_box_class = BoxGuiObject:new(scroll_bar_box_panel, {
+		sides = {
+			2,
+			2,
+			0,
+			0
+		}
+	})
+	self._scroll_bar_box_class:set_aligns("scale", "scale")
+	scroll_bar_box_panel:set_w( scroll_width )
+	scroll_bar_box_panel:set_h( scroll_height )
+	scroll_bar:set_top( scroll_up_indicator_arrow:top() + scroll_position )
+	scroll_bar:set_center_x( scroll_up_indicator_arrow:center_x() - 2 )
+	scroll_bar:set_h( scroll_height )
+
+	scroll_up_indicator_arrow:set_visible( scroll_bar:top() > scroll_up_indicator_arrow:bottom() )
+	scroll_down_indicator_arrow:set_visible( scroll_bar:bottom() < scroll_down_indicator_arrow:top() )
+
 end
 
 Hooks:RegisterHook("BlackMarketGUIOnPopulateWeapons")
@@ -521,6 +783,115 @@ function BlackMarketGui.populate_melee_weapons(self, data)
 		end
 	end
 
+end
+
+Hooks:RegisterHook("BlackMarketGUIOnPopulateGrenades")
+Hooks:RegisterHook("BlackMarketGUIOnPopulateGrenadesActionList")
+function BlackMarketGui.populate_grenades(self, data)
+
+	Hooks:Call("BlackMarketGUIOnPopulateGrenades", self, data)
+
+	local new_data = {}
+	local sort_data = {}
+	local xd, yd, x_td, y_td, x_sn, y_sn, x_gv, y_gv
+	local m_tweak_data = tweak_data.blackmarket.grenades
+	local l_tweak_data = tweak_data.lootdrop.global_values
+	for id, d in pairs(Global.blackmarket_manager.grenades) do
+		table.insert(sort_data, {id, d})
+	end
+	table.sort(sort_data, function(x, y)
+		xd = x[2]
+		yd = y[2]
+		x_td = m_tweak_data[x[1]]
+		y_td = m_tweak_data[y[1]]
+		if not xd.is_favorite ~= not yd.is_favorite then
+			return xd.is_favorite
+		end
+		if xd.unlocked ~= yd.unlocked then
+			return xd.unlocked
+		end
+		x_gv = x_td.global_value or x_td.dlc or "normal"
+		y_gv = y_td.global_value or y_td.dlc or "normal"
+		x_sn = l_tweak_data[x_gv]
+		y_sn = l_tweak_data[y_gv]
+		x_sn = x_sn and x_sn.sort_number or 1
+		y_sn = y_sn and y_sn.sort_number or 1
+		if x_sn ~= y_sn then
+			return x_sn < y_sn
+		end
+		return x[1] < y[1]
+	end
+)
+	local max_items = math.ceil(#sort_data / (data.override_slots[1] or 3)) * (data.override_slots[1] or 3)
+	for i = 1, max_items do
+		data[i] = nil
+	end
+	local index = 0
+	local guis_catalog, m_tweak_data, melee_weapon_id
+	for i, grenades_data in ipairs(sort_data) do
+		melee_weapon_id = grenades_data[1]
+		m_tweak_data = tweak_data.blackmarket.grenades[grenades_data[1]] or {}
+		guis_catalog = "guis/"
+		local bundle_folder = m_tweak_data.texture_bundle_folder
+		if bundle_folder then
+			guis_catalog = guis_catalog .. "dlcs/" .. tostring(bundle_folder) .. "/"
+		end
+		new_data = {}
+		new_data.name = melee_weapon_id
+		new_data.name_localized = managers.localization:text(tweak_data.blackmarket.grenades[new_data.name].name_id)
+		new_data.category = "grenades"
+		new_data.slot = i
+		new_data.unlocked = grenades_data[2].unlocked
+		new_data.equipped = grenades_data[2].equipped
+		new_data.level = grenades_data[2].level
+		new_data.stream = true
+		new_data.global_value = m_tweak_data.dlc or "normal"
+		new_data.skill_based = grenades_data[2].skill_based
+		new_data.skill_name = "bm_menu_skill_locked_" .. new_data.name
+		new_data.equipped_text = not new_data.unlocked and new_data.equipped and " "
+		if m_tweak_data and m_tweak_data.locks then
+			local dlc = m_tweak_data.locks.dlc
+			local achievement = m_tweak_data.locks.achievement
+			local saved_job_value = m_tweak_data.locks.saved_job_value
+			local level = m_tweak_data.locks.level
+			new_data.dlc_based = true
+			new_data.lock_texture = self:get_lock_icon(new_data, "guis/textures/pd2/lock_community")
+			if achievement and managers.achievment:get_info(achievement) and not managers.achievment:get_info(achievement).awarded then
+				new_data.dlc_locked = "menu_bm_achievement_locked_" .. tostring(achievement)
+			elseif dlc and not managers.dlc:is_dlc_unlocked(dlc) then
+				new_data.dlc_locked = tweak_data.lootdrop.global_values[dlc] and tweak_data.lootdrop.global_values[dlc].unlock_id or "bm_menu_dlc_locked"
+			else
+				new_data.dlc_locked = tweak_data.lootdrop.global_values[new_data.global_value].unlock_id or "bm_menu_dlc_locked"
+			end
+		else
+			new_data.lock_texture = self:get_lock_icon(new_data)
+			new_data.dlc_locked = tweak_data.lootdrop.global_values[new_data.global_value].unlock_id or "bm_menu_dlc_locked"
+		end
+		new_data.bitmap_texture = guis_catalog .. "textures/pd2/blackmarket/icons/grenades/" .. tostring(new_data.name)
+		if new_data.unlocked and not new_data.equipped then
+			table.insert(new_data, "lo_g_equip")
+		end
+		if new_data.unlocked and data.allow_preview and m_tweak_data.unit then
+			table.insert(new_data, "lo_g_preview")
+		end
+		
+		Hooks:Call("BlackMarketGUIOnPopulateGrenadesActionList", self, new_data)
+		
+		data[i] = new_data
+		index = i
+	end
+	for i = 1, max_items do
+		if not data[i] then
+			new_data = {}
+			new_data.name = "empty"
+			new_data.name_localized = ""
+			new_data.category = "grenades"
+			new_data.slot = i
+			new_data.unlocked = true
+			new_data.equipped = false
+			data[i] = new_data
+		end
+	end
 end
 
 Hooks:RegisterHook("BlackMarketGUIOnPopulateMasks")
@@ -977,7 +1348,6 @@ function BlackMarketGui.populate_mods(self, data)
 		end
 
 		if mod_name then
-
 			local forbid = managers.blackmarket:can_modify_weapon(new_data.category, new_data.slot, new_data.name)
 			if forbid then
 				if type(new_data.unlocked) == "number" then
@@ -1331,6 +1701,14 @@ function BlackMarketGui._start_page_data(self)
 		identifier = Idstring("melee_weapon")
 	})
 	table.insert(data, {
+		name = "bm_menu_grenades",
+		category = "grenades",
+		on_create_func_name = "populate_grenades",
+		allow_preview = true,
+		override_slots = {3, 3},
+		identifier = self.identifiers.grenade
+	})
+	table.insert(data, {
 		name = "bm_menu_armors",
 		category = "armors",
 		on_create_func_name = "populate_armors",
@@ -1357,7 +1735,7 @@ function BlackMarketGui._start_page_data(self)
 			name = "bm_menu_characters",
 			category = "characters",
 			on_create_func_name = "populate_characters",
-			override_slots = {3, 3},
+			override_slots = {5, 3},
 			identifier = self.identifiers.character
 		})
 	end
@@ -1370,6 +1748,16 @@ function BlackMarketGui._start_page_data(self)
 
 end
 
+Hooks:RegisterHook("BlackMarketGUIOnMouseMoved")
+function BlackMarketGui.mouse_moved(self, o, x, y)
+	local r = self.orig.mouse_moved(self, o, x, y)
+	if not self._enabled then
+		return r
+	end
+	Hooks:Call("BlackMarketGUIOnMouseMoved", self, o, x, y)
+	return r
+end
+
 Hooks:RegisterHook("BlackMarketGUIUpdateInfoText")
 function BlackMarketGui.update_info_text(self)
 	self.orig.update_info_text(self)
@@ -1377,6 +1765,8 @@ function BlackMarketGui.update_info_text(self)
 end
 
 function BlackMarketGui._update_info_text(self, slot_data, updated_texts, data, scale_override)
+
+	self._info_text_first_set = true
 
 	local ignore_lock = false
 	local is_renaming_this = false
@@ -1487,6 +1877,117 @@ function BlackMarketGui._update_info_text(self, slot_data, updated_texts, data, 
 		self._rename_caret:set_w(2)
 		self._rename_caret:set_h(h)
 		self._rename_caret:set_world_position(x + w, y)
+	end
+
+end
+
+function BlackMarketGui:mouse_pressed(button, x, y)
+
+	if not self._enabled then
+		return
+	end
+
+	if self._renaming_item then
+		self:_stop_rename_item()
+		return
+	end
+
+	local holding_shift = false
+	local scroll_button_pressed = button == Idstring("mouse wheel up") or button == Idstring("mouse wheel down")
+	local inside_tab_area = self._tab_area_panel:inside(x, y)
+
+	if inside_tab_area then
+
+		if button == Idstring("mouse wheel down") then
+			self:next_page(true)
+			return
+		elseif button == Idstring("mouse wheel up") then
+			self:previous_page(true)
+			return
+		end
+
+	elseif self._info_texts_panel:inside(x, y) and scroll_button_pressed then
+
+		local scroll_speed = small_font_size
+		self._info_text_scroll_offset = self._info_text_scroll_offset or 0
+		if button == Idstring("mouse wheel down") then
+			self._info_text_scroll_offset = self._info_text_scroll_offset - scroll_speed
+			self:_update_borders()
+			return
+		elseif button == Idstring("mouse wheel up") then
+			self._info_text_scroll_offset = self._info_text_scroll_offset + scroll_speed
+			self:_update_borders()
+			return
+		end
+
+	elseif self._tabs[self._selected] and scroll_button_pressed and self._tabs[self._selected]:mouse_pressed(button, x, y) then
+
+		local x, y = self._tabs[self._selected]:selected_slot_center()
+		self._select_rect:set_world_center(x, y)
+		self._select_rect:stop()
+		self._select_rect_box:set_color(Color.white)
+		self._select_rect:set_visible(y > self._tabs[self._selected]._grid_panel:top() and y < self._tabs[self._selected]._grid_panel:bottom())
+		return
+
+	end
+
+	if button ~= Idstring("0") then
+		return
+	end
+
+	if self._panel:child("back_button"):inside(x, y) then
+		managers.menu:back(true)
+		return
+	end
+
+	if self._tab_scroll_table.left_klick and self._tab_scroll_table.left:inside(x, y) then
+		self:previous_page()
+		return
+	end
+
+	if self._tab_scroll_table.right_klick and self._tab_scroll_table.right:inside(x, y) then
+		self:next_page()
+		return
+	end
+
+	if self._selected_slot and self._selected_slot._equipped_rect then
+		self._selected_slot._equipped_rect:set_alpha(1)
+	end
+
+	if self._tab_scroll_panel:inside(x, y) and self._tabs[self._highlighted] and self._tabs[self._highlighted]:inside(x, y) ~= 1 then
+		if self._selected ~= self._highlighted then
+			self:set_selected_tab(self._highlighted)
+		end
+		return
+	elseif self._tabs[self._selected] then
+		local selected_slot = self._tabs[self._selected]:mouse_pressed(button, x, y)
+		self:on_slot_selected(selected_slot)
+		if selected_slot then
+			return
+		end
+	end
+
+	if self._rename_info_text then
+		local text_button = self._info_texts and self._info_texts[self._rename_info_text]
+		if self._slot_data and text_button and text_button:inside(x, y) then
+			local category = self._slot_data.category
+			local slot = self._slot_data.slot
+			self:_start_rename_item(category, slot)
+			return
+		end
+	end
+
+	if self._btns[self._button_highlighted] and self._btns[self._button_highlighted]:inside(x, y) then
+		local data = self._btns[self._button_highlighted]._data
+		if data.callback and (not self._button_press_delay or self._button_press_delay < TimerManager:main():time()) then
+			managers.menu_component:post_event("menu_enter")
+			data.callback(self._slot_data, self._data.topic_params)
+			self._button_press_delay = TimerManager:main():time() + 0.2
+		end
+	end
+
+	if self._selected_slot and self._selected_slot._equipped_rect then
+		self._selected_slot._equipped_rect:set_alpha(0.6)
 	end
 
 end
@@ -1635,4 +2136,9 @@ function BlackMarketGui._preview_weapon(self, data)
 	self.orig._preview_weapon(self, data)
 	Hooks:Call("BlackMarketGUIOnPreviewWeapon", self, data)
 end
--- END OF FILE
+
+Hooks:RegisterHook("BlackMarketGUISlotItemOnRefresh")
+function BlackMarketGuiSlotItem.refresh(self)
+	self.orig.refresh(self)
+	Hooks:Call("BlackMarketGUISlotItemOnRefresh", self)
+end
