@@ -1,4 +1,4 @@
-33
+34
 1.30.0
-http://payday.jameswilko.com/archives/87
-manual=false
+http://paydaymods.com/welcome/
+manual=true
