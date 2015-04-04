@@ -1,6 +1,14 @@
 
 CloneClass( NetworkManager )
 
+function NetworkManager:session()
+	return self._started and self._session or nil
+end
+
+function NetworkManager:game()
+	return self._started and self._game or nil
+end
+
 function NetworkManager.stop_network( self, clean )
 	if self._started then
 		self._game:on_network_stopped()
