@@ -27,7 +27,10 @@ CustomWaypoints.Network.RemoveWaypoint = "CustomWaypointRemove"
 
 -- Options
 GoonBase.Options.CustomWaypoints 				= GoonBase.Options.CustomWaypoints or {}
-GoonBase.Options.CustomWaypoints.ShowDistance 	= GoonBase.Options.CustomWaypoints.ShowDistance or true
+GoonBase.Options.CustomWaypoints.ShowDistance 	= GoonBase.Options.CustomWaypoints.ShowDistance
+if GoonBase.Options.CustomWaypoints.ShowDistance == nil then
+	GoonBase.Options.CustomWaypoints.ShowDistance = true
+end
 
 -- Menu
 Hooks:Add( "MenuManagerInitialize", "MenuManagerInitialize_" .. Mod:ID(), function( menu_manager )

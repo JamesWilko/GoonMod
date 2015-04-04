@@ -29,6 +29,15 @@ GoonBase.Options.WeaponLight.BV 			= GoonBase.Options.WeaponLight.BV or 1
 GoonBase.Options.WeaponLight.UseHSV 		= GoonBase.Options.WeaponLight.UseHSV or false
 GoonBase.Options.WeaponLight.UseRainbow 	= GoonBase.Options.WeaponLight.UseRainbow or false
 GoonBase.Options.WeaponLight.RainbowSpeed 	= GoonBase.Options.WeaponLight.RainbowSpeed or 1
+if GoonBase.Options.WeaponLight.Enabled == nil then
+	GoonBase.Options.WeaponLight.Enabled = true
+end
+if GoonBase.Options.WeaponLight.UseHSV == nil then
+	GoonBase.Options.WeaponLight.UseHSV = false
+end
+if GoonBase.Options.WeaponLight.UseRainbow == nil then
+	GoonBase.Options.WeaponLight.UseRainbow = false
+end
 
 -- Light Colour
 Light.Color = ColorHSVRGB:new( GoonBase.Options.WeaponLight, Color.white )

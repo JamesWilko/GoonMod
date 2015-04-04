@@ -30,6 +30,15 @@ GoonBase.Options.WorldLasers.BV 			= GoonBase.Options.WorldLasers.BV or 0.0
 GoonBase.Options.WorldLasers.UseHSV 		= GoonBase.Options.WorldLasers.UseHSV or false
 GoonBase.Options.WorldLasers.UseRainbow 	= GoonBase.Options.WorldLasers.UseRainbow or false
 GoonBase.Options.WorldLasers.RainbowSpeed 	= GoonBase.Options.WorldLasers.RainbowSpeed or 1
+if GoonBase.Options.WorldLasers.Enabled == nil then
+	GoonBase.Options.WorldLasers.Enabled = true
+end
+if GoonBase.Options.WorldLasers.UseHSV == nil then
+	GoonBase.Options.WorldLasers.UseHSV = false
+end
+if GoonBase.Options.WorldLasers.UseRainbow == nil then
+	GoonBase.Options.WorldLasers.UseRainbow = false
+end
 
 -- Laser Colour
 Lasers.Color = ColorHSVRGB:new( GoonBase.Options.WorldLasers, Color.red:with_alpha(0.6) )

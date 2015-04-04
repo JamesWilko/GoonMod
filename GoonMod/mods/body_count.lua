@@ -22,10 +22,16 @@ GoonBase.CorpseDelimiter.MenuFile = "corpse_mod_menu.txt"
 
 -- Options
 GoonBase.Options.BodyCount 							= GoonBase.Options.BodyCount or {}
-GoonBase.Options.BodyCount.UseCustomCorpseLimit 	= GoonBase.Options.BodyCount.UseCustomCorpseLimit or true
+GoonBase.Options.BodyCount.UseCustomCorpseLimit 	= GoonBase.Options.BodyCount.UseCustomCorpseLimit
 GoonBase.Options.BodyCount.MaxCorpses 				= GoonBase.Options.BodyCount.MaxCorpses or 256
-GoonBase.Options.BodyCount.RemoveShields 			= GoonBase.Options.BodyCount.RemoveShields or false
+GoonBase.Options.BodyCount.RemoveShields 			= GoonBase.Options.BodyCount.RemoveShields
 GoonBase.Options.BodyCount.RemoveShieldsTime 		= GoonBase.Options.BodyCount.RemoveShieldsTime or 120
+if GoonBase.Options.BodyCount.UseCustomCorpseLimit == nil then
+	GoonBase.Options.BodyCount.UseCustomCorpseLimit = true
+end
+if GoonBase.Options.BodyCount.RemoveShields == nil then
+	GoonBase.Options.BodyCount.RemoveShields = false
+end
 
 -- Stop bodies from despawning
 Hooks:Add("EnemyManagerPreUpdateCorpseDisposal", "EnemyManagerPreUpdateCorpseDisposal_BodyCount", function(enemy_manager)

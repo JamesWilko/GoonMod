@@ -30,6 +30,15 @@ GoonBase.Options.EnemyLasers.BV 			= GoonBase.Options.EnemyLasers.BV or 0.0
 GoonBase.Options.EnemyLasers.UseHSV 		= GoonBase.Options.EnemyLasers.UseHSV or false
 GoonBase.Options.EnemyLasers.UseRainbow 	= GoonBase.Options.EnemyLasers.UseRainbow or false
 GoonBase.Options.EnemyLasers.RainbowSpeed 	= GoonBase.Options.EnemyLasers.RainbowSpeed or 1
+if GoonBase.Options.EnemyLasers.Enabled == nil then
+	GoonBase.Options.EnemyLasers.Enabled = true
+end
+if GoonBase.Options.EnemyLasers.UseHSV == nil then
+	GoonBase.Options.EnemyLasers.UseHSV = false
+end
+if GoonBase.Options.EnemyLasers.UseRainbow == nil then
+	GoonBase.Options.EnemyLasers.UseRainbow = false
+end
 
 -- Laser Colour
 Lasers.Color = ColorHSVRGB:new( GoonBase.Options.EnemyLasers, Color.red:with_alpha(0.6) )

@@ -25,11 +25,17 @@ InfamyOutliner.Outline = {}
 
 -- Options
 GoonBase.Options.InfamyOutliner 				= GoonBase.Options.InfamyOutliner or {}
-GoonBase.Options.InfamyOutliner.Enabled 		= GoonBase.Options.InfamyOutliner.Enabled or true
+GoonBase.Options.InfamyOutliner.Enabled 		= GoonBase.Options.InfamyOutliner.Enabled
 GoonBase.Options.InfamyOutliner.RH 				= GoonBase.Options.InfamyOutliner.RH or 0.8
 GoonBase.Options.InfamyOutliner.GS 				= GoonBase.Options.InfamyOutliner.GS or 1.0
 GoonBase.Options.InfamyOutliner.BV 				= GoonBase.Options.InfamyOutliner.BV or 0.4
-GoonBase.Options.InfamyOutliner.UseHSV 			= GoonBase.Options.InfamyOutliner.UseHSV or true
+GoonBase.Options.InfamyOutliner.UseHSV 			= GoonBase.Options.InfamyOutliner.UseHSV
+if GoonBase.Options.InfamyOutliner.Enabled == nil then
+	GoonBase.Options.InfamyOutliner.Enabled = true
+end
+if GoonBase.Options.InfamyOutliner.UseHSV == nil then
+	GoonBase.Options.InfamyOutliner.UseHSV = true
+end
 
 -- Color
 InfamyOutliner.Color = ColorHSVRGB:new( GoonBase.Options.InfamyOutliner, Color.purple:with_alpha(0) )

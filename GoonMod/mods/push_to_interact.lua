@@ -29,10 +29,19 @@ PushToInteract.ForceKeepInteraction = {
 
 -- Options
 GoonBase.Options.PushToInteract 					= GoonBase.Options.PushToInteract or {}
-GoonBase.Options.PushToInteract.Enabled 			= GoonBase.Options.PushToInteract.Enabled or true
+GoonBase.Options.PushToInteract.Enabled 			= GoonBase.Options.PushToInteract.Enabled
 GoonBase.Options.PushToInteract.InteractionMinTime 	= GoonBase.Options.PushToInteract.InteractionMinTime or 2
-GoonBase.Options.PushToInteract.HoldAllEnabled 		= GoonBase.Options.PushToInteract.HoldAllEnabled or false
-GoonBase.Options.PushToInteract.UseStopKey 			= GoonBase.Options.PushToInteract.UseStopKey or false
+GoonBase.Options.PushToInteract.HoldAllEnabled 		= GoonBase.Options.PushToInteract.HoldAllEnabled
+GoonBase.Options.PushToInteract.UseStopKey 			= GoonBase.Options.PushToInteract.UseStopKey
+if not GoonBase.Options.PushToInteract.Enabled then
+	GoonBase.Options.PushToInteract.Enabled = true
+end
+if not GoonBase.Options.PushToInteract.HoldAllEnabled then
+	GoonBase.Options.PushToInteract.HoldAllEnabled = false
+end
+if not GoonBase.Options.PushToInteract.UseStopKey then
+	GoonBase.Options.PushToInteract.UseStopKey = false
+end
 
 -- Menu
 Hooks:Add("MenuManagerInitialize", "MenuManagerInitialize_" .. Mod:ID(), function( menu_manager )

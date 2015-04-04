@@ -17,7 +17,10 @@ end
 
 -- Options
 GoonBase.Options.IronsightSensitivity 			= GoonBase.Options.IronsightSensitivity or {}
-GoonBase.Options.IronsightSensitivity.Enabled 	= GoonBase.Options.IronsightSensitivity.Enabled or true
+GoonBase.Options.IronsightSensitivity.Enabled 	= GoonBase.Options.IronsightSensitivity.Enabled
+if GoonBase.Options.IronsightSensitivity.Enabled == nil then
+	GoonBase.Options.IronsightSensitivity.Enabled = true
+end
 
 -- Add options to menu
 Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_" .. Mod:ID(), function( menu_manager )

@@ -24,14 +24,23 @@ Lasers._WorldOpacity = 0.4
 
 -- Options
 GoonBase.Options.WeaponLasers 				= GoonBase.Options.WeaponLasers or {}
-GoonBase.Options.WeaponLasers.Enabled 		= GoonBase.Options.WeaponLasers.Enabled or true
+GoonBase.Options.WeaponLasers.Enabled 		= GoonBase.Options.WeaponLasers.Enabled
 GoonBase.Options.WeaponLasers.RH 			= GoonBase.Options.WeaponLasers.RH or 0.0
 GoonBase.Options.WeaponLasers.GS 			= GoonBase.Options.WeaponLasers.GS or 0.75
 GoonBase.Options.WeaponLasers.BV 			= GoonBase.Options.WeaponLasers.BV or 0.0
-GoonBase.Options.WeaponLasers.UseHSV 		= GoonBase.Options.WeaponLasers.UseHSV or false
-GoonBase.Options.WeaponLasers.UseRainbow 	= GoonBase.Options.WeaponLasers.UseRainbow or false
+GoonBase.Options.WeaponLasers.UseHSV 		= GoonBase.Options.WeaponLasers.UseHSV
+GoonBase.Options.WeaponLasers.UseRainbow 	= GoonBase.Options.WeaponLasers.UseRainbow
 GoonBase.Options.WeaponLasers.RainbowSpeed 	= GoonBase.Options.WeaponLasers.RainbowSpeed or 1
 GoonBase.Options.WeaponLasers.TeamLasers 	= GoonBase.Options.WeaponLasers.TeamLasers or 3
+if GoonBase.Options.WeaponLasers.Enabled == nil then
+	GoonBase.Options.WeaponLasers.Enabled = true
+end
+if GoonBase.Options.WeaponLasers.UseHSV == nil then
+	GoonBase.Options.WeaponLasers.UseHSV = false
+end
+if GoonBase.Options.WeaponLasers.UseRainbow == nil then
+	GoonBase.Options.WeaponLasers.UseRainbow = false
+end
 
 -- Laser Colours
 Lasers.Color = ColorHSVRGB:new( GoonBase.Options.WeaponLasers, Color.red:with_alpha(0.6) )
