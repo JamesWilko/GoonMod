@@ -128,20 +128,64 @@ function ExtendedInv:GetDisplayDataForItem( data )
 		return managers.localization:text(item_data.name), item_data.texture
 	end
 
-	local item_data = tweak_data.blackmarket[category][name]
+	local item_data = tweak_data:get_raw_value("blackmarket", category, name)
 	if not item_data then
 		return nil, nil
 	end
 
-	if category == "masks" then
-		local guis_catalog = "guis/"
-		local bundle_folder = item_data.texture_bundle_folder
-		if bundle_folder then
-			guis_catalog = guis_catalog .. "dlcs/" .. tostring(bundle_folder) .. "/"
-		end
-		local bitmap_texture = guis_catalog .. "textures/pd2/blackmarket/icons/masks/" .. name
-		return managers.localization:text(item_data.name_id), bitmap_texture
+	local guis_catalog = "guis/"
+	local bundle_folder = item_data.texture_bundle_folder
+	if bundle_folder then
+		guis_catalog = guis_catalog .. "dlcs/" .. tostring(bundle_folder) .. "/"
 	end
+
+	local bitmap_texture = guis_catalog  .. "textures/pd2/blackmarket/icons/{1}/" .. name
+	local render_template = nil
+
+	if category == "masks" then
+		bitmap_texture = bitmap_texture:gsub("{1}", "masks")
+	end
+	if category == "weapon_mods" then
+		bitmap_texture = bitmap_texture:gsub("{1}", "mods")
+	end
+	if category == "materials" then
+		if item_data.bitmap_texture_override then
+			bitmap_texture = guis_catalog .. "textures/pd2/blackmarket/icons/materials/" .. item_data.bitmap_texture_override
+		else
+			bitmap_texture = bitmap_texture:gsub("{1}", "materials")
+		end
+	end
+	if category == "textures" then
+		bitmap_texture = tweak_data.blackmarket[category][name].texture
+		render_template = "VertexColorTexturedPatterns"
+	end
+	if category == "colors" then
+		bitmap_texture = "guis/textures/pd2/blackmarket/icons/colors/color_bg"
+	end
+
+	return managers.localization:text(item_data.name_id), bitmap_texture, render_template
+
+end
+
+function ExtendedInv:IsItemColour( data )
+	local category = data.category
+	return category == "colors"
+end
+
+function ExtendedInv:GetColourSwatchColours( data )
+
+	if not self:IsItemColour( data ) then
+		return
+	end
+
+	local category = data.category
+	local name = data.item
+	local item_data = tweak_data:get_raw_value("blackmarket", category, name)
+	if not item_data then
+		return nil, nil
+	end
+
+	return item_data.colors[1], item_data.colors[2]
 
 end
 
@@ -246,7 +290,7 @@ function ExtendedInv:ShowCodeRedeemFailureWindow( error )
 end
 
 function ExtendedInv:ShowRedeemInfoWindow( data )
-		
+	
 	data = json.decode( data )
 
 	local dialog_data = {}
@@ -298,8 +342,8 @@ function ExtendedInv:RedeemedCode( data, id )
 
 	if code_data.success then
 
-		table.insert( ExtendedInv.RedeemedCodes, code_data.code )
-		self:Save()
+		-- table.insert( ExtendedInv.RedeemedCodes, code_data.code )
+		-- self:Save()
 
 		self:AddRedeemedItemsToInventory( code_data.data )
 		self:ShowRedeemedCodeWindow( code_data.data )
@@ -328,8 +372,6 @@ function ExtendedInv:ShowRedeemedCodeWindow( data )
 end
 
 function ExtendedInv:AddRedeemedItemsToInventory( data )
-
-	PrintTable( data )
 
 	for k, v in pairs( data ) do
 

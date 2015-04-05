@@ -100,8 +100,10 @@ function ExtendedInventoryCodeItem:init( panel, index, data )
 	local padding = item_padding
 	local w, h = item_size, item_size
 	local x, y = padding * index + w * (index - 1), padding
+	local ExtendedInv = _G.GoonBase.ExtendedInventory
 
-	local item_name, item_icon = _G.GoonBase.ExtendedInventory:GetDisplayDataForItem( data )
+	local item_name, item_icon, item_render = ExtendedInv:GetDisplayDataForItem( data )
+	local item_is_color = ExtendedInv:IsItemColour( data )
 	if item_name and data.quantity then
 		item_name = item_name .. ( data.quantity > 1 and " x" .. tostring(data.quantity) or "" )
 	end
@@ -114,8 +116,36 @@ function ExtendedInventoryCodeItem:init( panel, index, data )
 		y = y,
 		w = w,
 		h = h,
-		color = Color.white
+		layer = 2,
+		color = Color.white,
+		render_template = item_render,
 	})
+
+	if item_is_color then
+
+		local col1, col2 = ExtendedInv:GetColourSwatchColours( data )
+
+		self._item_col1 = panel:bitmap({
+			texture = "guis/textures/pd2/blackmarket/icons/colors/color_01",
+			x = x,
+			y = y,
+			w = w,
+			h = h,
+			color = col1,
+			layer = 1,
+		})
+
+		self._item_col2 = panel:bitmap({
+			texture = "guis/textures/pd2/blackmarket/icons/colors/color_02",
+			x = x,
+			y = y,
+			w = w,
+			h = h,
+			color = col2,
+			layer = 1,
+		})
+
+	end
 
 	self._item_name = panel:text({
 		text = item_name or "Item",
@@ -123,6 +153,7 @@ function ExtendedInventoryCodeItem:init( panel, index, data )
 		font_size = tweak_data.menu.pd2_small_font_size,
 		blend_mode = "add",
 		color = Color.white,
+		layer = 5,
 	})
 	make_fine_text( self._item_name )
 	self._item_name:set_center( x + w * 0.5, y + h )
@@ -135,6 +166,12 @@ end
 function ExtendedInventoryCodeItem:destroy()
 	self._panel:remove( self._item )
 	self._panel:remove( self._item_name )
+	if alive( self._item_col1 ) then
+		self._panel:remove( self._item_col1 )
+	end
+	if alive( self._item_col2 ) then
+		self._panel:remove( self._item_col2 )
+	end
 	self._item = nil
 	self._item_name = nil
 end
