@@ -55,10 +55,8 @@ function Mutator:OnEnabled()
 		if ply_manager and ply_manager.get_my_carry_data and ply_manager.player_unit then
 
 			local carry_data = ply_manager:get_my_carry_data()
-			if carry_data then
-				local carrying = carry_data and self:IsDrugsBag(carry_data)
-				self:ApplyAddictionDamage( ply_manager:player_unit(), false, dt )
-			end
+			local carrying = carry_data and self:IsDrugsBag(carry_data) or false
+			self:ApplyAddictionDamage( ply_manager:player_unit(), carrying, dt )
 
 		end
 
