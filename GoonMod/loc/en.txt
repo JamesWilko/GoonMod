@@ -2,6 +2,11 @@
 	"gm_options_menu" : "GoonMod",
 	"gm_options_menu_desc" : "Change your GoonMod preferences",
 
+	"gm_language_select" : "Language",
+	"gm_language_select_desc" : "Choose the language which GoonMod is displayed in",
+	"gm_language_en" : "English",
+	"gm_language_fr" : "Français",
+
 	"gm_mods_menu" : "Modifications",
 	"gm_mods_menu_desc" : "Control which modifications are loaded",
 	"gm_mods_menu_info" : "Help",
