@@ -32,7 +32,6 @@ ColourGrading.GradingOptions = {
 
 -- Options
 GoonBase.Options.ColourGrading 					= GoonBase.Options.ColourGrading or {}
-log("GoonBase.Options.ColourGrading.GradingOption: " .. tostring(GoonBase.Options.ColourGrading.GradingOption))
 GoonBase.Options.ColourGrading.GradingOption 	= GoonBase.Options.ColourGrading.GradingOption or 9
 
 -- Functions
