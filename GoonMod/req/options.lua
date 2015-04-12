@@ -22,7 +22,7 @@ local options_menu_id = "goonbase_options_menu"
 Hooks:RegisterHook( "MenuManagerSetupGoonBaseMenu" )
 Hooks:RegisterHook( "MenuManagerPostSetupGoonBaseMenu" )
 
-Hooks:Add( "MenuManagerInitialize", "MenuManagerInitialize_OptionsMenu", function( menu_manager )
+Hooks:Add( "MenuManagerInitialize", "MenuManagerInitialize_GoonModOptionsMenu", function( menu_manager )
 
 	MenuCallbackHandler.ClosedGoonModOptions = function(this)
 		GoonBase.Options:Save()
@@ -30,15 +30,15 @@ Hooks:Add( "MenuManagerInitialize", "MenuManagerInitialize_OptionsMenu", functio
 
 end)
 
-Hooks:Add("MenuManagerSetupCustomMenus", "MenuManagerSetupCustomMenus_OptionsMenu", function(menu_manager, mainmenu_nodes)
+Hooks:Add("MenuManagerSetupCustomMenus", "MenuManagerSetupCustomMenus_GoonModOptionsMenu", function(menu_manager, mainmenu_nodes)
 	MenuHelper:NewMenu( options_menu_id )
 end)
 
-Hooks:Add("MenuManagerPopulateCustomMenus", "MenuManagerPopulateCustomMenus_OptionsMenu", function(menu_manager, mainmenu_nodes)
+Hooks:Add("MenuManagerPopulateCustomMenus", "MenuManagerPopulateCustomMenus_GoonModOptionsMenu", function(menu_manager, mainmenu_nodes)
 	Hooks:Call( "MenuManagerSetupGoonBaseMenu", menu_manager, mainmenu_nodes )
 end)
 
-Hooks:Add("MenuManagerBuildCustomMenus", "MenuManagerBuildCustomMenus_OptionsMenu", function(menu_manager, mainmenu_nodes)
+Hooks:Add("MenuManagerBuildCustomMenus", "MenuManagerBuildCustomMenus_GoonModOptionsMenu", function(menu_manager, mainmenu_nodes)
 
 	local mod_options_menu = LuaModManager.Constants._lua_mod_options_menu_id
 	if mainmenu_nodes[mod_options_menu] then

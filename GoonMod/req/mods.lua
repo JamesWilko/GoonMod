@@ -7,7 +7,7 @@ Mods.EnabledMods = Mods.EnabledMods or {}
 Mods._cached_localization = Mods._cached_localization or {}
 
 -- Menus
-Hooks:Add("MenuManagerSetupCustomMenus", "MenuManagerSetupCustomMenus_ModsMenu", function( menu_manager, menu_nodes )
+Hooks:Add("MenuManagerSetupCustomMenus", "MenuManagerSetupCustomMenus_GoonModModsMenu", function( menu_manager, menu_nodes )
 
 	if menu_nodes.main ~= nil or menu_nodes.lobby ~= nil then
 		MenuHelper:NewMenu( Mods.MenuID )
@@ -15,7 +15,7 @@ Hooks:Add("MenuManagerSetupCustomMenus", "MenuManagerSetupCustomMenus_ModsMenu",
 
 end)
 
-Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_ModsMenu", function( menu_manager, menu_nodes )
+Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_GoonModModsMenu", function( menu_manager, menu_nodes )
 
 	if menu_nodes.main ~= nil or menu_nodes.lobby ~= nil then
 
@@ -64,7 +64,7 @@ Hooks:Add("MenuManagerSetupGoonBaseMenu", "MenuManagerSetupGoonBaseMenu_ModsMenu
 
 end)
 
-Hooks:Add("MenuManagerBuildCustomMenus", "MenuManagerBuildCustomMenus_ModsMenu", function( menu_manager, menu_nodes )
+Hooks:Add("MenuManagerBuildCustomMenus", "MenuManagerBuildCustomMenus_GoonModModsMenu", function( menu_manager, menu_nodes )
 
 	if menu_nodes.main ~= nil or menu_nodes.lobby ~= nil then
 
