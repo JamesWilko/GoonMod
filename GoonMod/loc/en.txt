@@ -282,4 +282,16 @@
 	"gm_options_infamy_outliner_clear_data_title" : "Clear Infamy Data",
 	"gm_options_infamy_outliner_clear_data_desc" : "Clear Infamy Outliner Data",
 
+	"gm_options_color_grading_menu" : "Menu Colour Grading",
+	"gm_options_color_grading_menu_desc" : "Allows you to change the colour grading used on the menu",
+	"gm_col_grading_off" : "Off",
+	"gm_col_grading_payday_plus" : "Payday+",
+	"gm_col_grading_heat" : "Dinero",
+	"gm_col_grading_nice" : "In Traffic",
+	"gm_col_grading_sin" : "GenSec",
+	"gm_col_grading_bhd" : "BHD",
+	"gm_col_grading_xgen" : "XGen Brown",
+	"gm_col_grading_xxxgen" : "Future of Gaming",
+	"gm_col_grading_matrix" : "The Matrices",
+
 }
