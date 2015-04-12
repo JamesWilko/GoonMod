@@ -15,3 +15,11 @@ function PlayerManager:force_verify_carry()
 	end
 	self._force_verify_carry = self._force_verify_carry + 1
 end
+
+function PlayerManager.get_my_carry_data(self)
+	if managers.network:session() then
+		local peer_id = managers.network:session():local_peer():id()
+		return self._global.synced_carry[peer_id]
+	end
+	return nil
+end

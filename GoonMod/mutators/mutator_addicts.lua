@@ -37,7 +37,7 @@ end
 
 function Mutator:ApplyAddictionDamage( unit, carrying_drugs, delta )
 
-	if unit and unit:character_damage() and unit:character_damage().change_health then
+	if unit and unit.character_damage and unit:character_damage().change_health then
 		if carrying_drugs then
 			unit:character_damage():change_health( self._addiction_restore * delta )
 		else
@@ -52,11 +52,13 @@ function Mutator:OnEnabled()
 	Hooks:Add("GameSetupUpdate", self._gameUpdateHook, function(t, dt)
 		
 		local ply_manager = managers.player
-		if ply_manager then
+		if ply_manager and ply_manager.get_my_carry_data and ply_manager.player_unit then
 
 			local carry_data = ply_manager:get_my_carry_data()
-			local carrying = carry_data and self:IsDrugsBag(carry_data)
-			self:ApplyAddictionDamage( ply_manager:player_unit(), carrying, dt )
+			if carry_data then
+				local carrying = carry_data and self:IsDrugsBag(carry_data)
+				self:ApplyAddictionDamage( ply_manager:player_unit(), false, dt )
+			end
 
 		end
 
