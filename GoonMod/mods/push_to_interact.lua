@@ -94,8 +94,8 @@ Hooks:Add("PlayerStandardCheckActionInteract", "PlayerStandardCheckActionInterac
 	elseif input.btn_interact_release then
 
 		local data = nil
-		if managers.interaction and alive( managers.interaction:active_object() ) then
-			data = managers.interaction:active_object():interaction().tweak_data
+		if managers.interaction and alive( managers.interaction:active_unit() ) then
+			data = managers.interaction:active_unit():interaction().tweak_data
 		end
 
 		if PushToInteract:ShouldHoldInteraction( data ) then
