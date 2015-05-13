@@ -1,0 +1,5 @@
+﻿<materials version="3">
+	<material name="mtr_bow" render_template="generic" version="2" />
+</materials>
+
+<!-- END OF FILE -->

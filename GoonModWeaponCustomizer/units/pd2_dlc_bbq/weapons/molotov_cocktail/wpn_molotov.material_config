@@ -7,6 +7,109 @@
 <variable value="1 0 0" type="vector3" name="tint_color_a"/>
 <variable value="0 1 0" type="vector3" name="tint_color_b"/>
 <variable value="1" type="scalar" name="material_amount"/>
+<reflection_texture file="units/payday2/matcaps/matcap_plastic_df"/>
+<material_texture file="units/payday2/masks/shared_textures/patterns/pattern_no_color_no_material_df"/>
+<variable value="1 0 0" type="vector3" name="tint_color_a"/>
+<variable value="0 1 0" type="vector3" name="tint_color_b"/>
+<variable value="1" type="scalar" name="material_amount"/>
+<reflection_texture file="units/payday2/matcaps/matcap_plastic_df"/>
+<material_texture file="units/payday2/masks/shared_textures/patterns/pattern_no_color_no_material_df"/>
+<variable value="1 0 0" type="vector3" name="tint_color_a"/>
+<variable value="0 1 0" type="vector3" name="tint_color_b"/>
+<variable value="1" type="scalar" name="material_amount"/>
+<reflection_texture file="units/payday2/matcaps/matcap_plastic_df"/>
+<material_texture file="units/payday2/masks/shared_textures/patterns/pattern_no_color_no_material_df"/>
+<variable value="1 0 0" type="vector3" name="tint_color_a"/>
+<variable value="0 1 0" type="vector3" name="tint_color_b"/>
+<variable value="1" type="scalar" name="material_amount"/>
+    </material>
+    <material name="sticker" render_template="solid_mask:DEPTH_SCALING" version="2">
+        <diffuse_texture file="units/pd2_dlc_bbq/weapons/molotov_cocktail/textures/molotov_df"/>
+        <bump_normal_texture file="units/pd2_dlc_bbq/weapons/molotov_cocktail/textures/molotov_nm"/>
+<reflection_texture file="units/payday2/matcaps/matcap_plastic_df"/>
+<material_texture file="units/payday2/masks/shared_textures/patterns/pattern_no_color_no_material_df"/>
+<variable value="1 0 0" type="vector3" name="tint_color_a"/>
+<variable value="0 1 0" type="vector3" name="tint_color_b"/>
+<variable value="1" type="scalar" name="material_amount"/>
+<reflection_texture file="units/payday2/matcaps/matcap_plastic_df"/>
+<material_texture file="units/payday2/masks/shared_textures/patterns/pattern_no_color_no_material_df"/>
+<variable value="1 0 0" type="vector3" name="tint_color_a"/>
+<variable value="0 1 0" type="vector3" name="tint_color_b"/>
+<variable value="1" type="scalar" name="material_amount"/>
+<reflection_texture file="units/payday2/matcaps/matcap_plastic_df"/>
+<material_texture file="units/payday2/masks/shared_textures/patterns/pattern_no_color_no_material_df"/>
+<variable value="1 0 0" type="vector3" name="tint_color_a"/>
+<variable value="0 1 0" type="vector3" name="tint_color_b"/>
+<variable value="1" type="scalar" name="material_amount"/>
+<reflection_texture file="units/payday2/matcaps/matcap_plastic_df"/>
+<material_texture file="units/payday2/masks/shared_textures/patterns/pattern_no_color_no_material_df"/>
+<variable value="1 0 0" type="vector3" name="tint_color_a"/>
+<variable value="0 1 0" type="vector3" name="tint_color_b"/>
+<variable value="1" type="scalar" name="material_amount"/>
+    </material>
+    <material name="cloth" render_template="solid_mask:DEPTH_SCALING" version="2">
+        <diffuse_texture file="units/pd2_dlc_bbq/weapons/molotov_cocktail/textures/molotov_fabric_df"/>
+        <bump_normal_texture file="units/pd2_dlc_bbq/weapons/molotov_cocktail/textures/molotov_nm"/>
+<reflection_texture file="units/payday2/matcaps/matcap_plastic_df"/>
+<material_texture file="units/payday2/masks/shared_textures/patterns/pattern_no_color_no_material_df"/>
+<variable value="1 0 0" type="vector3" name="tint_color_a"/>
+<variable value="0 1 0" type="vector3" name="tint_color_b"/>
+<variable value="1" type="scalar" name="material_amount"/>
+<reflection_texture file="units/payday2/matcaps/matcap_plastic_df"/>
+<material_texture file="units/payday2/masks/shared_textures/patterns/pattern_no_color_no_material_df"/>
+<variable value="1 0 0" type="vector3" name="tint_color_a"/>
+<variable value="0 1 0" type="vector3" name="tint_color_b"/>
+<variable value="1" type="scalar" name="material_amount"/>
+<reflection_texture file="units/payday2/matcaps/matcap_plastic_df"/>
+<material_texture file="units/payday2/masks/shared_textures/patterns/pattern_no_color_no_material_df"/>
+<variable value="1 0 0" type="vector3" name="tint_color_a"/>
+<variable value="0 1 0" type="vector3" name="tint_color_b"/>
+<variable value="1" type="scalar" name="material_amount"/>
+<reflection_texture file="units/payday2/matcaps/matcap_plastic_df"/>
+<material_texture file="units/payday2/masks/shared_textures/patterns/pattern_no_color_no_material_df"/>
+<variable value="1 0 0" type="vector3" name="tint_color_a"/>
+<variable value="0 1 0" type="vector3" name="tint_color_b"/>
+<variable value="1" type="scalar" name="material_amount"/>
+        <variable value="0.086000002920628" type="scalar" name="alpha_ref"/>
+    </material>
+    <material render_template="opacity:CUBE_ENVIRONMENT_MAPPING:CUBE_FRESNEL:DIFFUSE_TEXTURE:FPS:NORMALMAP" unique="true" name="glass" version="2">
+        <variable value="1.6999999284744 1 1" type="vector3" name="fresnel_settings"/>
+        <opacity_texture file="units/pd2_dlc_bbq/weapons/molotov_cocktail/textures/wpn_fps_molotov_glass_op"/>
+        <diffuse_texture file="units/pd2_dlc_bbq/weapons/molotov_cocktail/textures/wpn_fps_molotov_glass_df"/>
+        <reflection_texture type="cube" global_texture="current_global_texture"/>
+        <bump_normal_texture file="units/pd2_dlc_bbq/weapons/molotov_cocktail/textures/molotov_nm"/>
+<reflection_texture file="units/payday2/matcaps/matcap_plastic_df"/>
+<material_texture file="units/payday2/masks/shared_textures/patterns/pattern_no_color_no_material_df"/>
+<variable value="1 0 0" type="vector3" name="tint_color_a"/>
+<variable value="0 1 0" type="vector3" name="tint_color_b"/>
+<variable value="1" type="scalar" name="material_amount"/>
+<reflection_texture file="units/payday2/matcaps/matcap_plastic_df"/>
+<material_texture file="units/payday2/masks/shared_textures/patterns/pattern_no_color_no_material_df"/>
+<variable value="1 0 0" type="vector3" name="tint_color_a"/>
+<variable value="0 1 0" type="vector3" name="tint_color_b"/>
+<variable value="1" type="scalar" name="material_amount"/>
+<reflection_texture file="units/payday2/matcaps/matcap_plastic_df"/>
+<material_texture file="units/payday2/masks/shared_textures/patterns/pattern_no_color_no_material_df"/>
+<variable value="1 0 0" type="vector3" name="tint_color_a"/>
+<variable value="0 1 0" type="vector3" name="tint_color_b"/>
+<variable value="1" type="scalar" name="material_amount"/>
+<reflection_texture file="units/payday2/matcaps/matcap_plastic_df"/>
+<material_texture file="units/payday2/masks/shared_textures/patterns/pattern_no_color_no_material_df"/>
+<variable value="1 0 0" type="vector3" name="tint_color_a"/>
+<variable value="0 1 0" type="vector3" name="tint_color_b"/>
+<variable value="1" type="scalar" name="material_amount"/>
+    </material>
+    <material render_template="opacity:CUBE_ENVIRONMENT_MAPPING:CUBE_FRESNEL:DIFFUSE_TEXTURE:NORMALMAP" unique="true" name="liquid" version="2">
+        <variable value="1.8700000047684 1 0.97999995946884" type="vector3" name="fresnel_settings"/>
+        <opacity_texture file="units/pd2_dlc_bbq/weapons/molotov_cocktail/textures/wpn_fps_molotov_liquid_op"/>
+        <diffuse_texture file="units/pd2_dlc_bbq/weapons/molotov_cocktail/textures/wpn_fps_molotov_liquid_df"/>
+        <reflection_texture type="cube" global_texture="current_global_texture"/>
+        <bump_normal_texture file="units/pd2_dlc_bbq/weapons/molotov_cocktail/textures/glass_nm"/>
+<reflection_texture file="units/payday2/matcaps/matcap_plastic_df"/>
+<material_texture file="units/payday2/masks/shared_textures/patterns/pattern_no_color_no_material_df"/>
+<variable value="1 0 0" type="vector3" name="tint_color_a"/>
+<variable value="0 1 0" type="vector3" name="tint_color_b"/>
+<variable value="1" type="scalar" name="material_amount"/>
     </material>
 </materials>
 
