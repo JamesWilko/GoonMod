@@ -1,8 +1,7 @@
-# GoonMod for Payday 2 - Development Branch
+# GoonMod for Payday 2
 
 ----
 
-This is the development branch for GoonMod for Payday 2. It should not be used as a normal installation as there will be errors, bugs, and crashes.
 
 ### Installation
 GoonMod requires the [Payday 2 BLT](http://paydaymods.com/download/) in order to run.  
