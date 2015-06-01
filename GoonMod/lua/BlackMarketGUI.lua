@@ -752,14 +752,13 @@ function BlackMarketGui.populate_melee_weapons(self, data)
 				melee_weapon_id
 			}
 		end
-
-		if new_data.unlocked then
-			new_data.comparision_data = managers.blackmarket:get_melee_weapon_stats(melee_weapon_id)
+		if new_data.unlocked then		
+				new_data.comparision_data = managers.blackmarket:get_melee_weapon_stats(melee_weapon_id)		
 		end
 		if new_data.unlocked and not new_data.equipped then
 			table.insert(new_data, "lo_mw_equip")
 		end
-		if new_data.unlocked and data.allow_preview and m_tweak_data.unit then
+		if data.allow_preview and m_tweak_data.unit then
 			table.insert(new_data, "lo_mw_preview")
 		end
 
@@ -1953,7 +1952,7 @@ function BlackMarketGui.populate_buy_mask(self, data)
 			end
 
 		else
-
+			table.insert(new_data, "bm_preview")
 			new_data.mid_text = ""
 			new_data.lock_texture = new_data.lock_texture or true
 
