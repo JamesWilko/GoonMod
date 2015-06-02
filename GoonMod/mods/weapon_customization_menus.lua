@@ -797,22 +797,23 @@ function WeaponCustomization:ShowControllerAdvancedOptions()
 	local title = managers.localization:text("wc_advanced_options_menu")
 	local message = ""
 	local menuOptions = {}
-	
-	local i = 1
-	for k, v in ipairs( WeaponCustomization._advanced_menu_options ) do
-		menuOptions[i] = {
-			text = managers.localization:text( v.text ),
-			callback = WeaponCustomization[v.func],
-			is_cancel_button = true
-		}
-		i = i + 1
-	end
-
-	menuOptions[i] = {
+	menuOptions[1] = {
+		text = managers.localization:text("wc_adv_toggle_preview_spin"),
+		callback = callback(self, self, "AdvancedToggleWeaponSpin")
+	}
+	menuOptions[2] = {
+		text = managers.localization:text("wc_adv_toggle_colour_grading"),
+		callback = callback(self, self, "AddvancedToggleColourGrading")
+	}
+	menuOptions[3] = {
+		text = managers.localization:text("wc_adv_clear_weapon"),
+		callback = callback(self, self, "AdvancedClearWeaponCheck")
+	}
+	menuOptions[4] = {
 		text = managers.localization:text("wc_clear_weapon_cancel"),
 		is_cancel_button = true
 	}
-
+	
 	local menu = QuickMenu:new(title, message, menuOptions, true)
 	
 end
