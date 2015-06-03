@@ -80,7 +80,7 @@ Hooks:Add( "MenuManagerInitialize", "MenuManagerInitialize_" .. Mod:ID(), functi
 	end
 
 	GoonBase.CorpseDelimiter.DoRemoveAllCorpses = function(self)
-		if managers.enemy then
+		if managers.enemy and not managers.groupai:state():whisper_mode() then
 			managers.enemy:dispose_all_corpses()
 		end
 	end
