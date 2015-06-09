@@ -3,7 +3,7 @@ local Mutator = class(BaseMutator)
 Mutator.Id = "AllTaserSpawns"
 Mutator.OptionsName = "Danger, Danger! High Voltage!"
 Mutator.OptionsDesc = "Replace all spawning units with Tasers"
-Mutator.Incompatibilities = { "AllCloakerSpawns", "AllBulldozerSpawns", "AllShieldSpawns" }
+Mutator.Incompatibilities = { "AllBulldozerSpawnsEasy","AllCloakerSpawns", "AllBulldozerSpawns", "AllShieldSpawns" }
 
 Mutator.HookTaskData = "GroupAITweakDataPostInitTaskData_AllTasersMutator"
 Mutator.HookUnitCategories = "GroupAITweakDataPostInitUnitCategories_AllTasersMutator"
