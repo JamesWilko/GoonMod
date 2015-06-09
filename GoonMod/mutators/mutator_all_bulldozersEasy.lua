@@ -1,4 +1,5 @@
 
+
 local Mutator = class(BaseMutator)
 Mutator.Id = "AllBulldozerSpawnsEasy"
 Mutator.OptionsName = " Weak Bomb Squad"
@@ -8,7 +9,7 @@ Mutator.Incompatibilities = { "AllBulldozerSpawns","AllCloakerSpawns", "AllTaser
 Mutator.HookTaskData = "GroupAITweakDataPostInitTaskData_AllBulldozerMutator"
 Mutator.HookUnitCategories = "GroupAITweakDataPostInitUnitCategories_AllBulldozerMutator"
 
-Hooks:Add("GoonBaseRegisterMutators", "GoonBaseRegisterMutators_AllBulldozerSpawns", function()
+Hooks:Add("GoonBaseRegisterMutators", "GoonBaseRegisterMutators_AllBulldozerSpawnsEasy", function()
 	GoonBase.Mutators:RegisterMutator( Mutator )
 end)
 
