@@ -3,7 +3,7 @@ local Mutator = class(BaseMutator)
 Mutator.Id = "AllShieldSpawns"
 Mutator.OptionsName = "Spartan Army"
 Mutator.OptionsDesc = "Replace all spawning units with Shields"
-Mutator.Incompatibilities = { "AllCloakerSpawns", "AllTaserSpawns", "AllBulldozerSpawns" }
+Mutator.Incompatibilities = { "AllBulldozerSpawnsEasy","AllCloakerSpawns", "AllTaserSpawns", "AllBulldozerSpawns" }
 
 Mutator.HookTaskData = "GroupAITweakDataPostInitTaskData_AllShieldsMutator"
 Mutator.HookUnitCategories = "GroupAITweakDataPostInitUnitCategories_AllShieldsMutator"
