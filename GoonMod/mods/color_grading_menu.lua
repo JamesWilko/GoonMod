@@ -19,7 +19,7 @@ end
 GoonBase.ColourGrading = GoonBase.ColourGrading or {}
 local ColourGrading = GoonBase.ColourGrading
 ColourGrading.GradingOptions = {
-	"color_off",
+	"color_matrix", -- color_off for default, menu default is matrices
 	"color_payday",
 	"color_heat",
 	"color_nice",
@@ -63,8 +63,8 @@ function ColourGrading:GetGradingOption()
 	end
 end
 
-function ColourGrading:GetDefaultGradingOption( is_menu )
-	return "color_off"
+function ColourGrading:GetDefaultGradingOption()
+	return "color_matrix"
 end
 
 function ColourGrading:UpdateColourGrading()
