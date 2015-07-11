@@ -23,7 +23,7 @@ Mutator._drug_spawns = {
 	"coke_pure",
 }
 Mutator._addiction_restore = 0.0425
-Mutator._addiction_damage = -0.1250
+Mutator._addiction_damage = -0.1055
 
 Mutator._gameUpdateHook = "GameSetupUpdate_" .. Mutator:ID()
 Mutator._playerDamageOnPostInitHook = "PlayerDamageOnPostInit_" .. Mutator:ID()
@@ -101,10 +101,22 @@ function Mutator:SpawnMutatorLoot(loot_id, zipline_unit)
 
 	local pos = camera_ext:position()
 	local rot = camera_ext:rotation()
+	local dir = player:camera():forward()
 	local peer_id = managers.network:session():local_peer() or 0
 
 	if not Network:is_client() then
-		managers.player:server_drop_carry(loot_id, carry_data.multiplier, dye_initiated, has_dye_pack, dye_value_multiplier, pos, rot, player:camera():forward(), throw_distance_multiplier_upgrade_level, zipline_unit, managers.network:session():local_peer():id())
+		managers.player:server_drop_carry(
+			loot_id,
+			carry_data.multiplier,
+			dye_initiated,
+			has_dye_pack,
+			dye_value_multiplier,
+			pos,
+			rot,
+			dir,
+			throw_distance_multiplier_upgrade_level,
+			zipline_unit,
+			peer_id)
 	end
 
 end
