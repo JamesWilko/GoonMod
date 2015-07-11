@@ -49,6 +49,12 @@ ModShop.NonDLCGlobalValues = {
 	["infamy"] = true,
 }
 
+ModShop.MaskMods = {
+	["materials"] = true,
+	["textures"] = true,
+	["colors"] = true,
+}
+
 function ModShop:IsItemExluded( item )
 	return ModShop.ExclusionList[item] or false
 end
@@ -72,6 +78,10 @@ function ModShop:IsInfamyLocked( data )
 
 	return false
 
+end
+
+function ModShop:IsItemMaskMod( item )
+	return ModShop.MaskMods[item.category] or false
 end
 
 function ModShop:GetItemPrice( data )
@@ -250,10 +260,22 @@ function ModShop:_PurchaseItem( purchase_data )
 		return
 	end
 
-	Print("Purchased item with gage-coins:\n\tItem name: " .. tostring(purchase_data.name) .. "\n\tCategory: " .. tostring(purchase_data.category))
-	managers.blackmarket:add_to_inventory(purchase_data.global_value, purchase_data.category, purchase_data.name, true)
+	local name = purchase_data.name
+	local category = purchase_data.category
+	local global_value = purchase_data.global_value
+	local price = purchase_data.price
 
-	ExtendedInv:TakeItem( ModShop.PurchaseCurrency, purchase_data.price )
+	log(string.format( "Purchased item with gage-coins:\n\tItem name: %s\n\tCategory: %s", tostring(name), tostring(category) ))
+	managers.blackmarket:add_to_inventory(global_value, category, name, true)
+
+	ExtendedInv:TakeItem( ModShop.PurchaseCurrency, price )
+
+	-- Record mask mods that were purchased so we can immediately add them to the gui when it reloads
+	if self:IsItemMaskMod( purchase_data ) then
+		self._purchased_mask_mods = ModShop._purchased_mask_mods or {}
+		self._purchased_mask_mods[category] = self._purchased_mask_mods[category] or {}
+		table.insert(self._purchased_mask_mods[category], name)
+	end
 
 	self:_ReloadBlackMarket()
 	if Global.wallet_panel then
@@ -324,6 +346,30 @@ Hooks:Add("BlackMarketGUIOnPopulateMaskModsActionList", "BlackMarketGUIOnPopulat
 	if ModShop:VerifyItemPurchase( data, false ) then
 		table.insert(data, "mp_modshop")
 	end
+end)
+
+Hooks:Add("BlackMarketGUIOnPopulateMaskMods", "BlackMarketGUIOnPopulateMaskMods_" .. Mod:ID(), function(gui, data)
+
+	local category = data.category
+
+	-- If we've purchased an item from this category then forcefully add that item when we force reload the gui
+	-- That way we don't have to stop customizing the mask and reload the gui for it to appear anymore
+	if data.on_create_data and ModShop._purchased_mask_mods and ModShop._purchased_mask_mods[category] then
+
+		for k, v in pairs( ModShop._purchased_mask_mods[category] ) do
+
+			for i, mods in pairs(data.on_create_data) do
+				if mods.id == v then
+					mods.amount = mods.amount + 1
+				end
+			end
+
+		end
+
+		ModShop._purchased_mask_mods[category] = nil
+
+	end
+
 end)
 
 Hooks:Add("BlackMarketManagerModifyGetInventoryCategory", "BlackMarketManagerModifyGetInventoryCategory_" .. Mod:ID(), function(blackmarket, category, data)
