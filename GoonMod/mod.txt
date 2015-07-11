@@ -74,6 +74,7 @@
 		{ "hook_id" : "lib/network/networkgame", "script_path" : "goonbase.lua" },
 		{ "hook_id" : "lib/tweak_data/upgradestweakdata", "script_path" : "goonbase.lua" },
 		{ "hook_id" : "lib/network/base/networkmanager", "script_path" : "goonbase.lua" },
-		{ "hook_id" : "lib/units/weapons/sentrygunweapon", "script_path" : "goonbase.lua" }
+		{ "hook_id" : "lib/units/weapons/sentrygunweapon", "script_path" : "goonbase.lua" },
+		{ "hook_id" : "lib/managers/savefilemanager", "script_path" : "goonbase.lua" }
 	]
 }
