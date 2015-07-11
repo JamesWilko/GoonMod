@@ -36,7 +36,7 @@ GoonBase.Options.PushToInteract.UseStopKey 			= GoonBase.Options.PushToInteract.
 if GoonBase.Options.PushToInteract.Enabled == nil then
 	GoonBase.Options.PushToInteract.Enabled = true
 end
-if GoonBase.Options.PushToInteract.HoldAllEnabled nil then
+if GoonBase.Options.PushToInteract.HoldAllEnabled == nil then
 	GoonBase.Options.PushToInteract.HoldAllEnabled = false
 end
 if GoonBase.Options.PushToInteract.UseStopKey == nil then
