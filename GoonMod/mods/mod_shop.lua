@@ -163,7 +163,7 @@ function ModShop:VerifyItemPurchase( data, weapon_part )
 	for k, v in pairs( tweak_data.dlc ) do
 		if v.achievement_id ~= nil and v.content ~= nil and v.content.loot_drops ~= nil then
 			for i, loot in pairs( v.content.loot_drops ) do
-				if loot.item_entry ~= nil and loot.item_entry == purchase_data.name then
+				if loot.item_entry ~= nil and loot.item_entry == purchase_data.name and loot.type_items == purchase_data.category then
 
 					if not managers.achievment.handler:has_achievement(v.achievement_id) then
 
