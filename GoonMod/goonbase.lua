@@ -3,8 +3,8 @@ if not _G.GoonBase then
 
 	_G.GoonBase = {}
 
-	GoonBase.Version = 15
-	GoonBase.GameVersion = "1.33.0"
+	GoonBase.Version = 16
+	GoonBase.GameVersion = "1.35.0"
 	GoonBase.SupportedVersion = true
 
 	GoonBase.Path = ""
@@ -87,6 +87,7 @@ GoonBase.HookFiles = {
 	["lib/tweak_data/upgradestweakdata"] = "UpgradesTweakData.lua",
 	["lib/network/base/networkmanager"] = "NetworkManager.lua",
 	["lib/units/weapons/sentrygunweapon"] = "SentryGunWeapon.lua",
+	["lib/managers/savefilemanager"] = "SaveFileManager.lua",
 
 }
 

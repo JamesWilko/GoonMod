@@ -2,7 +2,7 @@
 CloneClass( GameSetup )
 
 Hooks:RegisterHook("GameSetupUpdate")
-function GameSetup.update(this, t, dt)
+function GameSetup.update(self, t, dt)
 	Hooks:Call("GameSetupUpdate", t, dt)
-	return this.orig.update(this, t, dt)
+	return self.orig.update(self, t, dt)
 end
