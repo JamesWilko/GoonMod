@@ -4,7 +4,7 @@
 	"contact" : "jw@jameswilko.com",
 	"updates" : [
 		{
-			"revision" : 15,
+			"revision" : 16,
 			"identifier" : "goonmod",
 		},
 		{
