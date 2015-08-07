@@ -19,6 +19,21 @@ end
 _G.GoonBase.MaskModsSearch = _G.GoonBase.MaskModsSearch or {}
 _G.GoonBase.MaskModsSearch._stored_data = {}
 
+function GoonBase.MaskModsSearch:IsMaskMod(category)
+	return category == "materials" or category == "textures" or category == "colors"
+end
+
+function GoonBase.MaskModsSearch:AttemptToRestoreData(data)
+	if self._stored_data[data.category] then
+		for k, v in pairs( self._stored_data[data.category] ) do
+			if v ~= nil then
+				data[k] = v
+			end
+		end
+		self._stored_data[data.category] = nil
+	end
+end
+
 -- Search Bar Class
 BlackmarketSearchBar = BlackmarketSearchBar or class()
 function BlackmarketSearchBar:init( parent, parent_panel )
@@ -279,7 +294,7 @@ Hooks:Add("BlackMarketGUIPostSetup", "BlackMarketGUIPostSetup." .. Mod.id, funct
 
 	if component_data and component_data[1] and component_data[1][1] then
 		local item = component_data[1][1]
-		if item.category == "materials" or item.category == "textures" or item.category == "colors" then
+		if GoonBase.MaskModsSearch:IsMaskMod(item.category) then
 			gui._search_bar:set_enabled(true)
 		else
 			gui._search_bar:set_enabled(false)
@@ -342,15 +357,27 @@ Hooks:Add("BlackMarketGUIOnPopulateMaskMods", "BlackMarketGUIOnPopulateMaskMods_
 		end
 		
 		local search_term = string.lower( blackmarket_gui._search_bar:get_current_search() )
+		local clear_items = {}
 
 		-- Clear all mods which do not contain the search term
 		for i, mods in pairs(data.on_create_data) do
 			local name_id = tweak_data.blackmarket[data.category][mods.id].name_id
 			local loc_name = string.lower( managers.localization:text(name_id) )
 			if string.find(loc_name, search_term) == nil then
-				data[i] = nil
-				data.on_create_data[i] = nil
+				table.insert( clear_items, i )
 			end
+		end
+
+		-- Check if we found anything that matches
+		if #clear_items == #data.on_create_data then
+			GoonBase.MaskModsSearch:AttemptToRestoreData(data)
+			return
+		end
+
+		-- Found something, so trim the data to the search results
+		for _, i in ipairs( clear_items ) do
+			data[i] = nil
+			data.on_create_data[i] = nil
 		end
 
 		-- Keep references to the data so we can sort it
@@ -361,7 +388,7 @@ Hooks:Add("BlackMarketGUIOnPopulateMaskMods", "BlackMarketGUIOnPopulateMaskMods_
 		-- Sort mods into order and remove the old references in the table
 		-- We use a separate table so that if the index and current count match up we don't overwrite anything and lose data
 		for i, mod in pairs(data) do
-			if type(mod) == "table" and mod.slot and mod.category ~= "masks" then
+			if type(mod) == "table" and mod.slot and GoonBase.MaskModsSearch:IsMaskMod(mod.category) then
 				mod.slot = count
 				table.insert( mod_data, mod )
 				table.insert( mod_on_create_data, data.on_create_data[i] )
@@ -379,12 +406,7 @@ Hooks:Add("BlackMarketGUIOnPopulateMaskMods", "BlackMarketGUIOnPopulateMaskMods_
 
 	else
 		-- Load stored data
-		if GoonBase.MaskModsSearch._stored_data[data.category] then
-			for k, v in pairs( GoonBase.MaskModsSearch._stored_data[data.category] ) do
-				data[k] = v
-			end
-			GoonBase.MaskModsSearch._stored_data[data.category] = nil
-		end
+		GoonBase.MaskModsSearch:AttemptToRestoreData(data)
 	end
 
 end)
