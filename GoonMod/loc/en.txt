@@ -299,4 +299,6 @@
 	"gm_col_grading_xxxgen" : "Future of Gaming",
 	"gm_col_grading_matrix" : "The Matrices",
 
+	"gm_bm_search" : "Search",
+
 }

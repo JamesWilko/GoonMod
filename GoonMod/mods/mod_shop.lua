@@ -350,6 +350,11 @@ end)
 
 Hooks:Add("BlackMarketGUIOnPopulateMaskMods", "BlackMarketGUIOnPopulateMaskMods_" .. Mod:ID(), function(gui, data)
 
+	-- Search compatibility, don't add everything if we're searching
+	if gui._search_bar and gui._search_bar:has_search() then
+		return
+	end
+
 	local category = data.category
 
 	-- If we've purchased an item from this category then forcefully add that item when we force reload the gui

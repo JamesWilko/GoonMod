@@ -1771,6 +1771,7 @@ function BlackMarketGui._update_info_text(self, slot_data, updated_texts, data, 
 
 end
 
+Hooks:RegisterHook("BlackMarketGUIOnMousePressed")
 function BlackMarketGui:mouse_pressed(button, x, y)
 
 	if not self._enabled then
@@ -1781,6 +1782,8 @@ function BlackMarketGui:mouse_pressed(button, x, y)
 		self:_stop_rename_item()
 		return
 	end
+
+	Hooks:Call("BlackMarketGUIOnMousePressed", self, button, x, y)
 
 	local holding_shift = false
 	local scroll_button_pressed = button == Idstring("mouse wheel up") or button == Idstring("mouse wheel down")
@@ -2031,4 +2034,74 @@ Hooks:RegisterHook("BlackMarketGUISlotItemOnRefresh")
 function BlackMarketGuiSlotItem.refresh(self)
 	self.orig.refresh(self)
 	Hooks:Call("BlackMarketGUISlotItemOnRefresh", self)
+end
+
+Hooks:RegisterHook("BlackMarketGUIOnPressFirstButton")
+function BlackMarketGui.press_first_btn(self, button)
+	local r = Hooks:ReturnCall("BlackMarketGUIOnPressFirstButton", self, button)
+	if r ~= nil then return r end
+	return self.orig.press_first_btn(self, button)
+end
+
+Hooks:RegisterHook("BlackMarketGUIOnMoveUp")
+function BlackMarketGui.move_up(self)
+	local r = Hooks:ReturnCall("BlackMarketGUIOnMoveUp", self)
+	if r ~= nil then return r end
+	return self.orig.move_up(self)
+end
+
+Hooks:RegisterHook("BlackMarketGUIOnMoveDown")
+function BlackMarketGui.move_down(self)
+	local r = Hooks:ReturnCall("BlackMarketGUIOnMoveDown", self)
+	if r ~= nil then return r end
+	return self.orig.move_down(self)
+end
+
+Hooks:RegisterHook("BlackMarketGUIOnMoveLeft")
+function BlackMarketGui.move_left(self)
+	local r = Hooks:ReturnCall("BlackMarketGUIOnMoveLeft", self)
+	if r ~= nil then return r end
+	return self.orig.move_left(self)
+end
+
+Hooks:RegisterHook("BlackMarketGUIOnMoveRight")
+function BlackMarketGui.move_right(self)
+	local r = Hooks:ReturnCall("BlackMarketGUIOnMoveRight", self)
+	if r ~= nil then return r end
+	return self.orig.move_right(self)
+end
+
+Hooks:RegisterHook("BlackMarketGUIOnNextPage")
+function BlackMarketGui.next_page(self, no_sound)
+	local r = Hooks:ReturnCall("BlackMarketGUIOnNextPage", self, no_sound)
+	if r ~= nil then return r end
+	return self.orig.next_page(self, no_sound)
+end
+
+Hooks:RegisterHook("BlackMarketGUIOnPreviousPage")
+function BlackMarketGui.previous_page(self, no_sound)
+	local r = Hooks:ReturnCall("BlackMarketGUIOnPreviousPage", self, no_sound)
+	if r ~= nil then return r end
+	return self.orig.previous_page(self, no_sound)
+end
+
+Hooks:RegisterHook("BlackMarketGUIOnPressButton")
+function BlackMarketGui.press_button(self, button)
+	local r = Hooks:ReturnCall("BlackMarketGUIOnPressButton", self, button)
+	if r ~= nil then return r end
+	return self.orig.press_button(self, button)
+end
+
+Hooks:RegisterHook("BlackMarketGUIOnPressedSpecialButton")
+function BlackMarketGui.special_btn_pressed(self, button)
+	local r = Hooks:ReturnCall("BlackMarketGUIOnPressedSpecialButton", self, button)
+	if r ~= nil then return r end
+	return self.orig.special_btn_pressed(self, button)
+end
+
+Hooks:RegisterHook("BlackMarketGUIOnConfirmPressed")
+function BlackMarketGui.confirm_pressed(self)
+	local r = Hooks:ReturnCall("BlackMarketGUIOnConfirmPressed", self)
+	if r ~= nil then return r end
+	return self.orig.confirm_pressed(self, button)
 end
