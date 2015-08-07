@@ -560,7 +560,6 @@ Hooks:Add("GenericSystemMenuManagerPostInit", "GenericSystemMenuManagerPostInit_
 end)
 
 Hooks:Add("SaveFileManagerOnSave", "SaveFileManagerOnSave)" .. Mod:ID(), function( savefile_manager, slot, cache_only, save_system )
-	log("SaveFileManagerOnSave")
 	if ExtendedInv:HasRequestedSave() and not cache_only then
 		ExtendedInv:_Save()
 	end

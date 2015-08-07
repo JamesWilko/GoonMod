@@ -13,7 +13,7 @@
 			"description" : "gm_options_corpse_custom_desc",
 			"callback" : "ToggleCorpseLimit",
 			"value" : "UseCustomCorpseLimit",
-			"default_value" : true,
+			"default_value" : true
 		},
 		{
 			"type" : "slider",
@@ -25,11 +25,11 @@
 			"default_value" : 256,
 			"min" : 8,
 			"max" : 1024,
-			"step" : 8,
+			"step" : 8
 		},
 		{
 			"type" : "divider",
-			"size" : 16,
+			"size" : 16
 		},
 
 		{
@@ -39,7 +39,7 @@
 			"description" : "gm_options_corpse_shields_desc",
 			"callback" : "ToggleDespawnShields",
 			"value" : "RemoveShields",
-			"default_value" : false,
+			"default_value" : false
 		},
 		{
 			"type" : "slider",
@@ -51,11 +51,11 @@
 			"default_value" : 180,
 			"min" : 10,
 			"max" : 600,
-			"step" : 10,
+			"step" : 10
 		},
 		{
 			"type" : "divider",
-			"size" : 16,
+			"size" : 16
 		},
 
 		{
@@ -64,7 +64,7 @@
 			"title" : "gm_options_corpse_keybind_remove_all_title",
 			"description" : "gm_options_corpse_keybind_remove_all_desc",
 			"keybind_id" : "BodyCountModRemoveAll",
-			"func" : "DoRemoveAllCorpses",
+			"func" : "DoRemoveAllCorpses"
 		},
 		{
 			"type" : "keybind",
@@ -72,9 +72,8 @@
 			"title" : "gm_options_corpse_keybind_remove_shields_title",
 			"description" : "gm_options_corpse_keybind_remove_shields_desc",
 			"keybind_id" : "BodyCountModRemoveShields",
-			"func" : "DoRemoveAllShields",
+			"func" : "DoRemoveAllShields"
 		}
 
 	]
-
 }

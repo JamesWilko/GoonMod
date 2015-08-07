@@ -3,7 +3,7 @@
 local Mod = class( BaseMod )
 Mod.id = "BodyCountMod"
 Mod.Name = "Corpse Delimiter"
-Mod.Desc = "Change the amount of bodies that can appear after enemies are killed."
+Mod.Desc = "Change the amount of bodies that can appear after enemies are killed"
 Mod.Requirements = {}
 Mod.Incompatibilities = {}
 Mod.EnabledByDefault = true
