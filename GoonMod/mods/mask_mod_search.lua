@@ -361,11 +361,25 @@ Hooks:Add("BlackMarketGUIOnPopulateMaskMods", "BlackMarketGUIOnPopulateMaskMods_
 
 		-- Clear all mods which do not contain the search term
 		for i, mods in pairs(data.on_create_data) do
+
+			-- Search for name match
 			local name_id = tweak_data.blackmarket[data.category][mods.id].name_id
 			local loc_name = string.lower( managers.localization:text(name_id) )
-			if string.find(loc_name, search_term) == nil then
+			local found_name = string.find(loc_name, search_term) ~= nil
+
+			-- Search for dlc name match
+			local found_gv = false
+			if mods.global_value ~= "normal" then
+				local gv_tweak = tweak_data.lootdrop.global_values[mods.global_value]
+				local gv_name = string.lower( managers.localization:text(gv_tweak.name_id) )
+				found_gv = string.find(gv_name, search_term) ~= nil
+			end
+
+			-- Flag items which are not included to be removed
+			if not found_name and not found_gv then
 				table.insert( clear_items, i )
 			end
+
 		end
 
 		-- Check if we found anything that matches
