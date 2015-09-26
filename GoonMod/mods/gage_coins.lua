@@ -159,10 +159,9 @@ Hooks:Add("WalletGuiObjectOnSetWallet", "WalletGuiObjectOnSetWallet_" .. Mod:ID(
 		font = tweak_data.menu.pd2_small_font,
 		color = tweak_data.screen_colors.text
 	})
-
-	local money_icon = Global.wallet_panel:child("wallet_money_icon")
-	local money_text = Global.wallet_panel:child("wallet_money_text")
-	gage_coins_icon:set_leftbottom( money_text:right() + 8, Global.wallet_panel:h() - 2 )
+	
+	local align_object = Global.wallet_panel:child("wallet_skillpoint_text")
+	gage_coins_icon:set_leftbottom( align_object:right() + 8, Global.wallet_panel:h() - 2 )
 	gage_coins_text:set_left(gage_coins_icon:right() + 2)
 	gage_coins_text:set_center_y(gage_coins_icon:center_y())
 	gage_coins_text:set_y( math.round(gage_coins_icon:y() - 2) )
@@ -176,10 +175,9 @@ Hooks:Add("WalletGuiObjectOnRefresh", "WalletGuiObjectOnRefresh_" .. Mod:ID(), f
 		local text = tostring( ExtendedInv:GetItem( GageCoins.CoinID ).amount )
 		local gage_coins_icon = Global.wallet_panel:child("gage_coins_icon")
 		local gage_coins_text = Global.wallet_panel:child("gage_coins_text")
-		local money_icon = Global.wallet_panel:child("wallet_money_icon")
-		local money_text = Global.wallet_panel:child("wallet_money_text")
+		local align_object = Global.wallet_panel:child("wallet_skillpoint_text")
 
-		gage_coins_icon:set_leftbottom( money_text:right() + 8, Global.wallet_panel:h() - 2 )
+		gage_coins_icon:set_leftbottom( align_object:right() + 8, Global.wallet_panel:h() - 2 )
 		gage_coins_text:set_text( text )
 		gage_coins_text:set_left(gage_coins_icon:right() + 2)
 		gage_coins_text:set_center_y(gage_coins_icon:center_y())
