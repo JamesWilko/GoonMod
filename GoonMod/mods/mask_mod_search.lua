@@ -212,7 +212,6 @@ function BlackmarketSearchBar:reload_blackmarket()
 	if blackmarket_gui then
 		blackmarket_gui.__block_enter = true
 		blackmarket_gui:reload()
-		blackmarket_gui:on_slot_selected( blackmarket_gui._selected_slot )
 	end
 end
 
