@@ -2,8 +2,8 @@
 -- Mod Definition
 local Mod = class( BaseMod )
 Mod.id = "ExtendedInventory"
-Mod.Name = "Extended Inventory"
-Mod.Desc = "Allows mods to add special items to your inventory"
+Mod.Name = "Inventory Extensions"
+Mod.Desc = "Allows mods to add special items to your inventory, and adds a code redemption system to GoonMod's options"
 Mod.Requirements = {}
 Mod.Incompatibilities = {}
 
