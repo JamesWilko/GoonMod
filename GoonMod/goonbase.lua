@@ -88,6 +88,7 @@ GoonBase.HookFiles = {
 	["lib/network/base/networkmanager"] = "NetworkManager.lua",
 	["lib/units/weapons/sentrygunweapon"] = "SentryGunWeapon.lua",
 	["lib/managers/savefilemanager"] = "SaveFileManager.lua",
+	["lib/managers/menu/playerinventorygui"] = "PlayerInventoryGUI.lua",
 
 }
 

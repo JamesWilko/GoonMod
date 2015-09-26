@@ -174,7 +174,7 @@ function WeaponCustomization.weapon_visual_customization_callback(self, data)
 		weapon_name = data.name_localized
 	}
 
-	new_node_data.blur_fade = self._data.blur_fade
+	new_node_data.blur_fade = self._data and self._data.blur_fade or 0
 	new_node_data.weapon_slot_data = data
 
 	if data.category == "primaries" or data.category == "secondaries" then
@@ -817,3 +817,65 @@ function WeaponCustomization:ShowControllerAdvancedOptions()
 	local menu = QuickMenu:new(title, message, menuOptions, true)
 	
 end
+
+-- Inventory Hooks
+function WeaponCustomization:NewInventoryOpenWeaponCustomization( weapon_category )
+
+	-- Look for equipped weapon
+	for slot, data in pairs( Global.blackmarket_manager.crafted_items[weapon_category] ) do
+		if data.equipped then
+			
+			-- Preview the weapon using the weapon customizer
+			local data = {
+				slot = slot,
+				category = weapon_category,
+				name = data.weapon_id,
+				name_localized = args and args["text_object"] and args["text_object"]["selected_text"] or data.weapon_id,
+				data = data,
+			}
+
+			GoonBase.WeaponCustomization.weapon_visual_customization_callback(GoonBase.WeaponCustomization, data)
+			return true
+
+		end
+	end
+
+	-- Didn't find one, so fallback to regular preview
+	return nil
+
+end
+
+Hooks:Add("PlayerInventoryGUIOnPreviewPrimary", "PlayerInventoryGUIOnPreviewPrimary.WeaponCustomization", function( inv, args )
+	return WeaponCustomization:NewInventoryOpenWeaponCustomization( "primaries" )
+end)
+
+Hooks:Add("PlayerInventoryGUIOnPreviewSecondary", "PlayerInventoryGUIOnPreviewSecondary.WeaponCustomization", function( inv, args )
+	return WeaponCustomization:NewInventoryOpenWeaponCustomization( "secondaries" )
+end)
+
+Hooks:Add("PlayerInventoryGUIOnPreviewMelee", "PlayerInventoryGUIOnPreviewMelee.WeaponCustomization", function( inv, args )
+
+	-- Look for equipped weapon
+	local wep_id = nil
+	local wep_data = nil
+	for id, data in pairs( managers.blackmarket._global.melee_weapons ) do
+		if data.equipped then
+			
+			-- Preview the weapon using the weapon customizer
+			local data = {
+				category = "melee_weapons",
+				name = id,
+				name_localized = args and args["text_object"] and args["text_object"]["selected_text"] or id,
+				data = data,
+			}
+
+			GoonBase.WeaponCustomization.weapon_visual_customization_callback(GoonBase.WeaponCustomization, data)
+			return true
+
+		end
+	end
+
+	-- Didn't find one, so fallback to regular preview
+	return nil
+
+end)
