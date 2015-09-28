@@ -1625,7 +1625,7 @@ function BlackMarketGui._start_page_data(self)
 			name = "bm_menu_characters",
 			category = "characters",
 			on_create_func_name = "populate_characters",
-			override_slots = {5, 3},
+			override_slots = {4, 3},
 			identifier = self.identifiers.character
 		})
 	end
@@ -1787,7 +1787,7 @@ function BlackMarketGui:mouse_pressed(button, x, y)
 
 	local holding_shift = false
 	local scroll_button_pressed = button == Idstring("mouse wheel up") or button == Idstring("mouse wheel down")
-	local inside_tab_area = self._tab_area_panel:inside(x, y)
+	local inside_tab_area = not self._tab_area_panel:inside(x, y) and self._tabs[self._selected] and not self._tabs[self._selected]:has_scroll_bar()
 
 	if inside_tab_area then
 
