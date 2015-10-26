@@ -49,7 +49,7 @@ function Mutator:Detonate(spooc)
 	if LuaNetworking:IsMultiplayer() and LuaNetworking:IsHost() then
 		
 		local grenade_type = "launcher_frag"
-		local unit_name = Idstring(tweak_data.blackmarket.grenades[grenade_type].unit)
+		local unit_name = Idstring(tweak_data.blackmarket.projectiles[grenade_type].unit)
 		local unit = World:spawn_unit(unit_name, pos, Rotation(math.random(0, 360), math.UP))
 		unit:base():_detonate()
 

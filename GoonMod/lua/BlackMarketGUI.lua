@@ -788,8 +788,6 @@ Hooks:RegisterHook("BlackMarketGUIOnPopulateMasks")
 Hooks:RegisterHook("BlackMarketGUIOnPopulateMasksActionList")
 function BlackMarketGui.populate_masks(self, data)
 
-	local success, err = pcall(function()
-
 	Hooks:Call("BlackMarketGUIOnPopulateMasks", self, data)
 
 	local NOT_WIN_32 = SystemInfo:platform() ~= Idstring("WIN32")
@@ -802,7 +800,7 @@ function BlackMarketGui.populate_masks(self, data)
 	local start_crafted_item = data.start_crafted_item or 1
 	local hold_crafted_item = managers.blackmarket:get_hold_crafted_item()
 	local currently_holding = hold_crafted_item and hold_crafted_item.category == "masks"
-	local max_rows = tweak_data.gui.MAX_MASK_ROWS
+	local max_rows = tweak_data.gui.MAX_MASK_ROWS or 5
 	max_items = max_rows * (data.override_slots and data.override_slots[2] or 3)
 	for i = 1, max_items do
 		data[i] = nil
@@ -1126,17 +1124,11 @@ function BlackMarketGui.populate_masks(self, data)
 
 	end
 
-	end)
-
-	if not success then Print(err) end
-
 end
 
 Hooks:RegisterHook("BlackMarketGUIOnPopulateMods")
 Hooks:RegisterHook("BlackMarketGUIOnPopulateModsActionList")
 function BlackMarketGui.populate_mods(self, data)
-
-	local success, err = pcall(function()
 
 	Hooks:Call("BlackMarketGUIOnPopulateMods", self, data)
 
@@ -1416,16 +1408,11 @@ function BlackMarketGui.populate_mods(self, data)
 
 	end
 
-	end)
-	if not success then Print("[Error] " .. err) end
-
 end
 
 Hooks:RegisterHook("BlackMarketGUIOnPopulateMaskMods")
 Hooks:RegisterHook("BlackMarketGUIOnPopulateMaskModsActionList")
 function BlackMarketGui.populate_choose_mask_mod(self, data)
-
-	local success, err = pcall(function()
 
 	Hooks:Call("BlackMarketGUIOnPopulateMaskMods", self, data)
 
@@ -1558,82 +1545,20 @@ function BlackMarketGui.populate_choose_mask_mod(self, data)
 
 	end
 
-	end)
-	if not success then Print("[Error] " .. err) end
-
 end
-
 
 Hooks:RegisterHook("BlackMarketGUIStartPageData")
 function BlackMarketGui._start_page_data(self)
 
 	local data = {}
-	table.insert(data, {
-		name = "bm_menu_primaries",
-		category = "primaries",
-		on_create_func_name = "populate_primaries",
-		identifier = self.identifiers.weapon,
-		override_slots = {3, 3}
-	})
-	table.insert(data, {
-		name = "bm_menu_secondaries",
-		category = "secondaries",
-		on_create_func_name = "populate_secondaries",
-		identifier = self.identifiers.weapon,
-		override_slots = {3, 3}
-	})
-	table.insert(data, {
-		name = "bm_menu_melee_weapons",
-		category = "melee_weapons",
-		on_create_func_name = "populate_melee_weapons",
-		allow_preview = true,
-		override_slots = {3, 3},
-		identifier = Idstring("melee_weapon")
-	})
-	table.insert(data, {
-		name = "bm_menu_grenades",
-		category = "grenades",
-		on_create_func_name = "populate_grenades",
-		allow_preview = true,
-		override_slots = {3, 3},
-		identifier = self.identifiers.grenade
-	})
-	table.insert(data, {
-		name = "bm_menu_armors",
-		category = "armors",
-		on_create_func_name = "populate_armors",
-		override_slots = {4, 2},
-		identifier = self.identifiers.armor
-	})
-	table.insert(data, {
-		name = "bm_menu_deployables",
-		category = "deployables",
-		on_create_func_name = "populate_deployables",
-		override_slots = {4, 2},
-		identifier = Idstring("deployable")
-	})
-	table.insert(data, {
-		name = "bm_menu_masks",
-		category = "masks",
-		on_create_func_name = "populate_masks",
-		identifier = self.identifiers.mask,
-		override_slots = {3, 3},
-		start_crafted_item = 1
-	})
-	if not managers.network:session() then
-		table.insert(data, {
-			name = "bm_menu_characters",
-			category = "characters",
-			on_create_func_name = "populate_characters",
-			override_slots = {5, 3},
-			identifier = self.identifiers.character
-		})
-	end
+	data.topic_id = "menu_steam_inventory"
+	data.init_callback_name = "create_steam_inventory"
+	data.init_callback_params = data
+	data.allow_tradable_reload = true
+	data.create_steam_inventory_extra = true
 
 	Hooks:Call("BlackMarketGUIStartPageData", self, data)
 
-	data.topic_id = "menu_inventory"
-	self:_cleanup_blackmarket()
 	return data
 
 end

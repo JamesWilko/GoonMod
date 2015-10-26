@@ -129,7 +129,7 @@ Hooks:Add("MenuManagerBuildCustomMenus", "MenuManagerBuildCustomMenus_MutatorsMe
 		MenuHelper:AddMenuItem( menu_nodes.main, menu_id, "Mutators_OptionsName", "Mutators_OptionsDesc", "safehouse", "after" )
 	end
 	if menu_nodes.lobby ~= nil then
-		MenuHelper:AddMenuItem( menu_nodes.lobby, menu_id, "Mutators_OptionsName", "Mutators_OptionsDesc", "skilltree", "after" )
+		MenuHelper:AddMenuItem( menu_nodes.lobby, menu_id, "Mutators_OptionsName", "Mutators_OptionsDesc", "options", "after" )
 	end
 
 	-- Add to ingame menu
