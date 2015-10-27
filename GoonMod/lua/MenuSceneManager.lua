@@ -2,9 +2,9 @@
 CloneClass( MenuSceneManager )
 
 Hooks:RegisterHook("MenuSceneManagerSpawnedItemWeapon")
-function MenuSceneManager.spawn_item_weapon(self, factory_id, blueprint, texture_switches)
-	local unit = self.orig.spawn_item_weapon(self, factory_id, blueprint, texture_switches)
-	Hooks:Call("MenuSceneManagerSpawnedItemWeapon", self, factory_id, blueprint, texture_switches, unit)
+function MenuSceneManager.spawn_item_weapon(self, factory_id, blueprint, cosmetics, texture_switches, custom_data)
+	local unit = self.orig.spawn_item_weapon(self, factory_id, blueprint, cosmetics, texture_switches, custom_data)
+	Hooks:Call("MenuSceneManagerSpawnedItemWeapon", self, factory_id, blueprint, cosmetics, texture_switches, custom_data, unit)
 	return unit
 end
 

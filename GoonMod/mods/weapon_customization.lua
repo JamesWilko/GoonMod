@@ -84,7 +84,7 @@ Hooks:Add("BlackMarketGUIOnPreviewWeapon", "BlackMarketGUIOnPreviewWeapon_Weapon
 	end
 end)
 
-Hooks:Add("MenuSceneManagerSpawnedItemWeapon", "MenuSceneManagerSpawnedItemWeapon_" .. Mod:ID(), function(menu, factory_id, blueprint, texture_switches, spawned_unit)
+Hooks:Add("MenuSceneManagerSpawnedItemWeapon", "MenuSceneManagerSpawnedItemWeapon_" .. Mod:ID(), function(menu, factory_id, blueprint, cosmetics, texture_switches, custom_data, spawned_unit)
 
 	WeaponCustomization._menu_weapon_preview_unit = spawned_unit
 
