@@ -84,6 +84,15 @@ Hooks:Add("BlackMarketGUIOnPreviewWeapon", "BlackMarketGUIOnPreviewWeapon_Weapon
 	end
 end)
 
+Hooks:Add("BlackMarketGUIOnStartCraftingWeapon", "BlackMarketGUIOnStartCraftingWeapon.WeaponCustomization", function(gui, data, new_node_data)
+	if not WeaponCustomization._is_previewing then
+		WeaponCustomization._is_previewing = {
+			["previewing"] = true,
+			["data"] = data,
+		}
+	end
+end)
+
 Hooks:Add("MenuSceneManagerSpawnedItemWeapon", "MenuSceneManagerSpawnedItemWeapon_" .. Mod:ID(), function(menu, factory_id, blueprint, cosmetics, texture_switches, custom_data, spawned_unit)
 
 	WeaponCustomization._menu_weapon_preview_unit = spawned_unit
