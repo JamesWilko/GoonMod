@@ -1698,116 +1698,27 @@ end
 
 Hooks:RegisterHook("BlackMarketGUIOnMousePressed")
 function BlackMarketGui:mouse_pressed(button, x, y)
-
-	if not self._enabled then
-		return
+	if self:check_mouse_pressed(button, x, y) then
+		Hooks:Call("BlackMarketGUIOnMousePressed", self, button, x, y)
+		self.orig.mouse_pressed(self, button, x, y)
 	end
+end
 
+function BlackMarketGui:check_mouse_pressed(button, x, y)
+	if managers.menu_scene and managers.menu_scene:input_focus() then
+		return false
+	end
+	if not self._enabled then
+		return false
+	end
 	if self._renaming_item then
 		self:_stop_rename_item()
-		return
+		return false
 	end
-
-	Hooks:Call("BlackMarketGUIOnMousePressed", self, button, x, y)
-
-	local holding_shift = false
-	local scroll_button_pressed = button == Idstring("mouse wheel up") or button == Idstring("mouse wheel down")
-	local inside_tab_area = not self._tab_area_panel:inside(x, y) and self._tabs[self._selected] and not self._tabs[self._selected]:has_scroll_bar()
-
-	if inside_tab_area then
-
-		if button == Idstring("mouse wheel down") then
-			self:next_page(true)
-			return
-		elseif button == Idstring("mouse wheel up") then
-			self:previous_page(true)
-			return
-		end
-
-	elseif self._info_texts_panel:inside(x, y) and scroll_button_pressed then
-
-		local scroll_speed = small_font_size
-		self._info_text_scroll_offset = self._info_text_scroll_offset or 0
-		if button == Idstring("mouse wheel down") then
-			self._info_text_scroll_offset = self._info_text_scroll_offset - scroll_speed
-			self:_update_borders()
-			return
-		elseif button == Idstring("mouse wheel up") then
-			self._info_text_scroll_offset = self._info_text_scroll_offset + scroll_speed
-			self:_update_borders()
-			return
-		end
-
-	elseif self._tabs[self._selected] and scroll_button_pressed and self._tabs[self._selected]:mouse_pressed(button, x, y) then
-
-		local x, y = self._tabs[self._selected]:selected_slot_center()
-		self._select_rect:set_world_center(x, y)
-		self._select_rect:stop()
-		self._select_rect_box:set_color(Color.white)
-		self._select_rect:set_visible(y > self._tabs[self._selected]._grid_panel:top() and y < self._tabs[self._selected]._grid_panel:bottom())
-		return
-
+	if self._no_input then
+		return false
 	end
-
-	if button ~= Idstring("0") then
-		return
-	end
-
-	if self._panel:child("back_button"):inside(x, y) then
-		managers.menu:back(true)
-		return
-	end
-
-	if self._tab_scroll_table.left_klick and self._tab_scroll_table.left:inside(x, y) then
-		self:previous_page()
-		return
-	end
-
-	if self._tab_scroll_table.right_klick and self._tab_scroll_table.right:inside(x, y) then
-		self:next_page()
-		return
-	end
-
-	if self._selected_slot and self._selected_slot._equipped_rect then
-		self._selected_slot._equipped_rect:set_alpha(1)
-	end
-
-	if self._tab_scroll_panel:inside(x, y) and self._tabs[self._highlighted] and self._tabs[self._highlighted]:inside(x, y) ~= 1 then
-		if self._selected ~= self._highlighted then
-			self:set_selected_tab(self._highlighted)
-		end
-		return
-	elseif self._tabs[self._selected] then
-		local selected_slot = self._tabs[self._selected]:mouse_pressed(button, x, y)
-		self:on_slot_selected(selected_slot)
-		if selected_slot then
-			return
-		end
-	end
-
-	if self._rename_info_text then
-		local text_button = self._info_texts and self._info_texts[self._rename_info_text]
-		if self._slot_data and text_button and text_button:inside(x, y) then
-			local category = self._slot_data.category
-			local slot = self._slot_data.slot
-			self:_start_rename_item(category, slot)
-			return
-		end
-	end
-
-	if self._btns[self._button_highlighted] and self._btns[self._button_highlighted]:inside(x, y) then
-		local data = self._btns[self._button_highlighted]._data
-		if data.callback and (not self._button_press_delay or self._button_press_delay < TimerManager:main():time()) then
-			managers.menu_component:post_event("menu_enter")
-			data.callback(self._slot_data, self._data.topic_params)
-			self._button_press_delay = TimerManager:main():time() + 0.2
-		end
-	end
-
-	if self._selected_slot and self._selected_slot._equipped_rect then
-		self._selected_slot._equipped_rect:set_alpha(0.6)
-	end
-
+	return true
 end
 
 Hooks:RegisterHook("BlackMarketGUIOnPopulateBuyMasks")
