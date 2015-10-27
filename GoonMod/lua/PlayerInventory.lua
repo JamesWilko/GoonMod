@@ -1,8 +1,8 @@
 
 CloneClass( PlayerInventory )
 
-function PlayerInventory.add_unit_by_factory_name(self, factory_name, equip, instant, blueprint, texture_switches)
-	self.orig.add_unit_by_factory_name(self, factory_name, equip, instant, blueprint, texture_switches)
+function PlayerInventory.add_unit_by_factory_name(self, factory_name, equip, instant, blueprint, cosmetics, texture_switches)
+	self.orig.add_unit_by_factory_name(self, factory_name, equip, instant, blueprint, cosmetics, texture_switches)
 end
 
 Hooks:RegisterHook("PlayerInventoryOnPlaceSelection")
