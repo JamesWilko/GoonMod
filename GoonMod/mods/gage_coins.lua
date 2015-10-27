@@ -170,6 +170,10 @@ end)
 
 Hooks:Add("WalletGuiObjectOnRefresh", "WalletGuiObjectOnRefresh_" .. Mod:ID(), function()
 
+	if not ExtendedInv or not GageCoins then
+		return
+	end
+
 	if Global.wallet_panel then
 
 		local text = tostring( ExtendedInv:GetItem( GageCoins.CoinID ).amount )
