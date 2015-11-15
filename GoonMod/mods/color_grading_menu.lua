@@ -71,6 +71,7 @@ function ColourGrading:UpdateColourGrading()
 	if not Utils:IsInGameState() and managers and managers.environment_controller then
 		local grading = ColourGrading:GetGradingOption()
 		if grading then
+			managers.menu_scene._environments.standard.color_grading = grading
 			managers.environment_controller:set_default_color_grading( grading )
 			managers.environment_controller:refresh_render_settings()
 		end
