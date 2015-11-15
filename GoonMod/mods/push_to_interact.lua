@@ -125,6 +125,9 @@ end
 function PushToInteract:ShouldHoldInteraction( interaction_data )
 
 	if PushToInteract:IsEnabled() and interaction_data then
+		if type(interaction_data) == "string" then
+			interaction_data = tweak_data.interaction[interaction_data]
+		end
 		local hold_all = PushToInteract:ShouldHoldAllInteractions()
 		local interaction = (interaction_data.timer or 10) >= PushToInteract:MinimumInteractionTime()
 		local forced_hold = PushToInteract.ForceKeepInteraction[ interaction_data ]
