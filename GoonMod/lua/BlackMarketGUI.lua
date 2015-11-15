@@ -1958,6 +1958,11 @@ function BlackMarketGui.mouse_released(self, o, button, x, y)
 	Hooks:Call("BlackMarketGUIMouseReleased", self, o, button, x, y)
 end
 
+function BlackMarketGui._choose_weapon_mods_callback(self, data)
+	BlackMarketGui.choose_weapon_mods_callback(self, data)
+	Hooks:Call("BlackMarketGUIOnStartCraftingWeapon", self, data, {})
+end
+
 Hooks:RegisterHook("BlackMarketGUIOnStartCraftingWeapon")
 function BlackMarketGui._start_crafting_weapon(self, data, new_node_data)
 	Hooks:Call("BlackMarketGUIOnStartCraftingWeapon", self, data, new_node_data)

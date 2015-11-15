@@ -34,3 +34,8 @@ function PlayerInventoryGui.preview_melee(self, ...)
 	end
 	self.orig.preview_melee(self, ...)
 end
+
+Hooks:RegisterHook("PlayerInventoryGUIOnOpenWeaponModMenu")
+function PlayerInventoryGui.open_weapon_mod_menu(self, box)
+	BlackMarketGui._choose_weapon_mods_callback(self, box.params.mod_data)
+end
