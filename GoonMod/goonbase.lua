@@ -89,6 +89,8 @@ GoonBase.HookFiles = {
 	["lib/units/weapons/sentrygunweapon"] = "SentryGunWeapon.lua",
 	["lib/managers/savefilemanager"] = "SaveFileManager.lua",
 	["lib/managers/menu/playerinventorygui"] = "PlayerInventoryGUI.lua",
+	["lib/units/weapons/cosmeticsweaponbase"] = "CosmeticsWeaponBase.lua",
+	["lib/tweak_data/blackmarket/weaponskinstweakdata"] = "WeaponSkinsTweakData.lua",
 
 }
 

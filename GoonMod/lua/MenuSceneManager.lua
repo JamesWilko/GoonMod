@@ -23,3 +23,21 @@ function MenuSceneManager.set_scene_template(self, template, data, custom_name, 
 	end
 	self.orig.set_scene_template(self, template, data, custom_name, skip_transition)
 end
+
+Hooks:RegisterHook("MenuSceneManagerOnSetCharacterEquippedWeapon")
+function MenuSceneManager.set_character_equipped_weapon(self, unit, factory_id, blueprint, type, cosmetics)
+	self.orig.set_character_equipped_weapon(self, unit, factory_id, blueprint, type, cosmetics)
+	Hooks:Call("MenuSceneManagerOnSetCharacterEquippedWeapon", self, unit, factory_id, blueprint, type, cosmetics)
+end
+
+Hooks:RegisterHook("MenuSceneManagerOnCallbackWeaponBaseUnitLoaded")
+function MenuSceneManager.clbk_weapon_base_unit_loaded(self, params, status, asset_type, asset_name)
+	self.orig.clbk_weapon_base_unit_loaded(self, params, status, asset_type, asset_name)
+	Hooks:Call("MenuSceneManagerOnCallbackWeaponBaseUnitLoaded", self, params, status, asset_type, asset_name)
+end
+
+Hooks:RegisterHook("MenuSceneManagerOnSetCharacterOutfitVisibility")
+function MenuSceneManager._set_character_and_outfit_visibility(self, char_unit, state)
+	self.orig._set_character_and_outfit_visibility(self, char_unit, state)
+	Hooks:Call("MenuSceneManagerOnSetCharacterOutfitVisibility", self, char_unit, state)
+end

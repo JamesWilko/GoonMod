@@ -77,6 +77,8 @@
 		{ "hook_id" : "lib/network/base/networkmanager", "script_path" : "goonbase.lua" },
 		{ "hook_id" : "lib/units/weapons/sentrygunweapon", "script_path" : "goonbase.lua" },
 		{ "hook_id" : "lib/managers/savefilemanager", "script_path" : "goonbase.lua" },
-		{ "hook_id" : "lib/managers/menu/playerinventorygui", "script_path" : "goonbase.lua" }
+		{ "hook_id" : "lib/managers/menu/playerinventorygui", "script_path" : "goonbase.lua" },
+		{ "hook_id" : "lib/units/weapons/cosmeticsweaponbase", "script_path" : "goonbase.lua" },
+		{ "hook_id" : "lib/tweak_data/blackmarket/weaponskinstweakdata", "script_path" : "goonbase.lua" }
 	]
 }

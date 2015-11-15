@@ -11,7 +11,7 @@ WeaponCustomization._advanced_menu_options = {
 	},
 	[2] = {
 		text = "wc_adv_toggle_colour_grading",
-		func = "AddvancedToggleColourGrading",
+		func = "AdvancedToggleColourGrading",
 	},
 	[3] = {
 		text = "wc_adv_clear_weapon",
@@ -300,11 +300,10 @@ end)
 
 Hooks:Add("BlackMarketGUIUpdateInfoText", "BlackMarketGUIUpdateInfoText_WeaponCustomization", function(self)
 
-
 	local slot_data = self._slot_data
 	local tab_data = self._tabs[self._selected]._data
 	local prev_data = tab_data.prev_node_data
-	local ids_category = Idstring(slot_data.category)
+	local ids_category = slot_data and slot_data.category and Idstring(slot_data.category)
 	local identifier = tab_data.identifier
 	local updated_texts = {
 		{text = ""},
@@ -721,7 +720,7 @@ function WeaponCustomization:AdvancedToggleWeaponSpin()
 
 end
 
-function WeaponCustomization:AddvancedToggleColourGrading()
+function WeaponCustomization:AdvancedToggleColourGrading()
 
 	if managers and managers.environment_controller then
 
@@ -803,7 +802,7 @@ function WeaponCustomization:ShowControllerAdvancedOptions()
 	}
 	menuOptions[2] = {
 		text = managers.localization:text("wc_adv_toggle_colour_grading"),
-		callback = callback(self, self, "AddvancedToggleColourGrading")
+		callback = callback(self, self, "AdvancedToggleColourGrading")
 	}
 	menuOptions[3] = {
 		text = managers.localization:text("wc_adv_clear_weapon"),

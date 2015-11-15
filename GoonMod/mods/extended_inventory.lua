@@ -487,7 +487,7 @@ Hooks:Add("BlackMarketGUIUpdateInfoText", "BlackMarketGUIUpdateInfoText_Extended
 	local slot_data = self._slot_data
 	local tab_data = self._tabs[self._selected]._data
 	local prev_data = tab_data.prev_node_data
-	local ids_category = Idstring(slot_data.category)
+	local ids_category = slot_data and slot_data.category and Idstring(slot_data.category)
 	local identifier = tab_data.identifier
 	local updated_texts = {
 		{text = ""},

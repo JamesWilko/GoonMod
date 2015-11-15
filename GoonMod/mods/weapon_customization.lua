@@ -75,22 +75,117 @@ Hooks:Add( "MenuManagerInitialize", "MenuManagerInitialize_" .. Mod:ID(), functi
 end)
 
 -- Hooks
-Hooks:Add("BlackMarketGUIOnPreviewWeapon", "BlackMarketGUIOnPreviewWeapon_WeaponCustomization", function(gui, data)
-	if not WeaponCustomization._is_previewing then
-		WeaponCustomization._is_previewing = {
-			["previewing"] = true,
-			["data"] = data,
-		}
+Hooks:Add("BlackMarketTweakDataPostInitWeaponSkins", "BlackMarketTweakDataPostInitWeaponSkins.WeaponCustomization", function( tweak )
+
+	tweak.weapon_skins.goonmod_custom_skin = {}
+	tweak.weapon_skins.goonmod_custom_skin.name_id = "bm_wskn_goonmod_custom_skin"
+	tweak.weapon_skins.goonmod_custom_skin.unique_name_id = "bm_wskn_goonmod_custom_skin"
+	tweak.weapon_skins.goonmod_custom_skin.desc_id = "bm_wskn_goonmod_custom_skin_desc"
+	tweak.weapon_skins.goonmod_custom_skin.weapon_id = "deagle"
+	tweak.weapon_skins.goonmod_custom_skin.rarity = "epic"
+	tweak.weapon_skins.goonmod_custom_skin.bonus = "recoil_p2"
+	tweak.weapon_skins.goonmod_custom_skin.reserve_quality = false
+	tweak.weapon_skins.goonmod_custom_skin.texture_bundle_folder = "cash/safes/cf15"
+	tweak.weapon_skins.goonmod_custom_skin.locked = false
+
+end)
+
+Hooks:Add("BlackMarketManagerPreGetInventoryTradable", "BlackMarketManagerPreGetInventoryTradable.WeaponCustomization", function(blackmarket)
+
+	if blackmarket._global.inventory_tradable and not blackmarket._global.inventory_tradable["goonmod_custom_skin"] then
+		local data = {}
+		data["category"] = "weapon_skins"
+		data["entry"] = "goonmod_custom_skin"
+		data["bonus"] = false
+		data["amount"] = 1
+		data["quality"] = "mint"
+		blackmarket._global.inventory_tradable["goonmod_custom_skin"] = data
 	end
+
+end)
+
+Hooks:Add("BlackMarketManagerModifyGetCosmeticsInstancesByWeaponId", "BlackMarketManagerModifyGetCosmeticsInstancesByWeaponId.WeaponCustomization", function(blackmarket, weapon_id, items)
+	table.insert(items, "goonmod_custom_skin")
+end)
+
+Hooks:Add("BlackMarketGUIModifyWeaponCosmeticsActionList", "BlackMarketGUIModifyWeaponCosmeticsActionList.WeaponCustomization", function(gui, data, new_data)
+
+	if new_data.name == "goonmod_custom_skin" then
+
+		-- Clear actions list
+		for k, v in ipairs(new_data) do
+			new_data[k] = nil
+		end
+
+		-- Custom actions
+		local crafted = managers.blackmarket:get_crafted_category(data.category)[data.prev_node_data and data.prev_node_data.slot]
+		if crafted and crafted.cosmetics then
+			table.insert( new_data, "wcc_goonmod_apply" )
+		else
+			table.insert( new_data, "wcc_goonmod_edit" )
+		end
+
+	end
+
+end)
+
+Hooks:Add("BlackMarketGUIPostSetup", "BlackMarketGUIPostSetup.WeaponCustomization", function(gui, is_start_page, component_data)
+
+	-- Create open editor button
+	local btn_x = 10
+	if gui._btns then
+
+		local BTNS = {
+			wcc_goonmod_edit = {
+				prio = 1,
+				btn = "BTN_A",
+				pc_btn = nil,
+				name = "bm_menu_btn_edit_goonmod_cosmetic",
+				callback = callback(WeaponCustomization, WeaponCustomization, "weapon_visual_customization_callback")
+			},
+			wcc_goonmod_apply = {
+				prio = 1,
+				btn = "BTN_A",
+				pc_btn = nil,
+				name = "bm_menu_btn_choose_goonmod_cosmetic",
+				callback = nil
+			}
+		}
+
+		local btn_x = 10
+		for btn, btn_data in pairs(BTNS) do
+			local new_btn = BlackMarketGuiButtonItem:new(gui._buttons, btn_data, btn_x)
+			gui._btns[btn] = new_btn
+		end
+
+	end
+
+end)
+
+Hooks:Add("MenuManagerOnBack", "MenuManagerOnBack.WeaponCustomization", function(menu, queue, skip_nodes)
+	
+	if WeaponCustomization._is_previewing then
+		local gui = managers.menu_component._blackmarket_gui
+		if gui then
+			local data = WeaponCustomization._is_previewing.data
+			managers.blackmarket:view_weapon(data.category, data.slot, callback(gui, gui, "_update_crafting_node"), nil, BlackMarketGui.get_crafting_custom_data())
+		end
+	end
+
+end)
+
+Hooks:Add("BlackMarketGUIOnPreviewWeapon", "BlackMarketGUIOnPreviewWeapon_WeaponCustomization", function(gui, data)
+	WeaponCustomization._is_previewing = {
+		["previewing"] = true,
+		["data"] = data,
+	}
 end)
 
 Hooks:Add("BlackMarketGUIOnStartCraftingWeapon", "BlackMarketGUIOnStartCraftingWeapon.WeaponCustomization", function(gui, data, new_node_data)
-	if not WeaponCustomization._is_previewing then
-		WeaponCustomization._is_previewing = {
-			["previewing"] = true,
-			["data"] = data,
-		}
-	end
+	WeaponCustomization._is_previewing = {
+		["previewing"] = true,
+		["data"] = data,
+	}
 end)
 
 Hooks:Add("MenuSceneManagerSpawnedItemWeapon", "MenuSceneManagerSpawnedItemWeapon_" .. Mod:ID(), function(menu, factory_id, blueprint, cosmetics, texture_switches, custom_data, spawned_unit)
@@ -100,7 +195,6 @@ Hooks:Add("MenuSceneManagerSpawnedItemWeapon", "MenuSceneManagerSpawnedItemWeapo
 	if WeaponCustomization._is_previewing then
 		local data = WeaponCustomization._is_previewing["data"]
 		WeaponCustomization:LoadCurrentWeaponCustomization( data )
-		WeaponCustomization._is_previewing = nil
 	end
 
 end)

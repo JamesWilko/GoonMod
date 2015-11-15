@@ -301,4 +301,8 @@
 
 	"gm_bm_search" : "Search",
 
+	"bm_menu_btn_edit_goonmod_cosmetic" : "Edit GoonMod Skin",
+	"bm_menu_btn_choose_goonmod_cosmetic" : "Remove Equipped Skins To Edit",
+	"bm_wskn_goonmod_custom_skin" : "Custom GoonMod Skin",
+	"bm_wskn_goonmod_custom_skin_desc" : "Apply a custom skin via GoonMod's Weapon Customizer",
 }
