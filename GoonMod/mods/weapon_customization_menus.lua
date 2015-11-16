@@ -18,7 +18,7 @@ WeaponCustomization._advanced_menu_options = {
 		func = "AdvancedClearWeaponCheck",
 	}
 }
-WeaponCustomization._menu_text_scaling = 0.85
+WeaponCustomization._menu_text_scaling = 0.80
 
 WeaponCustomization._controller_index = {
 	modifying = 1,
@@ -169,9 +169,10 @@ function WeaponCustomization.weapon_visual_customization_callback(self, data)
 
 	end
 
+	local weapon_name = WeaponCustomization._is_previewing and WeaponCustomization._is_previewing.data and WeaponCustomization._is_previewing.data.name_localized
 	new_node_data.topic_id = "bm_menu_customize_weapon_title"
 	new_node_data.topic_params = {
-		weapon_name = data.name_localized
+		weapon_name = weapon_name or data.name_localized
 	}
 
 	new_node_data.blur_fade = self._data and self._data.blur_fade or 0
