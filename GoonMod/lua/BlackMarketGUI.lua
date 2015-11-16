@@ -609,8 +609,8 @@ function BlackMarketGui.populate_melee_weapons(self, data)
 
 		xd = x[2]
 		yd = y[2]
-		x_td = m_tweak_data[x[1]]
-		y_td = m_tweak_data[y[1]]
+		x_td = m_tweak_data[ x[1] ]
+		y_td = m_tweak_data[ y[1] ]
 
 		if not xd.is_favorite ~= not yd.is_favorite then
 			return xd.is_favorite
@@ -657,7 +657,7 @@ function BlackMarketGui.populate_melee_weapons(self, data)
 	for i, melee_weapon_data in ipairs(sort_data) do
 
 		melee_weapon_id = melee_weapon_data[1]
-		m_tweak_data = tweak_data.blackmarket.melee_weapons[melee_weapon_data[1]] or {}
+		m_tweak_data = tweak_data.blackmarket.melee_weapons[ melee_weapon_data[1] ] or {}
 		guis_catalog = "guis/"
 
 		local bundle_folder = m_tweak_data.texture_bundle_folder
@@ -1167,17 +1167,15 @@ function BlackMarketGui.populate_mods(self, data)
 		new_data = {}
 		new_data.name = mod_name or data.prev_node_data.name
 		if not mod_name or not managers.weapon_factory:get_part_name_by_part_id(mod_name) then
+			new_data.name_localized = managers.localization:text("bm_menu_no_mod")
+		else
+			new_data.name_localized = managers.weapon_factory:get_part_name_by_part_id(mod_name)
 		end
-		new_data.name_localized = managers.localization:text("bm_menu_no_mod")
-		new_data.category = not data.category and data.prev_node_data and data.prev_node_data.category
-
-		new_data.name_localized = managers.weapon_factory:get_part_name_by_part_id(mod_name)
-		new_data.category = data.prev_node_data.category
+		new_data.category = data.category or data.prev_node_data.category
 		new_data.bitmap_texture = guis_catalog .. "textures/pd2/blackmarket/icons/mods/" .. new_data.name
-		new_data.slot = not data.slot and data.prev_node_data and data.prev_node_data.slot
+		new_data.slot = data.slot or data.prev_node_data.slot
 		new_data.global_value = mod_global_value
 		new_data.unlocked = not crafted.customize_locked and part_is_from_cosmetic and 1 or mod_default or managers.blackmarket:get_item_amount(new_data.global_value, "weapon_mods", new_data.name, true)
-		new_data.unlocked = mod_default or managers.blackmarket:get_item_amount(new_data.global_value, "weapon_mods", new_data.name, true)
 		new_data.equipped = false
 		new_data.stream = true
 		new_data.default_mod = default_mod
@@ -1212,7 +1210,6 @@ function BlackMarketGui.populate_mods(self, data)
 				local stat = new_data.unlock_tracker.stat or false
 				local max_progress = new_data.unlock_tracker.max_progress or 0
 				local award = new_data.unlock_tracker.award or false
-				do break end
 				if new_data.unlock_tracker.text_id then
 					if max_progress > 0 and stat then
 						local progress_left = max_progress - (managers.achievment:get_stat(stat) or 0)
@@ -1220,7 +1217,7 @@ function BlackMarketGui.populate_mods(self, data)
 							progress = tostring(progress_left)
 							text_id = new_data.unlock_tracker.text_id
 							font = small_font
-							font_size = small_font_size
+							font_size = tiny_font_size
 							no_upper = true
 						end
 
@@ -1228,7 +1225,7 @@ function BlackMarketGui.populate_mods(self, data)
 						local achievement = managers.achievment:get_info(award)
 						text_id = new_data.unlock_tracker.text_id
 						font = small_font
-						font_size = small_font_size
+						font_size = tiny_font_size
 						no_upper = true
 					end
 
@@ -1312,6 +1309,7 @@ function BlackMarketGui.populate_mods(self, data)
 			end
 
 		end
+
 		if mod_name and new_data.unlocked and not crafted.customize_locked then
 			if type(new_data.unlocked) ~= "number" or new_data.unlocked > 0 then
 				if new_data.can_afford then
@@ -1345,7 +1343,6 @@ function BlackMarketGui.populate_mods(self, data)
 			new_data.equipped = false
 			data[i] = new_data
 		end
-
 	end
 
 	local weapon_blueprint = managers.blackmarket:get_weapon_blueprint(data.prev_node_data.category, data.prev_node_data.slot) or {}
@@ -1356,12 +1353,9 @@ function BlackMarketGui.populate_mods(self, data)
 				equipped = i
 			else
 			end
-
 		end
 	end
-
 	if equipped then
-
 		data[equipped].equipped = true
 		data[equipped].unlocked = not crafted.customize_locked and (data[equipped].unlocked or true)
 		data[equipped].mid_text = crafted.customize_locked and data[equipped].mid_text or nil
@@ -1369,7 +1363,6 @@ function BlackMarketGui.populate_mods(self, data)
 		for i = 1, #data[equipped] do
 			table.remove(data[equipped], 1)
 		end
-
 		data[equipped].price = 0
 		data[equipped].can_afford = true
 		if not crafted.customize_locked then
@@ -1381,9 +1374,7 @@ function BlackMarketGui.populate_mods(self, data)
 				table.insert(data[equipped], "wm_preview")
 			end
 		end
-
 		Hooks:Call("BlackMarketGUIOnPopulateModsActionList", self, data[equipped])
-
 		local factory = tweak_data.weapon.factory.parts[data[equipped].name]
 		if data.name == "sight" and factory and factory.texture_switch then
 			if not crafted.customize_locked then
@@ -1402,29 +1393,15 @@ function BlackMarketGui.populate_mods(self, data)
 					stream = true,
 					blend_mode = "add"
 				})
-				table.insert(data[equipped].mini_icons, {
-					color = Color.black,
-					right = -5,
-					bottom = -5,
-					layer = 0,
-					alpha = 0.4,
-					w = 42,
-					h = 42,
-					borders = true
-				})
 			end
-
 		end
-
 		if not data[equipped].conflict then
 			if data[equipped].default_mod then
 				data[equipped].comparision_data = managers.blackmarket:get_weapon_stats_with_mod(data[equipped].category, data[equipped].slot, data[equipped].default_mod)
 			else
 				data[equipped].comparision_data = managers.blackmarket:get_weapon_stats_without_mod(data[equipped].category, data[equipped].slot, data[equipped].name)
 			end
-
 		end
-
 	end
 
 end
@@ -1700,7 +1677,7 @@ function BlackMarketGui._update_info_text(self, slot_data, updated_texts, data, 
 	end
 	for _, desc_mini_icon in ipairs(self._desc_mini_icons) do
 		desc_mini_icon[1]:set_y(title_offset)
-		desc_mini_icon[1]:set_world_top(self._info_texts[desc_mini_icon[2]]:world_bottom() + (2 - (desc_mini_icon[2] - 1) * 3))
+		desc_mini_icon[1]:set_world_top(self._info_texts[ desc_mini_icon[2] ]:world_bottom() + (2 - (desc_mini_icon[2] - 1) * 3))
 	end
 	if is_renaming_this and self._rename_info_text and self._rename_caret then
 		local info_text = self._info_texts[self._rename_info_text]

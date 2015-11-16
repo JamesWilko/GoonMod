@@ -126,6 +126,10 @@ end
 
 function ModShop:VerifyItemPurchase( data, weapon_part )
 
+	if not data then
+		return
+	end
+
 	local name = data.name
 	local category = weapon_part and "parts" or data.category
 
