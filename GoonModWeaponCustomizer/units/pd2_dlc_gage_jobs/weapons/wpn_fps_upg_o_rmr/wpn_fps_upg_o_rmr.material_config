@@ -1,4 +1,4 @@
-﻿<materials version="3">
+﻿<materials version="3" group="weapon_group">
     <material name="gfx_reddot" version="2" unique="true" render_template="effect:BLEND_ADD:DIFFUSE0_TEXTURE:FPS:VIEW_ANGLE_FALLOFF_OP">
         <variable value="reddot" type="scalar" name="intensity"/>
         <diffuse_texture file="units/pd2_dlc1/weapons/wpn_effects_textures/wpn_sight_reticle_1_il"/>

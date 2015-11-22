@@ -1,4 +1,4 @@
-﻿<materials version="3">
+﻿<materials version="3" group="weapon_group">
     <material name="no_blurr" version="2" render_template="effect:DOF_CUTTER">
         <variable value="10" type="scalar" name="fadeout_distance"/>
         <diffuse_texture file="units/payday2/weapons/wpn_effects_textures/wpn_effect_no_blurr_df"/>

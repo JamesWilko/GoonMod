@@ -1,4 +1,4 @@
-﻿<materials version="3">
+﻿<materials version="3" group="weapon_group">
 	<material name="mtr_battle" render_template="solid_mask:DEPTH_SCALING" version="2">
 		<diffuse_texture file="units/pd2_dlc_butcher_mods/weapons/wpn_fps_upg_ass_ns_battle/battle_df" />
 		<bump_normal_texture file="units/pd2_dlc_butcher_mods/weapons/wpn_fps_upg_ass_ns_battle/battle_nm" />

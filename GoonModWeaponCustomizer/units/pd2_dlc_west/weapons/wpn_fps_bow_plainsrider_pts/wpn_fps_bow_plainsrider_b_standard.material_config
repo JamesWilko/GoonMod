@@ -1,4 +1,4 @@
-﻿<materials version="3">
+﻿<materials version="3" group="weapon_group">
 	<material name="mtr_bow" render_template="generic" version="2" />
 </materials>
 

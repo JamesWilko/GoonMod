@@ -1,4 +1,4 @@
-﻿<materials version="3">
+﻿<materials version="3" group="weapon_group">
 	<material name="mtr_silencer" render_template="solid_mask:DEPTH_SCALING" version="2">
 		<diffuse_texture file="units/pd2_dlc_hotline2/weapons/wpn_fps_smg_cobray_pts/wpn_fps_smg_cobray_silencer_df" />
 		<bump_normal_texture file="units/pd2_dlc_hotline2/weapons/wpn_fps_smg_cobray_pts/wpn_fps_smg_cobray_silencer_nm" />

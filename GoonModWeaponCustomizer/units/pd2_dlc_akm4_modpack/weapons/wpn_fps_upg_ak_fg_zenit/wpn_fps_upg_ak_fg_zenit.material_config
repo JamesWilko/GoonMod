@@ -1,4 +1,4 @@
-﻿<materials version="3">
+﻿<materials version="3" group="weapon_group">
 	<material name="mtr_zenit" render_template="solid_mask:DEPTH_SCALING" version="2">
 		<diffuse_texture file="units/pd2_dlc_akm4_modpack/weapons/wpn_fps_upg_ak_fg_zenit/zenit_df" />
 		<bump_normal_texture file="units/pd2_dlc_akm4_modpack/weapons/wpn_fps_upg_ak_fg_zenit/zenit_nm" />

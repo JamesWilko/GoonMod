@@ -1,4 +1,4 @@
-﻿<materials version="3">
+﻿<materials version="3" group="weapon_group">
 	<material name="mtr_grip_light" render_template="solid_mask:DEPTH_SCALING" version="2">
 		<diffuse_texture file="units/pd2_dlc_turtles/weapons/wpn_fps_snp_wa2000_pts/grip_light_df" />
 		<bump_normal_texture file="units/pd2_dlc_turtles/weapons/wpn_fps_snp_wa2000_pts/grip_standard_nm" />

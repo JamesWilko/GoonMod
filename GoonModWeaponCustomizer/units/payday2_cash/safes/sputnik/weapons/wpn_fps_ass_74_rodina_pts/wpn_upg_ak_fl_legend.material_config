@@ -1,0 +1,14 @@
+﻿<materials version="3" group="weapon_group">
+    <material name="laser" version="2" render_template="effect:BLEND_ADD:DIFFUSE0_TEXTURE:FPS:VIEW_ANGLE_FALLOFF_OP">
+        <variable value="match" type="scalar" name="intensity"/>
+        <diffuse_texture file="units/payday2/weapons/wpn_effects_textures/wpn_effect_green_il"/>
+        <variable value="1" type="scalar" name="falloff_exp"/>
+    </material>
+    <material name="indicator" version="2" render_template="effect:BLEND_ADD:DIFFUSE0_TEXTURE:FPS:VIEW_ANGLE_FALLOFF_OP">
+        <variable value="match" type="scalar" name="intensity"/>
+        <diffuse_texture file="units/payday2/weapons/wpn_effects_textures/wpn_effect_green_il"/>
+        <variable value="1" type="scalar" name="falloff_exp"/>
+    </material>
+</materials>
+
+<!-- END OF FILE -->

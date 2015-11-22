@@ -1,4 +1,4 @@
-﻿<materials version="3">
+﻿<materials version="3" group="weapon_group">
 	<material name="flame_fuel_can" render_template="solid_mask:DEPTH_SCALING" version="2">
 		<diffuse_texture file="units/pd2_dlc_bbq/weapons/wpn_fps_fla_mk2_pts/rare_df" />
 		<bump_normal_texture file="units/pd2_dlc_bbq/weapons/wpn_fps_fla_mk2_pts/medium_nm" />
