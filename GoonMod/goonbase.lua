@@ -3,8 +3,8 @@ if not _G.GoonBase then
 
 	_G.GoonBase = {}
 
-	GoonBase.Version = 22
-	GoonBase.GameVersion = "1.43.0"
+	GoonBase.Version = 23
+	GoonBase.GameVersion = "1.45.0"
 	GoonBase.SupportedVersion = true
 
 	GoonBase.Path = ""
