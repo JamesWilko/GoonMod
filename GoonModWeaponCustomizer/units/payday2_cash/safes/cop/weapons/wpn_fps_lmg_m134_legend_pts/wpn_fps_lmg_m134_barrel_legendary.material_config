@@ -1,0 +1,21 @@
+﻿<materials version="3" group="weapon_group">
+	<material name="mtr_barrel" render_template="solid_mask:DEPTH_SCALING" version="2">
+		<diffuse_texture file="units/pd2_dlc_overkill_pack/weapons/wpn_fps_lmg_m134_pts/barrel_df" />
+		<bump_normal_texture file="units/pd2_dlc_overkill_pack/weapons/wpn_fps_lmg_m134_pts/barrel_nm" />
+<reflection_texture file="units/payday2/matcaps/matcap_plastic_df"/>
+<material_texture file="units/payday2/masks/shared_textures/patterns/pattern_no_color_no_material_df"/>
+<variable value="1 0 0" type="vector3" name="tint_color_a"/>
+<variable value="0 1 0" type="vector3" name="tint_color_b"/>
+<variable value="1" type="scalar" name="material_amount"/>
+	</material>
+	<material name="mtr_spikey" render_template="solid_mask:DEPTH_SCALING" version="2">
+		<diffuse_texture file="units/payday2_cash/safes/cop/weapons/wpn_fps_lmg_m134_legend_pts/wpn_fps_lmg_m134_legend_extra_df" />
+		<bump_normal_texture file="units/payday2_cash/safes/cop/weapons/wpn_fps_lmg_m134_legend_pts/wpn_fps_lmg_m134_legend_extra_nm" />
+<reflection_texture file="units/payday2/matcaps/matcap_plastic_df"/>
+<material_texture file="units/payday2/masks/shared_textures/patterns/pattern_no_color_no_material_df"/>
+<variable value="1 0 0" type="vector3" name="tint_color_a"/>
+<variable value="0 1 0" type="vector3" name="tint_color_b"/>
+<variable value="1" type="scalar" name="material_amount"/>
+	</material>
+</materials>
+<!-- END OF FILE -->
