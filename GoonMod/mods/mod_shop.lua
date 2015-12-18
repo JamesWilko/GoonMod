@@ -55,6 +55,10 @@ ModShop.MaskMods = {
 	["colors"] = true,
 }
 
+ModShop.NamePriceOverrides = {
+	["wpn_fps_upg_"] = 5,
+}
+
 function ModShop:IsItemExluded( item )
 	return ModShop.ExclusionList[item] or false
 end
@@ -93,6 +97,12 @@ function ModShop:GetItemPrice( data )
 
 	if data.global_value == "infamy" or data.global_value == "infamous" then
 		return ModShop.CostInfamous
+	end
+
+	for pattern, cost_override in pairs(self.NamePriceOverrides) do
+		if data.name and string.find(data.name, pattern) then
+			return cost_override
+		end
 	end
 
 	return ModShop.CostRegular
