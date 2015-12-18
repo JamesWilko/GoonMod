@@ -20,12 +20,20 @@ function Mutator:OnEnabled()
 	Hooks:Add("GroupAITweakDataPostInitEnemySpawnGroups", self.HookSpawnGroups, function(data, difficulty_index)
 		self:ModifyTweakData(data, difficulty_index)
 	end)
+	
 	Hooks:Add("EnemyManagerInitEnemyData", self.HookEnemyData, function(enemy_manager)
 		enemy_manager._enemy_data.max_nr_active_units = 2000
 	end)
+
 	Hooks:Add("GroupAIStateBesiegeInit", self.HookGroupAIState, function(ai_state)
+
 		GroupAIStateBesiege._MAX_SIMULTANEOUS_SPAWNS = 3000
+		
+		-- Load spawn adjustment hooks
+		SafeDoFile(GoonBase.Mutators.MutatorsPath .. "mutator_spawn_adjustments.lua")
+
 	end)
+
 	Hooks:Add("CopDamageSetMoverCollisionState", self.CopDamageMover, function(cop_damage, state)
 		return false
 	end)
@@ -322,8 +330,8 @@ function Mutator:ModifyTweakData(data, difficulty_index)
 
 	self.besiege.reenforce.interval = {
 		1,
-		2,
-		3
+		1,
+		1
 	}
 
 	self.besiege.assault.force_balance_mul = {

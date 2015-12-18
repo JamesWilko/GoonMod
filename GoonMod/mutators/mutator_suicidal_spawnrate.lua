@@ -20,15 +20,24 @@ function Mutator:OnEnabled()
 	Hooks:Add("GroupAITweakDataPostInitUnitCategories", self.HookSpawnCategories, function(data, difficulty_index)
 		self:ModifyUnitCategories(data, difficulty_index)
 	end)
+	
 	Hooks:Add("GroupAITweakDataPostInitEnemySpawnGroups", self.HookSpawnGroups, function(data, difficulty_index)
 		self:ModifyTweakData(data, difficulty_index)
 	end)
+
 	Hooks:Add("EnemyManagerInitEnemyData", self.HookEnemyData, function(enemy_manager)
 		enemy_manager._enemy_data.max_nr_active_units = 2000
 	end)
+
 	Hooks:Add("GroupAIStateBesiegeInit", self.HookGroupAIState, function(ai_state)
+
 		GroupAIStateBesiege._MAX_SIMULTANEOUS_SPAWNS = 3000
+		
+		-- Load spawn adjustment hooks
+		SafeDoFile(GoonBase.Mutators.MutatorsPath .. "mutator_spawn_adjustments.lua")
+
 	end)
+
 	Hooks:Add("CopDamageSetMoverCollisionState", self.CopDamageMover, function(cop_damage, state)
 		return false
 	end)
@@ -62,7 +71,7 @@ end
 function Mutator:ModifyTweakData(data, difficulty_index)
 
 	local self = data
-	--[[
+
 	self.enemy_spawn_groups = self.enemy_spawn_groups or {}
 	self.enemy_spawn_groups.CS_defend_a = {
 		amount = {50, 60},
@@ -454,7 +463,6 @@ function Mutator:ModifyTweakData(data, difficulty_index)
 			}
 		}
 	}
-	]]
 
 	self.besiege.assault.force = {
 		200,
