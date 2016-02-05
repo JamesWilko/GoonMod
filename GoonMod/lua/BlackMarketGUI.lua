@@ -1756,12 +1756,19 @@ function BlackMarketGui.populate_buy_mask(self, data)
 			Application:debug("BlackMarketGui:populate_buy_mask( data ) Missing global value on mask", new_data.name)
 		end
 
-		if tweak_data.lootdrop.global_values[new_data.global_value] and tweak_data.lootdrop.global_values[new_data.global_value].dlc and not tweak_data.dlc[new_data.global_value].free and not managers.dlc:has_dlc(new_data.global_value) then
+		if new_data.global_value and
+			tweak_data.lootdrop.global_values[new_data.global_value] and
+			tweak_data.dlc[new_data.global_value] and
+			tweak_data.lootdrop.global_values[new_data.global_value].dlc and
+			not tweak_data.dlc[new_data.global_value].free and
+			not managers.dlc:has_dlc(new_data.global_value) then
+
 			if type(new_data.unlocked) == "number" then
 				new_data.unlocked = -math.abs(new_data.unlocked)
 			end
 			new_data.lock_texture = self:get_lock_icon(new_data)
 			new_data.dlc_locked = tweak_data.lootdrop.global_values[new_data.global_value].unlock_id or "bm_menu_dlc_locked"
+
 		end
 
 		if tweak_data.blackmarket.masks[new_data.name].infamy_lock then
