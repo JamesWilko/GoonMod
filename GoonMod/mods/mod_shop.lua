@@ -56,7 +56,7 @@ ModShop.MaskMods = {
 }
 
 ModShop.NamePriceOverrides = {
-	["wpn_fps_upg_"] = 5,
+	["wpn_fps_upg_bonus_"] = 5,
 }
 
 function ModShop:IsItemExluded( item )
