@@ -1,7 +1,7 @@
 ﻿<materials version="3">
 	<material name="mtr_exp" render_template="solid_mask:DEPTH_SCALING" version="2">
-		<diffuse_texture file="units/pd2_dlc_steel/weapons/wpn_prj_frankish_arrow_exp/arrow_df" />
-		<bump_normal_texture file="units/pd2_dlc_steel/weapons/wpn_prj_frankish_arrow_exp/arrow_nm" />
+		<diffuse_texture file="units/pd2_dlc_steel/weapons/wpn_prj_frankish_arrow_exp/third_arrow_df" />
+		<bump_normal_texture file="units/pd2_dlc_steel/weapons/wpn_prj_frankish_arrow_exp/third_arrow_nm" />
 <reflection_texture file="units/payday2/matcaps/matcap_plastic_df"/>
 <material_texture file="units/payday2/masks/shared_textures/patterns/pattern_no_color_no_material_df"/>
 <variable value="1 0 0" type="vector3" name="tint_color_a"/>
