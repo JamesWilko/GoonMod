@@ -316,7 +316,7 @@ Hooks:Add("BlackMarketGUIPostSetup", "BlackMarketGUIPostSetup_" .. Mod:ID(), fun
 	local wm_modshop = {
 		prio = 5,
 		btn = "BTN_BACK",
-		pc_btn = Idstring("toggle_chat"),
+		pc_btn = "toggle_chat",
 		name = "gm_gms_purchase",
 		callback = callback(gui, gui, "modshop_purchase_weaponmod_callback")
 	}
@@ -324,7 +324,7 @@ Hooks:Add("BlackMarketGUIPostSetup", "BlackMarketGUIPostSetup_" .. Mod:ID(), fun
 	local bm_modshop = {
 		prio = 5,
 		btn = "BTN_BACK",
-		pc_btn = Idstring("toggle_chat"),
+		pc_btn = "toggle_chat",
 		name = "gm_gms_purchase",
 		callback = callback(gui, gui, "modshop_purchase_mask_callback")
 	}
@@ -332,7 +332,7 @@ Hooks:Add("BlackMarketGUIPostSetup", "BlackMarketGUIPostSetup_" .. Mod:ID(), fun
 	local mp_modshop = {
 		prio = 5,
 		btn = "BTN_BACK",
-		pc_btn = Idstring("toggle_chat"),
+		pc_btn = "toggle_chat",
 		name = "gm_gms_purchase",
 		callback = callback(gui, gui, "modshop_purchase_mask_part_callback")
 	}

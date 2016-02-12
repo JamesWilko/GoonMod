@@ -50,8 +50,10 @@ function BlackMarketGui.init(self, ws, fullscreen_ws, node)
 	self:set_enabled(true)
 
 	BlackMarketGui._instance = self
-	self:on_slot_selected( self._selected_slot )
-	self:show_btns( self._selected_slot )
+	if self._selected_slot ~= nil then
+		self:on_slot_selected( self._selected_slot )
+		self:show_btns( self._selected_slot )
+	end
 	self:_update_borders()
 
 end

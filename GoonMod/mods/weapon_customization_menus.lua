@@ -252,7 +252,7 @@ Hooks:Add("BlackMarketGUIPostSetup", "BlackMarketGUIPostSetup_WeaponCustomizatio
 	local w_visual_customize = {
 		prio = 5,
 		btn = "BTN_BACK",
-		pc_btn = Idstring("toggle_chat"),
+		pc_btn = "toggle_chat",
 		name = "bm_menu_customize_weapon",
 		callback = callback(gui, gui, "customize_weapon_visuals")
 	}
