@@ -4,6 +4,8 @@ Mutator.Id = "RealismMode"
 Mutator.OptionsName = "Realism Mode"
 Mutator.OptionsDesc = "No waypoints, no outlines, no names"
 Mutator.AllPlayersRequireMod = true
+Mutator.HideInOptionsMenu = true
+Mutator.MutatorDisabled = true
 
 Hooks:Add("GoonBaseRegisterMutators", "GoonBaseRegisterMutators_" .. Mutator.Id, function()
 	GoonBase.Mutators:RegisterMutator( Mutator )

@@ -11,6 +11,7 @@ BaseMutator.MenuSuffix = ""
 BaseMutator.HideInOptionsMenu = false
 BaseMutator.AllPlayersRequireMod = false
 BaseMutator.IsAllowedInRandomizer = true
+BaseMutator.MutatorDisabled = false
 BaseMutator.Incompatibilities = {}
 
 BaseMutator._AllPlayersRequirementText = "\nWarning: All players must have GoonMod and Mutators installed for this mutator to work properly!"
@@ -183,6 +184,10 @@ end
 
 function BaseMutator:IsEnabled()
 	
+	if self.MutatorDisabled then
+		return false
+	end
+
 	local Net = _G.LuaNetworking
 	if Global and Global.game_settings then
 
@@ -205,13 +210,13 @@ function BaseMutator:IsEnabled()
 end
 
 function BaseMutator:ShouldBeEnabled()
-
 	if GoonBase.Options.Mutators == nil then
 		return false
 	end
-
+	if self.MutatorDisabled then
+		return false
+	end
 	return GoonBase.Options.Mutators[self.Id] or false
-
 end
 
 function BaseMutator:ForceEnable()
