@@ -27,11 +27,13 @@ function GroupAIStateBesiege:_upd_group_spawning()
 		local spawn_points = spawn_task.spawn_group.spawn_pts
 		local function _try_spawn_unit(u_type_name, spawn_entry)
 			local hopeless = true
+			local current_unit_type = tweak_data.levels:get_ai_group_type()
 			for _, sp_data in ipairs(spawn_points) do
 				local category = group_ai_tweak.unit_categories[u_type_name]
 				if (sp_data.accessibility == "any" or category.access[sp_data.accessibility]) and (not sp_data.amount or sp_data.amount > 0) and sp_data.mission_element:enabled() then
 					hopeless = false
-					produce_data.name = category.units[math.random(#category.units)]
+					local units = category.unit_types[current_unit_type]
+					produce_data.name = units[math.random(#units)]
 					local spawned_unit = sp_data.mission_element:produce(produce_data)
 					local u_key = spawned_unit:key()
 					local objective
