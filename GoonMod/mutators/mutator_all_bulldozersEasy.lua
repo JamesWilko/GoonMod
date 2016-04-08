@@ -1,14 +1,15 @@
 
+
 local Mutator = class(BaseMutator)
-Mutator.Id = "AllBulldozerSpawns"
-Mutator.OptionsName = "Bomb Squad"
-Mutator.OptionsDesc = "Replace all spawning units with various Bulldozers and backup"
-Mutator.Incompatibilities = { "AllBulldozerSpawnsEasy","AllCloakerSpawns", "AllTaserSpawns", "AllShieldSpawns" }
+Mutator.Id = "AllBulldozerSpawnsEasy"
+Mutator.OptionsName = " Weak Bomb Squad"
+Mutator.OptionsDesc = "Replace all spawning units with green Bulldozers and backup"
+Mutator.Incompatibilities = { "AllBulldozerSpawns","AllCloakerSpawns", "AllTaserSpawns", "AllShieldSpawns" }
 
 Mutator.HookTaskData = "GroupAITweakDataPostInitTaskData_AllBulldozerMutator"
 Mutator.HookUnitCategories = "GroupAITweakDataPostInitUnitCategories_AllBulldozerMutator"
 
-Hooks:Add("GoonBaseRegisterMutators", "GoonBaseRegisterMutators_AllBulldozerSpawns", function()
+Hooks:Add("GoonBaseRegisterMutators", "GoonBaseRegisterMutators_AllBulldozerSpawnsEasy", function()
 	GoonBase.Mutators:RegisterMutator( Mutator )
 end)
 
@@ -126,16 +127,14 @@ function Mutator:ModifyUnitCategories(data, difficulty_index)
 	local access_type_walk_only = { walk = true }
 
 	data.special_unit_spawn_limits = {
-		tank = 1000000,
+		tank = 3,
 		taser = 0,
 		spooc = 0,
 		shield = 0,
 	}
 
 	data.unit_categories.FBI_tank.units = {
-		Idstring("units/payday2/characters/ene_bulldozer_1/ene_bulldozer_1"),
-		Idstring("units/payday2/characters/ene_bulldozer_2/ene_bulldozer_2"),
-		Idstring("units/payday2/characters/ene_bulldozer_3/ene_bulldozer_3")
+		Idstring("units/payday2/characters/ene_bulldozer_1/ene_bulldozer_1")
 	}
 	data.unit_categories.CS_cop_C45_R870 = data.unit_categories.FBI_tank
 	data.unit_categories.CS_cop_stealth_MP5 = data.unit_categories.FBI_tank

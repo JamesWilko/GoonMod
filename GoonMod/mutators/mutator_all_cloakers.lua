@@ -3,7 +3,7 @@ local Mutator = class(BaseMutator)
 Mutator.Id = "AllCloakerSpawns"
 Mutator.OptionsName = "Night of a Million Cloakers"
 Mutator.OptionsDesc = "Replace all spawning units with Cloakers"
-Mutator.Incompatibilities = { "AllTaserSpawns", "AllBulldozerSpawns", "AllShieldSpawns" }
+Mutator.Incompatibilities = { "AllBulldozerSpawnsEasy","AllTaserSpawns", "AllBulldozerSpawns", "AllShieldSpawns" }
 
 Mutator.HookTaskData = "GroupAITweakDataPostInitTaskData_AllCloakersMutator"
 Mutator.HookUnitCategories = "GroupAITweakDataPostInitUnitCategories_AllCloakersMutator"
@@ -156,3 +156,4 @@ function Mutator:ModifyUnitCategories(data, difficulty_index)
 	data.unit_categories.FBI_tank = data.unit_categories.spooc
 
 end
+
