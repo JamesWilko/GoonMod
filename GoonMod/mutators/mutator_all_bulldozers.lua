@@ -3,7 +3,7 @@ local Mutator = class(BaseMutator)
 Mutator.Id = "AllBulldozerSpawns"
 Mutator.OptionsName = "Bomb Squad"
 Mutator.OptionsDesc = "Replace all spawning units with various Bulldozers and backup"
-Mutator.Incompatibilities = { "AllCloakerSpawns", "AllTaserSpawns", "AllShieldSpawns" }
+Mutator.Incompatibilities = { "AllCloakerSpawns", "AllTaserSpawns", "AllShieldSpawns", "AllBlueCopSpawns" }
 
 Mutator.HookTaskData = "GroupAITweakDataPostInitTaskData_AllBulldozerMutator"
 Mutator.HookUnitCategories = "GroupAITweakDataPostInitUnitCategories_AllBulldozerMutator"
