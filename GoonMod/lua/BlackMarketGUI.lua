@@ -2036,3 +2036,9 @@ function BlackMarketGui.confirm_pressed(self)
 	if r ~= nil then return r end
 	return self.orig.confirm_pressed(self, button)
 end
+
+Hooks:RegisterHook("BlackMarketGUIPrePopulateInventoryTradables")
+function BlackMarketGui.populate_inventory_tradable(self, data)
+	Hooks:Call("BlackMarketGUIPrePopulateInventoryTradables", self, data)
+	self.orig.populate_inventory_tradable(self, data)
+end
