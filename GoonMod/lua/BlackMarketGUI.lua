@@ -1554,6 +1554,7 @@ function BlackMarketGui._start_page_data(self)
 	data.init_callback_params = data
 	data.allow_tradable_reload = true
 	data.create_steam_inventory_extra = true
+	data.add_market_panel = true
 
 	Hooks:Call("BlackMarketGUIStartPageData", self, data)
 
