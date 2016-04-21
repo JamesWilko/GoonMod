@@ -3,7 +3,7 @@ local Mutator = class(BaseMutator)
 Mutator.Id = "AllCloakerSpawns"
 Mutator.OptionsName = "Night of a Million Cloakers"
 Mutator.OptionsDesc = "Replace all spawning units with Cloakers"
-Mutator.Incompatibilities = { "AllTaserSpawns", "AllBulldozerSpawns", "AllShieldSpawns", "AllBlueCopSpawns" }
+Mutator.Incompatibilities = { "AllTaserSpawns", "AllBulldozerSpawns", "AllShieldSpawns", "AllBlueSpawns" }
 
 Mutator.HookTaskData = "GroupAITweakDataPostInitTaskData_AllCloakersMutator"
 Mutator.HookUnitCategories = "GroupAITweakDataPostInitUnitCategories_AllCloakersMutator"

@@ -1,14 +1,14 @@
 
 local Mutator = class(BaseMutator)
-Mutator.Id = "AllBlueCopSpawns"
-Mutator.OptionsName = "Nothing but Blues"
+Mutator.Id = "AllBlueSpawns"
+Mutator.OptionsName = "Nothing But Blues"
 Mutator.OptionsDesc = "Replace most normal units with various blue SWATs"
 Mutator.Incompatibilities = { "AllCloakerSpawns", "AllTaserSpawns", "AllBulldozerSpawns", "AllShieldSpawns" }
 
-Mutator.HookTaskData = "GroupAITweakDataPostInitTaskData_AllShieldsMutator"
-Mutator.HookUnitCategories = "GroupAITweakDataPostInitUnitCategories_AllShieldsMutator"
+Mutator.HookTaskData = "GroupAITweakDataPostInitTaskData_AllBluesMutator"
+Mutator.HookUnitCategories = "GroupAITweakDataPostInitUnitCategories_AllBluesMutator"
 
-Hooks:Add("GoonBaseRegisterMutators", "GoonBaseRegisterMutators_AllShieldSpawns", function()
+Hooks:Add("GoonBaseRegisterMutators", "GoonBaseRegisterMutators_AllBlueSpawns", function()
 	GoonBase.Mutators:RegisterMutator( Mutator )
 end)
 
@@ -129,7 +129,7 @@ function Mutator:ModifyUnitCategories(data, difficulty_index)
 		tank = 2,
 		taser = 4,
 		spooc = 4,
-		shield = 15, --1000000
+		shield = 10,
 	}
 
 	data.unit_categories.FBI_shield.units = {
@@ -137,60 +137,16 @@ function Mutator:ModifyUnitCategories(data, difficulty_index)
 		Idstring("units/payday2/characters/ene_shield_1/ene_shield_1"),
 		Idstring("units/payday2/characters/ene_shield_2/ene_shield_2")
 	}
-	--[[
-	data.unit_categories.CS_cop_C45_R870 = data.unit_categories.FBI_shield
-	data.unit_categories.CS_cop_stealth_MP5 = data.unit_categories.FBI_shield
-	data.unit_categories.CS_swat_MP5 = data.unit_categories.FBI_shield
-	data.unit_categories.CS_swat_R870 = data.unit_categories.FBI_shield
-	data.unit_categories.CS_heavy_M4 = data.unit_categories.FBI_shield
-	data.unit_categories.CS_heavy_M4_w = data.unit_categories.FBI_shield
-	data.unit_categories.CS_tazer = data.unit_categories.FBI_shield
-	data.unit_categories.CS_shield = data.unit_categories.FBI_shield
-	data.unit_categories.FBI_suit_C45_M4 = data.unit_categories.FBI_shield
-	data.unit_categories.FBI_suit_M4_MP5 = data.unit_categories.FBI_shield
-	data.unit_categories.FBI_suit_stealth_MP5 = data.unit_categories.FBI_shield
-	data.unit_categories.FBI_swat_M4 = data.unit_categories.FBI_shield
-	data.unit_categories.FBI_swat_R870 = data.unit_categories.FBI_shield
-	data.unit_categories.FBI_heavy_G36 = data.unit_categories.FBI_shield
-	data.unit_categories.FBI_heavy_G36_w = data.unit_categories.FBI_shield
-	data.unit_categories.FBI_tank = data.unit_categories.FBI_shield
-	--data.unit_categories.FBI_shield = data.unit_categories.CS_swat_MP5--]]
-	---[[
+	
 	data.unit_categories.CS_cop_C45_R870 = data.unit_categories.CS_swat_R870
 	data.unit_categories.CS_cop_stealth_MP5 = data.unit_categories.CS_swat_MP5
-	--data.unit_categories.CS_swat_MP5 = data.unit_categories.CS_swat_MP5
-	--data.unit_categories.CS_swat_R870 = data.unit_categories.CS_swat_MP5
 	data.unit_categories.CS_heavy_M4 = data.unit_categories.CS_swat_R870
 	data.unit_categories.CS_heavy_M4_w = data.unit_categories.CS_swat_R870
-	--data.unit_categories.CS_tazer = data.unit_categories.CS_swat_MP5
-	--data.unit_categories.CS_shield = data.unit_categories.CS_swat_MP5
 	data.unit_categories.FBI_suit_C45_M4 = data.unit_categories.CS_swat_MP5
 	data.unit_categories.FBI_suit_M4_MP5 = data.unit_categories.CS_swat_MP5
 	data.unit_categories.FBI_suit_stealth_MP5 = data.unit_categories.CS_swat_MP5
 	data.unit_categories.FBI_swat_M4 = data.unit_categories.CS_swat_MP5
-	--data.unit_categories.FBI_swat_R870 = data.unit_categories.CS_swat_R870
 	data.unit_categories.FBI_heavy_G36 = data.unit_categories.CS_swat_MP5
 	data.unit_categories.FBI_heavy_G36_w = data.unit_categories.CS_swat_MP5
-	--data.unit_categories.FBI_tank = data.unit_categories.CS_swat_MP5
-	--data.unit_categories.FBI_shield = data.unit_categories.CS_swat_MP5--]]
-	
-	--[[
-	data.unit_categories.CS_cop_C45_R870 = data.unit_categories.CS_swat_R870
-	data.unit_categories.CS_cop_stealth_MP5 = data.unit_categories.CS_swat_R870
-	--data.unit_categories.CS_swat_MP5 = data.unit_categories.CS_swat_MP5
-	--data.unit_categories.CS_swat_R870 = data.unit_categories.CS_swat_MP5
-	data.unit_categories.CS_heavy_M4 = data.unit_categories.CS_swat_R870
-	data.unit_categories.CS_heavy_M4_w = data.unit_categories.CS_swat_R870
-	--data.unit_categories.CS_tazer = data.unit_categories.CS_swat_MP5
-	--data.unit_categories.CS_shield = data.unit_categories.CS_swat_MP5
-	data.unit_categories.FBI_suit_C45_M4 = data.unit_categories.CS_swat_R870
-	data.unit_categories.FBI_suit_M4_MP5 = data.unit_categories.CS_swat_R870
-	data.unit_categories.FBI_suit_stealth_MP5 = data.unit_categories.CS_swat_R870
-	data.unit_categories.FBI_swat_M4 = data.unit_categories.CS_swat_R870
-	data.unit_categories.FBI_swat_R870 = data.unit_categories.CS_swat_R870
-	data.unit_categories.FBI_heavy_G36 = data.unit_categories.CS_swat_R870
-	data.unit_categories.FBI_heavy_G36_w = data.unit_categories.CS_swat_R870
-	--data.unit_categories.FBI_tank = data.unit_categories.CS_swat_MP5
-	--data.unit_categories.FBI_shield = data.unit_categories.CS_swat_MP5--]]
 
 end
