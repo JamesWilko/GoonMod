@@ -35,6 +35,7 @@ ModShop.MaskPricing = {
 
 ModShop.ExclusionList = {
 	["nothing"] = true,
+	["no_material"] = true,
 	["no_color_no_material"] = true,
 	["no_color_full_material"] = true,
 	["plastic"] = true,
