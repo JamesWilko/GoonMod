@@ -1418,6 +1418,7 @@ function BlackMarketGui.populate_choose_mask_mod(self, data)
 	local index = 1
 	local equipped_mod = managers.blackmarket:customize_mask_category_id(data.category)
 	local guis_catalog = "guis/"
+	local type_func = type
 
 	for k, mods in pairs(data.on_create_data) do
 
@@ -1449,15 +1450,12 @@ function BlackMarketGui.populate_choose_mask_mod(self, data)
 			new_data.dlc_locked = "bm_menu_amount_locked"
 			is_locked = true
 		end
-		if tweak_data.lootdrop.global_values[new_data.global_value] and tweak_data.lootdrop.global_values[new_data.global_value].dlc and not tweak_data.dlc[new_data.global_value].free and not managers.dlc:has_dlc(new_data.global_value) then
-			if type(new_data.unlocked) == "number" then
-				new_data.unlocked = -math.abs(new_data.unlocked)
-			end
+		if new_data.unlocked and type_func(new_data.unlocked) == "number" and tweak_data.lootdrop.global_values[new_data.global_value] and tweak_data.lootdrop.global_values[new_data.global_value].dlc and not managers.dlc:is_dlc_unlocked(new_data.global_value) then
+			new_data.unlocked = -math.abs(new_data.unlocked)
 			new_data.lock_texture = self:get_lock_icon(new_data)
 			new_data.dlc_locked = tweak_data.lootdrop.global_values[new_data.global_value].unlock_id or "bm_menu_dlc_locked"
 			is_locked = true
 		end
-
 		if data.category == "colors" then
 			new_data.bitmap_texture = "guis/textures/pd2/blackmarket/icons/colors/color_bg"
 			new_data.extra_bitmaps = {}
