@@ -5,7 +5,7 @@
 	"priority" : 200,
 	"updates" : [
 		{
-			"revision" : 29,
+			"revision" : 30,
 			"identifier" : "goonmod",
 		},
 		{
