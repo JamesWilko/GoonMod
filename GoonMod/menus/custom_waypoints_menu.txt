@@ -12,7 +12,7 @@
 			"title" : "gm_options_custom_waypoints_place",
 			"description" : "gm_options_custom_waypoints_place",
 			"keybind_id" : "CustomWaypointsPlaceWaypoint",
-			"func" : "DoPlaceWaypoint",
+			"func" : "DoPlaceWaypoint"
 		},
 		{
 			"type" : "keybind",
@@ -20,11 +20,11 @@
 			"title" : "gm_options_custom_waypoints_remove",
 			"description" : "gm_options_custom_waypoints_remove",
 			"keybind_id" : "CustomWaypointsRemoveWaypoint",
-			"func" : "DoRemoveWaypoint",
+			"func" : "DoRemoveWaypoint"
 		},
 		{
 			"type" : "divider",
-			"size" : 16,
+			"size" : 16
 		},
 
 		{
@@ -34,7 +34,7 @@
 			"description" : "gm_options_custom_waypoints_distance_desc",
 			"callback" : "ToggleWaypointShowDistance",
 			"value" : "ShowDistance",
-			"default_value" : false,
+			"default_value" : false
 		}
 
 	]
