@@ -280,6 +280,6 @@
 	"gm_options_infamy_outliner_enabled_title" : "Activer le contour d'infamie",
 	"gm_options_infamy_outliner_enabled_desc" : "Affiche le contour d'infamie sur l'arbre de compétence",
 	"gm_options_infamy_outliner_clear_data_title" : "Désactiver le contour d'infamie",
-	"gm_options_infamy_outliner_clear_data_desc" : "Effacer les données du contour d'infamie",
+	"gm_options_infamy_outliner_clear_data_desc" : "Effacer les données du contour d'infamie"
 
 }
