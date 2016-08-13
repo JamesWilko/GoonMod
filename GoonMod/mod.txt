@@ -5,8 +5,8 @@
 	"priority" : 200,
 	"updates" : [
 		{
-			"revision" : 30,
-			"identifier" : "goonmod",
+			"revision" : 31,
+			"identifier" : "goonmod"
 		},
 		{
 			"revision" : "revision.txt",

@@ -3,8 +3,8 @@ if not _G.GoonBase then
 
 	_G.GoonBase = {}
 
-	GoonBase.Version = 30
-	GoonBase.GameVersion = "1.52.0"
+	GoonBase.Version = 31
+	GoonBase.GameVersion = "1.54.0"
 	GoonBase.SupportedVersion = true
 
 	GoonBase.Path = ""
@@ -21,6 +21,7 @@ if not _G.GoonBase then
 	GoonBase.SavePath = SavePath .. "goonmod_options.txt"
 
 	GoonBase.LogTag = "[GoonMod]"
+	GoonBase.LoggingEnabled = false
 
 end
 
@@ -105,29 +106,33 @@ function _G.Print( ... )
 	log( str )
 
 	-- Write to log file
-	str = str .. "\n"
-	local file = io.open( GoonBase.LogFile, "a+" )
-	if file ~= nil then
+	if GoonBase.LoggingEnabled then
 
-		io.output( file )
+		str = str .. "\n"
+		local file = io.open( GoonBase.LogFile, "a+" )
+		if file ~= nil then
 
-		if GoonBase._print_cache ~= nil then
-			for k, v in ipairs(GoonBase._print_cache) do
-				io.write( v )
+			io.output( file )
+
+			if GoonBase._print_cache ~= nil then
+				for k, v in ipairs(GoonBase._print_cache) do
+					io.write( v )
+				end
+				GoonBase._print_cache = {}
 			end
-			GoonBase._print_cache = {}
+			io.write( str )
+
+			io.close( file )
+
+		else
+
+			log( "[Error] Could not write to file, caching print string: '" .. str .. "'" )
+			if GoonBase._print_cache == nil then
+				GoonBase._print_cache = {}
+			end
+			table.insert( GoonBase._print_cache, str )
+
 		end
-		io.write( str )
-
-		io.close( file )
-
-	else
-
-		log( "[Error] Could not write to file, caching print string: '" .. str .. "'" )
-		if GoonBase._print_cache == nil then
-			GoonBase._print_cache = {}
-		end
-		table.insert( GoonBase._print_cache, str )
 
 	end
 
