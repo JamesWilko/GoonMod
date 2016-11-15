@@ -83,7 +83,7 @@
 	"OptionsMenu_GrenadeMarker" : "Afficher les indicateurs de flash",
 	"OptionsMenu_GrenadeMarkerDesc" : "Affiche un indicateur dans le HUD lorsqu'une grenade flash est déployée",
 
-	"gm_gms_purchase" : "Acheter avec des Gage Coins",
+	"gm_gms_purchase" : "Acheter avec des Continental Coins",
 	"gm_gms_purchase_window_title" : "Etes-vous sûr?",
 	"gm_gms_purchase_window_message" : "Voulez-vous vraiment acheter '{1}'?\n\nCela vous coûtera {2} {3}.",
 	"gm_gms_purchase_failed" : "Achat impossible",

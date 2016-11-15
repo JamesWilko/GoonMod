@@ -89,7 +89,7 @@
 	"OptionsMenu_GrenadeMarker" : "Show Markers on Flashbangs",
 	"OptionsMenu_GrenadeMarkerDesc" : "Show a HUD marker when a flashbang is deployed",
 
-	"gm_gms_purchase" : "Buy with Gage Coins",
+	"gm_gms_purchase" : "Buy with Continental Coins",
 	"gm_gms_purchase_window_title" : "Are you sure?",
 	"gm_gms_purchase_window_message" : "Do you really want to buy '{1}'?\n\nIt will cost you {2} {3}.",
 	"gm_gms_purchase_failed" : "Cannot Purchase",

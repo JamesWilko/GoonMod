@@ -2,12 +2,12 @@
 -- Mod Definition
 local Mod = class( BaseMod )
 Mod.id = "BlackmarketModShop"
-Mod.Name = "Gage's Mod Shop"
-Mod.Desc = "Gage will sell you weapon parts, masks, and mask customization items in return for Gage Coins"
-Mod.Requirements = { "ExtendedInventory", "GageCoins" }
+Mod.Name = "Extended Continental Coin Shop"
+Mod.Desc = "Continental Coins can be used to purchase extra weapon parts, masks, and mask customization items"
+Mod.Requirements = { "ExtendedInventory" }
 Mod.Incompatibilities = {}
 
-Hooks:Add("GoonBaseRegisterMods", "GoonBaseRegisterMutators_" .. Mod.id, function()
+Hooks:Add("GoonBaseRegisterMods", "GoonBaseRegisterMods_" .. Mod.id, function()
 	GoonBase.Mods:RegisterMod( Mod )
 end)
 
@@ -20,17 +20,16 @@ _G.GoonBase.ModShop = _G.GoonBase.ModShop or {}
 local ModShop = _G.GoonBase.ModShop
 local ExtendedInv = _G.GoonBase.ExtendedInventory
 
-ModShop.PurchaseCurrency = "gage_coin"
-ModShop.CostRegular = 1
-ModShop.CostInfamous = 3
+ModShop.CostRegular = 6
+ModShop.CostInfamous = 18
 ModShop.MaskPricing = {
-	["default"] = 5,
-	["dlc"] = 5,
-	["normal"] = 5,
-	["pd2_clan"] = 3,
-	["halloween"] = 8,
-	["infamous"] = 20,
-	["infamy"] = 20,
+	["default"] = 12,
+	["dlc"] = 12,
+	["normal"] = 12,
+	["pd2_clan"] = 18,
+	["halloween"] = 24,
+	["infamous"] = 60,
+	["infamy"] = 60,
 }
 
 ModShop.ExclusionList = {
@@ -57,7 +56,7 @@ ModShop.MaskMods = {
 }
 
 ModShop.NamePriceOverrides = {
-	["wpn_fps_upg_bonus_"] = 5,
+	["wpn_fps_upg_bonus_"] = 18,
 }
 
 function ModShop:IsItemExluded( item )
@@ -126,7 +125,7 @@ function ModShop:AttemptItemPurchase( data, weapon_part )
 
 	local verified, purchase_data = self:VerifyItemPurchase( data, weapon_part )
 	if verified then
-		if purchase_data.price <= GoonBase.ExtendedInventory:GetItem( ModShop.PurchaseCurrency ).amount then
+		if purchase_data.price <= managers.custom_safehouse:coins() then
 			self:ShowItemPurchaseMenu( purchase_data )
 		else
 			self:ShowItemCannotAffordMenu( purchase_data )
@@ -219,7 +218,7 @@ end
 
 function ModShop:ShowItemPurchaseMenu( purchase_data )
 
-	local currency_name = GoonBase.ExtendedInventory:GetItem( ModShop.PurchaseCurrency ).name
+	local currency_name = "menu_cs_coins"
 	local title = managers.localization:text("gm_gms_purchase_window_title")
 	local message = managers.localization:text("gm_gms_purchase_window_message")
 	message = message:gsub("{1}", purchase_data.name_localized)
@@ -247,7 +246,7 @@ end
 
 function ModShop:ShowItemCannotAffordMenu( purchase_data )
 
-	local currency_name = GoonBase.ExtendedInventory:GetItem( ModShop.PurchaseCurrency ).name
+	local currency_name = "menu_cs_coins"
 	local title = managers.localization:text("gm_gms_purchase_failed")
 	local message = managers.localization:text("gm_gms_cannot_afford_message")
 	message = message:gsub("{1}", purchase_data.name_localized)
@@ -280,10 +279,9 @@ function ModShop:_PurchaseItem( purchase_data )
 	local global_value = purchase_data.global_value
 	local price = purchase_data.price
 
-	log(string.format( "Purchased item with gage-coins:\n\tItem name: %s\n\tCategory: %s", tostring(name), tostring(category) ))
+	log(string.format( "Purchased item with continental coins:\n\tItem name: %s\n\tCategory: %s", tostring(name), tostring(category) ))
 	managers.blackmarket:add_to_inventory(global_value, category, name, true)
-
-	ExtendedInv:TakeItem( ModShop.PurchaseCurrency, price )
+	managers.custom_safehouse:deduct_coins( price )
 
 	-- Record mask mods that were purchased so we can immediately add them to the gui when it reloads
 	if self:IsItemMaskMod( purchase_data ) then
@@ -424,6 +422,31 @@ Hooks:Add("BlackMarketManagerModifyGetInventoryCategory", "BlackMarketManagerMod
 
 		end
 		
+	end
+
+end)
+
+Hooks:Add("GageAssignmentManagerOnMissionCompleted", "GageAssignmentManagerOnMissionCompleted_" .. Mod:ID(), function(assignment_manager)
+
+	local self = assignment_manager
+	local total_pickup = 0
+
+	if self._progressed_assignments then
+		for assignment, value in pairs(self._progressed_assignments) do
+
+			if value > 0 then
+
+				local collected = Application:digest_value(self._global.active_assignments[assignment], false) + value
+				local to_aquire = self._tweak_data:get_value(assignment, "aquire") or 1
+				while collected >= to_aquire do
+					collected = collected - to_aquire
+					managers.custom_safehouse:add_coins( tweak_data.safehouse.rewards.challenge )
+				end
+
+			end
+
+			total_pickup = total_pickup + value
+		end
 	end
 
 end)

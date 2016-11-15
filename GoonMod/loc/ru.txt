@@ -89,7 +89,7 @@
 	"OptionsMenu_GrenadeMarker" : "Show Markers on Flashbangs",
 	"OptionsMenu_GrenadeMarkerDesc" : "Show a HUD marker when a flashbang is deployed",
 
-	"gm_gms_purchase" : "Купить за Гейдж-монеты",
+	"gm_gms_purchase" : "Buy with Continental Coins",
 	"gm_gms_purchase_window_title" : "Вы уверены?",
 	"gm_gms_purchase_window_message" : "Вы точно хотите купить '{1}'?\n\nСтоимость: {2} {3}.",
 	"gm_gms_purchase_failed" : "Невозможно Оплатить",
