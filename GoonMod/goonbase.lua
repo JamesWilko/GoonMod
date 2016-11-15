@@ -33,7 +33,6 @@ GoonBase.RequireHookFiles = {
 GoonBase.HookFiles = {
 
 	["lib/managers/menumanager"] = "MenuManager.lua",
-	["lib/managers/enemymanager"] = "EnemyManager.lua",
 	["lib/units/weapons/grenades/quicksmokegrenade"] = "QuickSmokeGrenade.lua",
 	["lib/managers/hudmanager"] = "HUDManager.lua",
 	["lib/managers/jobmanager"] = "JobManager.lua",
