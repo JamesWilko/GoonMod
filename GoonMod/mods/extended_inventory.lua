@@ -585,12 +585,18 @@ function ExtendedInv:_Save()
 	end
 
 	local file = io.open(ExtendedInv.SaveFile, "w+")
-	local data = json.encode( save_data )
-	data = GoonBase.Utils.Base64:Encode( data )
-	file:write( data )
-	file:close()
+	if file then
 
-	self._save_requested = false
+		local data = json.encode( save_data )
+		data = GoonBase.Utils.Base64:Encode( data )
+		file:write( data )
+		file:close()
+
+		self._save_requested = false
+
+	else
+		Print( "Could not save GoonMod Extended Inventory save file, will attempt to save later..." )
+	end
 
 end
 
