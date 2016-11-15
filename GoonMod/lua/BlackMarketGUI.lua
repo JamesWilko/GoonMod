@@ -50,10 +50,6 @@ function BlackMarketGui.init(self, ws, fullscreen_ws, node)
 	self:set_enabled(true)
 
 	BlackMarketGui._instance = self
-	if self._selected_slot ~= nil then
-		self:on_slot_selected( self._selected_slot )
-		self:show_btns( self._selected_slot )
-	end
 	self:_update_borders()
 
 end
@@ -1849,69 +1845,78 @@ end
 Hooks:RegisterHook("BlackMarketGUIModifyWeaponCosmeticsActionList")
 function BlackMarketGui.populate_weapon_cosmetics(self, data)
 	local cosmetics_data = tweak_data.blackmarket.weapon_skins
-	local my_cd, new_data, bitmap_texture, bg_texture
-	local crafted = managers.blackmarket:get_crafted_category(data.category)[data.prev_node_data and data.prev_node_data.slot]
+	local my_cd, new_data
+	local bitmap_texture, bg_texture
+	local crafted = managers.blackmarket:get_crafted_category( data.category )[ data.prev_node_data and data.prev_node_data.slot ]
 	local inventory_tradable = managers.blackmarket:get_inventory_tradable()
+	
 	local cosmetic_id
-	for index, instance_id in ipairs(data.on_create_data) do
-		if inventory_tradable[instance_id] then
-			cosmetic_id = inventory_tradable[instance_id].entry
+	local cosmetics_instances = data.on_create_data.instances
+	local index_i = 1
+
+	for _, instance_id in ipairs( cosmetics_instances ) do
+		if inventory_tradable[ instance_id ] then
+			cosmetic_id = inventory_tradable[ instance_id ].entry
+			
 			my_cd = cosmetics_data[cosmetic_id]
 			new_data = {}
 			new_data.name = instance_id
-			new_data.name_localized = managers.localization:text(my_cd.name_id)
+			new_data.name_localized = ( my_cd and my_cd.name_id and managers.localization:text( my_cd.name_id ) ) or managers.localization:text( "bm_menu_no_mod" )
 			new_data.desc_id = my_cd and my_cd.desc_id
-			new_data.category = data.category or (not data.category and data.prev_node_data and data.prev_node_data.category)
+			new_data.category = data.category or data.prev_node_data and data.prev_node_data.category
 			new_data.default_blueprint = my_cd and my_cd.default_blueprint
 			new_data.locked_cosmetics = my_cd and my_cd.locked
-			bitmap_texture, bg_texture = managers.blackmarket:get_weapon_icon_path(data.prev_node_data.name, {id = cosmetic_id})
+			
+			bitmap_texture, bg_texture = managers.blackmarket:get_weapon_icon_path( data.prev_node_data.name, { id = cosmetic_id } )
 			new_data.bitmap_texture = bitmap_texture
 			new_data.bg_texture = bg_texture
-			new_data.slot = not data.slot and data.prev_node_data and data.prev_node_data.slot
+			
+			new_data.slot = data.slot or data.prev_node_data and data.prev_node_data.slot
 			new_data.global_value = my_cd and my_cd.global_value or "normal"
 			new_data.cosmetic_id = cosmetic_id
-			new_data.cosmetic_quality = inventory_tradable[instance_id].quality
+			new_data.cosmetic_quality = inventory_tradable[ instance_id ].quality
 			new_data.cosmetic_rarity = my_cd and my_cd.rarity or "common"
-			new_data.cosmetic_bonus = inventory_tradable[instance_id].bonus
+			new_data.cosmetic_bonus = inventory_tradable[ instance_id ].bonus
 			new_data.unlocked = true
 			new_data.equipped = crafted and crafted.cosmetics and crafted.cosmetics.instance_id == instance_id
 			new_data.stream = true
+
 			new_data.lock_texture = not new_data.unlocked
+			
 			if new_data.default_blueprint then
-				new_data.comparision_data = managers.blackmarket:get_weapon_stats(new_data.category, new_data.slot, new_data.default_blueprint)
+				new_data.comparision_data = managers.blackmarket:get_weapon_stats( new_data.category, new_data.slot, new_data.default_blueprint )
 			end
+			
 			if new_data.unlocked then
-				table.insert(new_data, "wcc_preview")
+				table.insert( new_data, "wcc_preview" )
 				if new_data.equipped then
-					table.insert(new_data, "wcc_remove")
+					table.insert( new_data, "wcc_remove" )
 				else
-					table.insert(new_data, "wcc_equip")
+					table.insert( new_data, "wcc_equip" )
 				end
 				Hooks:Call("BlackMarketGUIModifyWeaponCosmeticsActionList", self, data, new_data)
 			end
+			
 			if new_data.cosmetic_bonus then
-				local bonuses = tweak_data.economy:get_bonus_icons(my_cd.bonus)
+				local bonuses = tweak_data.economy:get_bonus_icons( my_cd.bonus )
 				local x = 0
-				for _, texture_path in ipairs(bonuses) do
+				
+				for _, texture_path in ipairs( bonuses ) do
 					new_data.mini_icons = new_data.mini_icons or {}
-					table.insert(new_data.mini_icons, {
-						name = "has_bonus",
-						texture = texture_path,
-						right = x,
-						bottom = 0,
-						layer = 1,
-						w = 16,
-						h = 16,
-						stream = false
-					})
+					table.insert( new_data.mini_icons, { name="has_bonus", texture=texture_path, right=x, bottom=0, layer=1, w=16, h=16, stream=false } )
 					x = x + 17
 				end
 			end
-			data[index] = new_data
+			
+			data[index_i] = new_data
+			index_i = index_i + 1
+
 		end
 	end
+
 	local new_data
-	for i = 1, math.ceil(#data.on_create_data / 6) * 6 do
+	local count = table.size( cosmetics_instances )
+	for i=1, math.ceil( count/6 ) * 6 do
 		if not data[i] then
 			new_data = {}
 			new_data.name = "empty"
@@ -1920,9 +1925,11 @@ function BlackMarketGui.populate_weapon_cosmetics(self, data)
 			new_data.slot = i
 			new_data.unlocked = true
 			new_data.equipped = false
+			
 			data[i] = new_data
 		end
 	end
+
 end
 
 Hooks:RegisterHook("BlackMarketGUIChooseMaskPartCallback")
