@@ -432,13 +432,7 @@ end
 
 Hooks:RegisterHook("BlackMarketManagerModifyGetCosmeticsInstancesByWeaponId")
 function BlackMarketManager:get_cosmetics_instances_by_weapon_id(weapon_id)
-	local cosmetic_tweak = tweak_data.blackmarket.weapon_skins
-	local items = {}
-	for instance_id, data in pairs(self._global.inventory_tradable) do
-		if data.category == "weapon_skins" and cosmetic_tweak[data.entry] and cosmetic_tweak[data.entry].weapon_id == weapon_id then
-			table.insert(items, instance_id)
-		end
-	end
+	local items = self.orig.get_cosmetics_instances_by_weapon_id(self, weapon_id)
 	Hooks:Call("BlackMarketManagerModifyGetCosmeticsInstancesByWeaponId", self, weapon_id, items)
 	return items
 end
