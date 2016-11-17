@@ -110,7 +110,7 @@ function InfamyOutliner:UpdateSkillItem( item, skill_id, infamy_outline, infamy_
 	local tree = managers.skilltree._global.skill_switches[ skill_set ]
 	local outline = InfamyOutliner.Outline[ skill_set ]
 
-	if not outline then
+	if not outline or not tree.skills[skill_id] or not outline.skills[skill_id] then
 		return
 	end
 
@@ -245,54 +245,53 @@ Hooks:Add("MenuCallbackHandlerPreIncreaseInfamous", "MenuCallbackHandlerPreIncre
 	InfamyOutliner:SaveInfamySkillData()
 end)
 
-Hooks:Add("SkillTreeSkillItemPostInit", "SkillTreeSkillItemPostInit_" .. Mod:ID(), function(gui, skill_id, tier_panel, num_skills, i, tree, tier, w, h, skill_refresh_skills)
+Hooks:Add("NewSkillTreeSkillItemPostInit", "NewSkillTreeSkillItemPostInit." .. Mod:ID(), function(self, skill_id, skill_data, skill_panel, tree_panel, tree, tier, fullscreen_panel, gui)
 
 	if not InfamyOutliner:IsEnabled() then
 		return
 	end
 
-	local state_image = gui._skill_panel:child("state_image")
-	local infamy_outline = gui._skill_panel:bitmap({
+	local icon_panel = skill_panel:child("SkillIconPanel")
+	local infamy_outline = icon_panel:bitmap({
 		name = "infamy_outline",
 		texture = "guis/textures/pd2/hot_cold_glow",
 		alpha = 0,
 		color = InfamyOutliner.Color:GetColor(),
 		layer = -1
 	})
-	infamy_outline:set_size(state_image:w(), state_image:h())
+	infamy_outline:set_size(self._icon:w() * 2, self._icon:h() * 2)
 	infamy_outline:set_blend_mode("add")
 	infamy_outline:set_rotation(360)
-	infamy_outline:set_center(state_image:center())
-	gui._infamy_outline = infamy_outline
+	infamy_outline:set_center(self._icon:center())
+	self._infamy_outline = infamy_outline
 
-	local infamy_ace = gui._skill_panel:bitmap({
+	local infamy_ace = icon_panel:bitmap({
 		name = "infamy_outline_ace",
 		texture = "guis/textures/pd2/skilltree/ace",
 		alpha = 0,
 		color = InfamyOutliner.Color:GetColor(),
 		layer = -1
 	})
-	infamy_ace:set_size(state_image:w() * 2, state_image:h() * 2)
+	infamy_ace:set_size(self._icon:w() * 2, self._icon:h() * 2)
 	infamy_ace:set_blend_mode("add")
 	infamy_ace:set_rotation(360)
-	infamy_ace:set_center(state_image:center())
-	gui._infamy_ace = infamy_ace
+	infamy_ace:set_center(self._icon:center())
+	self._infamy_ace = infamy_ace
 
 	if not managers.skilltree or not InfamyOutliner.Outline then
 		return
 	end
 
-	InfamyOutliner:UpdateSkillItem( gui, skill_id, infamy_outline, infamy_ace )
+	InfamyOutliner:UpdateSkillItem( self, skill_id, infamy_outline, infamy_ace )
 
 end)
 
-Hooks:Add("SkillTreeSkillItemPostRefresh", "SkillTreeSkillItemPostRefresh_" .. Mod:ID(), function(gui, locked)
+Hooks:Add("SkillTreeSkillItemPostRefresh", "SkillTreeSkillItemPostRefresh_" .. Mod:ID(), function(self)
 
 	if not InfamyOutliner:IsEnabled() then
 		return
 	end
 
-	local skill_id = gui._skill_panel:name()
-	InfamyOutliner:UpdateSkillItem( gui, skill_id )
+	InfamyOutliner:UpdateSkillItem( self, self._skill_id )
 
 end)

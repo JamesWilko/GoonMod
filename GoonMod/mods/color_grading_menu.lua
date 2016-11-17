@@ -19,7 +19,7 @@ end
 GoonBase.ColourGrading = GoonBase.ColourGrading or {}
 local ColourGrading = GoonBase.ColourGrading
 ColourGrading.GradingOptions = {
-	"color_off",
+	"color_matrix", -- color_off for default, menu default is matrices
 	"color_payday",
 	"color_heat",
 	"color_nice",
@@ -63,14 +63,17 @@ function ColourGrading:GetGradingOption()
 	end
 end
 
-function ColourGrading:GetDefaultGradingOption( is_menu )
-	return "color_off"
+function ColourGrading:GetDefaultGradingOption()
+	return "color_matrix"
 end
 
 function ColourGrading:UpdateColourGrading()
-	if managers and managers.environment_controller then
+	if not Utils:IsInGameState() and managers and managers.environment_controller then
 		local grading = ColourGrading:GetGradingOption()
 		if grading then
+			if managers.menu_scene then
+				managers.menu_scene._environments.standard.color_grading = grading
+			end
 			managers.environment_controller:set_default_color_grading( grading )
 			managers.environment_controller:refresh_render_settings()
 		end

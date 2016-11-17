@@ -2,8 +2,8 @@
 -- Mod Definition
 local Mod = class( BaseMod )
 Mod.id = "ExtendedInventory"
-Mod.Name = "Extended Inventory"
-Mod.Desc = "Allows mods to add special items to your inventory"
+Mod.Name = "Inventory Extensions"
+Mod.Desc = "Allows mods to add special items to your inventory, and adds a code redemption system to GoonMod's options"
 Mod.Requirements = {}
 Mod.Incompatibilities = {}
 
@@ -342,11 +342,11 @@ function ExtendedInv:RedeemedCode( data, id )
 
 	if code_data.success then
 
-		-- table.insert( ExtendedInv.RedeemedCodes, code_data.code )
-		-- self:Save()
-
 		self:AddRedeemedItemsToInventory( code_data.data )
 		self:ShowRedeemedCodeWindow( code_data.data )
+
+		table.insert( ExtendedInv.RedeemedCodes, code_data.code )
+		self:Save()
 
 	else
 		self:ShowCodeRedeemFailureWindow( code_data.code )
@@ -487,7 +487,7 @@ Hooks:Add("BlackMarketGUIUpdateInfoText", "BlackMarketGUIUpdateInfoText_Extended
 	local slot_data = self._slot_data
 	local tab_data = self._tabs[self._selected]._data
 	local prev_data = tab_data.prev_node_data
-	local ids_category = Idstring(slot_data.category)
+	local ids_category = slot_data and slot_data.category and Idstring(slot_data.category)
 	local identifier = tab_data.identifier
 	local updated_texts = {
 		{text = ""},
@@ -559,12 +559,22 @@ Hooks:Add("GenericSystemMenuManagerPostInit", "GenericSystemMenuManagerPostInit_
 
 end)
 
--- Saving and Loading
-function ExtendedInv:Save( file_name )
-
-	if file_name == nil then
-		file_name = ExtendedInv.SaveFile
+Hooks:Add("SaveFileManagerOnSave", "SaveFileManagerOnSave)" .. Mod:ID(), function( savefile_manager, slot, cache_only, save_system )
+	if ExtendedInv:HasRequestedSave() and not cache_only then
+		ExtendedInv:_Save()
 	end
+end)
+
+-- Saving and Loading
+function ExtendedInv:Save()
+	self._save_requested = true
+end
+
+function ExtendedInv:HasRequestedSave()
+	return self._save_requested
+end
+
+function ExtendedInv:_Save()
 
 	local save_data = {
 		["items"] = ExtendedInv.Items,
@@ -574,18 +584,25 @@ function ExtendedInv:Save( file_name )
 		save_data["codes"] = nil
 	end
 
-	local file = io.open(file_name, "w+")
-	local data = json.encode( save_data )
-	data = GoonBase.Utils.Base64:Encode( data )
-	file:write( data )
-	file:close()
+	local file = io.open(ExtendedInv.SaveFile, "w+")
+	if file then
+
+		local data = json.encode( save_data )
+		data = GoonBase.Utils.Base64:Encode( data )
+		file:write( data )
+		file:close()
+
+		self._save_requested = false
+
+	else
+		Print( "Could not save GoonMod Extended Inventory save file, will attempt to save later..." )
+	end
 
 end
 
-function ExtendedInv:Load( file_name )
+function ExtendedInv:Load()
 
-	file_name = file_name or ExtendedInv.SaveFile
-	local file = io.open(file_name, "r")
+	local file = io.open(ExtendedInv.SaveFile, "r")
 	if not file then
 		Print( "Could not open GoonMod Extended Inventory save file, attempting to load old format..." )
 		if ExtendedInv:LoadOldFormat() then
@@ -602,14 +619,12 @@ function ExtendedInv:Load( file_name )
 
 end
 
-function ExtendedInv:LoadOldFormat( file_name )
+function ExtendedInv:LoadOldFormat()
 
-	file_name = file_name or ExtendedInv.OldFormatSaveFile
-
-	local file = io.open(file_name, 'r')
+	local file = io.open(ExtendedInv.OldFormatSaveFile, 'r')
 
 	if not file then
-		Print( "Could not open old format save file (" .. file_name .. ")! Does it exist?" )
+		Print( "Could not open old format save file (" .. ExtendedInv.OldFormatSaveFile .. ")! Does it exist?" )
 		return false
 	end
 

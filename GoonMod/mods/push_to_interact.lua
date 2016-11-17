@@ -33,13 +33,13 @@ GoonBase.Options.PushToInteract.Enabled 			= GoonBase.Options.PushToInteract.Ena
 GoonBase.Options.PushToInteract.InteractionMinTime 	= GoonBase.Options.PushToInteract.InteractionMinTime or 2
 GoonBase.Options.PushToInteract.HoldAllEnabled 		= GoonBase.Options.PushToInteract.HoldAllEnabled
 GoonBase.Options.PushToInteract.UseStopKey 			= GoonBase.Options.PushToInteract.UseStopKey
-if not GoonBase.Options.PushToInteract.Enabled then
+if GoonBase.Options.PushToInteract.Enabled == nil then
 	GoonBase.Options.PushToInteract.Enabled = true
 end
-if not GoonBase.Options.PushToInteract.HoldAllEnabled then
+if GoonBase.Options.PushToInteract.HoldAllEnabled == nil then
 	GoonBase.Options.PushToInteract.HoldAllEnabled = false
 end
-if not GoonBase.Options.PushToInteract.UseStopKey then
+if GoonBase.Options.PushToInteract.UseStopKey == nil then
 	GoonBase.Options.PushToInteract.UseStopKey = false
 end
 
@@ -78,7 +78,7 @@ Hooks:Add("MenuManagerInitialize", "MenuManagerInitialize_" .. Mod:ID(), functio
 end)
 
 -- Hooks
-Hooks:Add("PlayerStandardCheckActionInteract", "PlayerStandardCheckActionInteract_PushToInteract", function(ply, t, input)		
+Hooks:Add("PlayerStandardCheckActionInteract", "PlayerStandardCheckActionInteract_PushToInteract", function(ply, t, input)
 
 	if not PushToInteract:IsEnabled() then
 		return nil
@@ -94,8 +94,8 @@ Hooks:Add("PlayerStandardCheckActionInteract", "PlayerStandardCheckActionInterac
 	elseif input.btn_interact_release then
 
 		local data = nil
-		if managers.interaction and alive( managers.interaction:active_object() ) then
-			data = managers.interaction:active_object():interaction().tweak_data
+		if managers.interaction and alive( managers.interaction:active_unit() ) then
+			data = managers.interaction:active_unit():interaction().tweak_data
 		end
 
 		if PushToInteract:ShouldHoldInteraction( data ) then
@@ -107,24 +107,27 @@ Hooks:Add("PlayerStandardCheckActionInteract", "PlayerStandardCheckActionInterac
 end)
 
 function PushToInteract:IsEnabled()
-	return GoonBase.Options.PushToInteract.Enabled or true
+	return GoonBase.Options.PushToInteract.Enabled
 end
 
 function PushToInteract:ShouldHoldAllInteractions()
-	return GoonBase.Options.PushToInteract.HoldAllEnabled or false
+	return GoonBase.Options.PushToInteract.HoldAllEnabled
 end
 
 function PushToInteract:MinimumInteractionTime()
-	return GoonBase.Options.PushToInteract.InteractionMinTime or 2
+	return GoonBase.Options.PushToInteract.InteractionMinTime
 end
 
 function PushToInteract:ShouldUseStopKey()
-	return GoonBase.Options.PushToInteract.UseStopKey or false
+	return GoonBase.Options.PushToInteract.UseStopKey
 end
 
 function PushToInteract:ShouldHoldInteraction( interaction_data )
 
 	if PushToInteract:IsEnabled() and interaction_data then
+		if type(interaction_data) == "string" then
+			interaction_data = tweak_data.interaction[interaction_data]
+		end
 		local hold_all = PushToInteract:ShouldHoldAllInteractions()
 		local interaction = (interaction_data.timer or 10) >= PushToInteract:MinimumInteractionTime()
 		local forced_hold = PushToInteract.ForceKeepInteraction[ interaction_data ]

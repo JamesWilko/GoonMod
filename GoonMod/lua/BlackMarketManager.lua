@@ -429,3 +429,23 @@ function BlackMarketManager:remove_mask_mod_from_inventory(mod_id, category)
 	local global_value = data.global_value or data.dlc or "normal"
 	managers.blackmarket:remove_item(global_value, category, mod_id)
 end
+
+Hooks:RegisterHook("BlackMarketManagerModifyGetCosmeticsInstancesByWeaponId")
+function BlackMarketManager:get_cosmetics_instances_by_weapon_id(weapon_id)
+	local items = self.orig.get_cosmetics_instances_by_weapon_id(self, weapon_id)
+	Hooks:Call("BlackMarketManagerModifyGetCosmeticsInstancesByWeaponId", self, weapon_id, items)
+	return items
+end
+
+Hooks:RegisterHook("BlackMarketManagerPreGetInventoryTradable")
+function BlackMarketManager.get_inventory_tradable(self)
+	Hooks:Call("BlackMarketManagerPreGetInventoryTradable", self)
+	return self._global.inventory_tradable
+end
+
+function BlackMarketManager:get_crafted_category(category)
+	if not self._global.crafted_items then
+		return {}
+	end
+	return self._global.crafted_items[category] or {}
+end

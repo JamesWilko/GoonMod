@@ -29,6 +29,8 @@ WeaponCustomization._default_part_visual_blueprint =  {
 }
 
 WeaponCustomization._mod_overrides_download_location = "https://github.com/JamesWilko/GoonMod/archive/WeaponCustomizerModOverrides.zip"
+WeaponCustomization._customizer_skin_id = "goonmod_custom_skin"
+local CUSTOMIZER_SKIN_ID = WeaponCustomization._customizer_skin_id
 
 -- Load extras
 SafeDoFile( GoonBase.Path .. "mods/weapon_customization_menus.lua" )
@@ -51,7 +53,7 @@ if GoonBase.Options.WeaponCustomization == nil then
 end
 
 -- Menu
-Hooks:Add( "MenuManagerInitialize", "MenuManagerInitialize_" .. Mod:ID(), function( menu_manager )
+Hooks:Add( "MenuManagerInitialize", "MenuManagerInitialize." .. Mod:ID(), function( menu_manager )
 
 	-- Callbacks
 	MenuCallbackHandler.WeaponCustomizationClearDataAll = function(this, item)
@@ -75,28 +77,140 @@ Hooks:Add( "MenuManagerInitialize", "MenuManagerInitialize_" .. Mod:ID(), functi
 end)
 
 -- Hooks
-Hooks:Add("BlackMarketGUIOnPreviewWeapon", "BlackMarketGUIOnPreviewWeapon_WeaponCustomization", function(gui, data)
-	if not WeaponCustomization._is_previewing then
-		WeaponCustomization._is_previewing = {
-			["previewing"] = true,
-			["data"] = data,
-		}
-	end
+Hooks:Add("BlackMarketTweakDataPostInitWeaponSkins", "BlackMarketTweakDataPostInitWeaponSkins.WeaponCustomization", function( tweak )
+
+	tweak.weapon_skins[CUSTOMIZER_SKIN_ID] = {}
+	tweak.weapon_skins[CUSTOMIZER_SKIN_ID].name_id = "bm_wskn_goonmod_custom_skin"
+	tweak.weapon_skins[CUSTOMIZER_SKIN_ID].unique_name_id = "bm_wskn_goonmod_custom_skin"
+	tweak.weapon_skins[CUSTOMIZER_SKIN_ID].desc_id = "bm_wskn_goonmod_custom_skin_desc"
+	tweak.weapon_skins[CUSTOMIZER_SKIN_ID].weapon_id = "deagle"
+	tweak.weapon_skins[CUSTOMIZER_SKIN_ID].rarity = "epic"
+	tweak.weapon_skins[CUSTOMIZER_SKIN_ID].bonus = "recoil_p2"
+	tweak.weapon_skins[CUSTOMIZER_SKIN_ID].reserve_quality = false
+	tweak.weapon_skins[CUSTOMIZER_SKIN_ID].texture_bundle_folder = "cash/safes/cf15"
+	tweak.weapon_skins[CUSTOMIZER_SKIN_ID].locked = false
+
 end)
 
-Hooks:Add("MenuSceneManagerSpawnedItemWeapon", "MenuSceneManagerSpawnedItemWeapon_" .. Mod:ID(), function(menu, factory_id, blueprint, texture_switches, spawned_unit)
+Hooks:Add("BlackMarketManagerPreGetInventoryTradable", "BlackMarketManagerPreGetInventoryTradable.WeaponCustomization", function(blackmarket)
+
+	-- Only add the custom tradable if we're not calling this from the Steam inventory,
+	-- that way we only display the custom skin button in the weapon inventory
+	local call_func = debug.getinfo(4).name
+	if call_func == "populate_inventory_tradable" and blackmarket._global.inventory_tradable then
+
+		blackmarket._global.inventory_tradable[CUSTOMIZER_SKIN_ID] = nil
+
+	elseif blackmarket._global.inventory_tradable and not blackmarket._global.inventory_tradable[CUSTOMIZER_SKIN_ID] then
+
+		local data = {}
+		data["category"] = "weapon_skins"
+		data["entry"] = CUSTOMIZER_SKIN_ID
+		data["bonus"] = false
+		data["amount"] = 1
+		data["quality"] = "mint"
+		blackmarket._global.inventory_tradable[CUSTOMIZER_SKIN_ID] = data
+
+	end
+
+end)
+
+Hooks:Add("BlackMarketManagerModifyGetCosmeticsInstancesByWeaponId", "BlackMarketManagerModifyGetCosmeticsInstancesByWeaponId.WeaponCustomization", function(blackmarket, weapon_id, items)
+	table.insert(items, CUSTOMIZER_SKIN_ID)
+end)
+
+Hooks:Add("BlackMarketGUIModifyWeaponCosmeticsActionList", "BlackMarketGUIModifyWeaponCosmeticsActionList.WeaponCustomization", function(gui, data, new_data)
+
+	if new_data.name == CUSTOMIZER_SKIN_ID then
+
+		-- Clear actions list
+		for k, v in ipairs(new_data) do
+			new_data[k] = nil
+		end
+
+		-- Custom actions
+		local crafted = managers.blackmarket:get_crafted_category(data.category)[data.prev_node_data and data.prev_node_data.slot]
+		if crafted and crafted.cosmetics then
+			table.insert( new_data, "wcc_goonmod_apply" )
+		else
+			table.insert( new_data, "wcc_goonmod_edit" )
+		end
+
+	end
+
+end)
+
+Hooks:Add("BlackMarketGUIPostSetup", "BlackMarketGUIPostSetup.WeaponCustomization", function(gui, is_start_page, component_data)
+
+	-- Create open editor button
+	local btn_x = 10
+	if gui._btns then
+
+		local BTNS = {
+			wcc_goonmod_edit = {
+				prio = 1,
+				btn = "BTN_A",
+				pc_btn = nil,
+				name = "bm_menu_btn_edit_goonmod_cosmetic",
+				callback = callback(WeaponCustomization, WeaponCustomization, "weapon_visual_customization_callback")
+			},
+			wcc_goonmod_apply = {
+				prio = 1,
+				btn = "BTN_A",
+				pc_btn = nil,
+				name = "bm_menu_btn_choose_goonmod_cosmetic",
+				callback = nil
+			}
+		}
+
+		local btn_x = 10
+		for btn, btn_data in pairs(BTNS) do
+			local new_btn = BlackMarketGuiButtonItem:new(gui._buttons, btn_data, btn_x)
+			gui._btns[btn] = new_btn
+		end
+
+	end
+
+end)
+
+Hooks:Add("MenuManagerOnBack", "MenuManagerOnBack.WeaponCustomization", function(menu, queue, skip_nodes)
+	
+	if WeaponCustomization._is_previewing then
+		local gui = managers.menu_component._blackmarket_gui
+		if gui then
+			local data = WeaponCustomization._is_previewing.data
+			managers.blackmarket:view_weapon(data.category, data.slot, callback(gui, gui, "_update_crafting_node"), nil, BlackMarketGui.get_crafting_custom_data())
+		end
+	end
+
+end)
+
+Hooks:Add("BlackMarketGUIOnPreviewWeapon", "BlackMarketGUIOnPreviewWeapon.WeaponCustomization", function(gui, data)
+	WeaponCustomization._is_previewing = {
+		["previewing"] = true,
+		["data"] = data,
+	}
+end)
+
+Hooks:Add("BlackMarketGUIOnStartCraftingWeapon", "BlackMarketGUIOnStartCraftingWeapon.WeaponCustomization", function(gui, data, new_node_data)
+	WeaponCustomization._is_previewing = {
+		["previewing"] = true,
+		["data"] = data,
+	}
+end)
+
+Hooks:Add("MenuSceneManagerSpawnedItemWeapon", "MenuSceneManagerSpawnedItemWeapon." .. Mod:ID(), function(menu, factory_id, blueprint, cosmetics, texture_switches, custom_data, spawned_unit)
 
 	WeaponCustomization._menu_weapon_preview_unit = spawned_unit
 
 	if WeaponCustomization._is_previewing then
 		local data = WeaponCustomization._is_previewing["data"]
 		WeaponCustomization:LoadCurrentWeaponCustomization( data )
-		WeaponCustomization._is_previewing = nil
 	end
 
 end)
 
-Hooks:Add("MenuSceneManagerSpawnedMeleeWeapon", "MenuSceneManagerSpawnedMeleeWeapon_" .. Mod:ID(), function(menu, melee_weapon_id, spawned_unit)
+Hooks:Add("MenuSceneManagerSpawnedMeleeWeapon", "MenuSceneManagerSpawnedMeleeWeapon." .. Mod:ID(), function(menu, melee_weapon_id, spawned_unit)
 
 	WeaponCustomization._menu_weapon_preview_unit = spawned_unit
 	WeaponCustomization:LoadCurrentWeaponCustomization({
@@ -111,23 +225,23 @@ Hooks:Add("MenuSceneManagerSpawnedMeleeWeapon", "MenuSceneManagerSpawnedMeleeWea
 
 end)
 
-Hooks:Add("NewRaycastWeaponBasePostAssemblyComplete", "NewRaycastWeaponBasePostAssemblyComplete_WeaponCustomization", function(weapon, clbk, parts, blueprint)
+Hooks:Add("NewRaycastWeaponBasePostAssemblyComplete", "NewRaycastWeaponBasePostAssemblyComplete.WeaponCustomization", function(weapon, clbk, parts, blueprint)
 	WeaponCustomization:LoadEquippedWeaponCustomizations( weapon )
 end)
 
-Hooks:Add("PlayerStandardStartActionEquipWeapon", "PlayerStandardStartActionEquipWeapon_WeaponCustomization", function(ply, t)
+Hooks:Add("PlayerStandardStartActionEquipWeapon", "PlayerStandardStartActionEquipWeapon.WeaponCustomization", function(ply, t)
 	if managers.player:local_player() then
 		WeaponCustomization:LoadEquippedWeaponCustomizations( managers.player:local_player():inventory():equipped_unit():base() )
 	end
 end)
 
-Hooks:Add("PlayerStandardStartMaskUp", "PlayerStandardStartMaskUp_WeaponCustomization", function(ply, data)
+Hooks:Add("PlayerStandardStartMaskUp", "PlayerStandardStartMaskUp.WeaponCustomization", function(ply, data)
 	if managers.player:local_player() then
 		WeaponCustomization:LoadEquippedWeaponCustomizations( managers.player:local_player():inventory():equipped_unit():base() )
 	end
 end)
 
-Hooks:Add("FPCameraPlayerBaseOnSpawnMeleeItem", "FPCameraPlayerBaseOnSpawnMeleeItem_WeaponCustomization", function(camera, melee_units)
+Hooks:Add("FPCameraPlayerBaseOnSpawnMeleeItem", "FPCameraPlayerBaseOnSpawnMeleeItem.WeaponCustomization", function(camera, melee_units)
 
 	if melee_units then
 		for k, v in pairs( melee_units ) do
@@ -137,7 +251,7 @@ Hooks:Add("FPCameraPlayerBaseOnSpawnMeleeItem", "FPCameraPlayerBaseOnSpawnMeleeI
 
 end)
 
-Hooks:Add("BlackMarketGUIOnPopulateMaskMods", "BlackMarketGUIOnPopulateMaskMods_WeaponCustomization", function(gui, data)
+Hooks:Add("BlackMarketGUIOnPopulateMaskMods", "BlackMarketGUIOnPopulateMaskMods.WeaponCustomization", function(gui, data)
 
 	-- Create "no material" data
 	if not tweak_data.blackmarket.materials.no_material then

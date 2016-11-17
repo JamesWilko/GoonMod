@@ -11,14 +11,14 @@ WeaponCustomization._advanced_menu_options = {
 	},
 	[2] = {
 		text = "wc_adv_toggle_colour_grading",
-		func = "AddvancedToggleColourGrading",
+		func = "AdvancedToggleColourGrading",
 	},
 	[3] = {
 		text = "wc_adv_clear_weapon",
 		func = "AdvancedClearWeaponCheck",
 	}
 }
-WeaponCustomization._menu_text_scaling = 0.85
+WeaponCustomization._menu_text_scaling = 0.80
 
 WeaponCustomization._controller_index = {
 	modifying = 1,
@@ -169,12 +169,13 @@ function WeaponCustomization.weapon_visual_customization_callback(self, data)
 
 	end
 
+	local weapon_name = WeaponCustomization._is_previewing and WeaponCustomization._is_previewing.data and WeaponCustomization._is_previewing.data.name_localized
 	new_node_data.topic_id = "bm_menu_customize_weapon_title"
 	new_node_data.topic_params = {
-		weapon_name = data.name_localized
+		weapon_name = weapon_name or data.name_localized
 	}
 
-	new_node_data.blur_fade = self._data.blur_fade
+	new_node_data.blur_fade = self._data and self._data.blur_fade or 0
 	new_node_data.weapon_slot_data = data
 
 	if data.category == "primaries" or data.category == "secondaries" then
@@ -251,7 +252,7 @@ Hooks:Add("BlackMarketGUIPostSetup", "BlackMarketGUIPostSetup_WeaponCustomizatio
 	local w_visual_customize = {
 		prio = 5,
 		btn = "BTN_BACK",
-		pc_btn = Idstring("toggle_chat"),
+		pc_btn = "toggle_chat",
 		name = "bm_menu_customize_weapon",
 		callback = callback(gui, gui, "customize_weapon_visuals")
 	}
@@ -300,11 +301,10 @@ end)
 
 Hooks:Add("BlackMarketGUIUpdateInfoText", "BlackMarketGUIUpdateInfoText_WeaponCustomization", function(self)
 
-
 	local slot_data = self._slot_data
 	local tab_data = self._tabs[self._selected]._data
 	local prev_data = tab_data.prev_node_data
-	local ids_category = Idstring(slot_data.category)
+	local ids_category = slot_data and slot_data.category and Idstring(slot_data.category)
 	local identifier = tab_data.identifier
 	local updated_texts = {
 		{text = ""},
@@ -721,7 +721,7 @@ function WeaponCustomization:AdvancedToggleWeaponSpin()
 
 end
 
-function WeaponCustomization:AddvancedToggleColourGrading()
+function WeaponCustomization:AdvancedToggleColourGrading()
 
 	if managers and managers.environment_controller then
 
@@ -797,22 +797,85 @@ function WeaponCustomization:ShowControllerAdvancedOptions()
 	local title = managers.localization:text("wc_advanced_options_menu")
 	local message = ""
 	local menuOptions = {}
-	
-	local i = 1
-	for k, v in ipairs( WeaponCustomization._advanced_menu_options ) do
-		menuOptions[i] = {
-			text = managers.localization:text( v.text ),
-			callback = WeaponCustomization[v.func],
-			is_cancel_button = true
-		}
-		i = i + 1
-	end
-
-	menuOptions[i] = {
+	menuOptions[1] = {
+		text = managers.localization:text("wc_adv_toggle_preview_spin"),
+		callback = callback(self, self, "AdvancedToggleWeaponSpin")
+	}
+	menuOptions[2] = {
+		text = managers.localization:text("wc_adv_toggle_colour_grading"),
+		callback = callback(self, self, "AdvancedToggleColourGrading")
+	}
+	menuOptions[3] = {
+		text = managers.localization:text("wc_adv_clear_weapon"),
+		callback = callback(self, self, "AdvancedClearWeaponCheck")
+	}
+	menuOptions[4] = {
 		text = managers.localization:text("wc_clear_weapon_cancel"),
 		is_cancel_button = true
 	}
-
+	
 	local menu = QuickMenu:new(title, message, menuOptions, true)
 	
 end
+
+-- Inventory Hooks
+function WeaponCustomization:NewInventoryOpenWeaponCustomization( weapon_category )
+
+	-- Look for equipped weapon
+	for slot, data in pairs( Global.blackmarket_manager.crafted_items[weapon_category] ) do
+		if data.equipped then
+			
+			-- Preview the weapon using the weapon customizer
+			local data = {
+				slot = slot,
+				category = weapon_category,
+				name = data.weapon_id,
+				name_localized = args and args["text_object"] and args["text_object"]["selected_text"] or data.weapon_id,
+				data = data,
+			}
+
+			GoonBase.WeaponCustomization.weapon_visual_customization_callback(GoonBase.WeaponCustomization, data)
+			return true
+
+		end
+	end
+
+	-- Didn't find one, so fallback to regular preview
+	return nil
+
+end
+
+Hooks:Add("PlayerInventoryGUIOnPreviewPrimary", "PlayerInventoryGUIOnPreviewPrimary.WeaponCustomization", function( inv, args )
+	return WeaponCustomization:NewInventoryOpenWeaponCustomization( "primaries" )
+end)
+
+Hooks:Add("PlayerInventoryGUIOnPreviewSecondary", "PlayerInventoryGUIOnPreviewSecondary.WeaponCustomization", function( inv, args )
+	return WeaponCustomization:NewInventoryOpenWeaponCustomization( "secondaries" )
+end)
+
+Hooks:Add("PlayerInventoryGUIOnPreviewMelee", "PlayerInventoryGUIOnPreviewMelee.WeaponCustomization", function( inv, args )
+
+	-- Look for equipped weapon
+	local wep_id = nil
+	local wep_data = nil
+	for id, data in pairs( managers.blackmarket._global.melee_weapons ) do
+		if data.equipped then
+			
+			-- Preview the weapon using the weapon customizer
+			local data = {
+				category = "melee_weapons",
+				name = id,
+				name_localized = args and args["text_object"] and args["text_object"]["selected_text"] or id,
+				data = data,
+			}
+
+			GoonBase.WeaponCustomization.weapon_visual_customization_callback(GoonBase.WeaponCustomization, data)
+			return true
+
+		end
+	end
+
+	-- Didn't find one, so fallback to regular preview
+	return nil
+
+end)

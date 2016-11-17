@@ -2,10 +2,11 @@
 	"name" : "GoonMod",
 	"author" : "James Wilkinson",
 	"contact" : "jw@jameswilko.com",
+	"priority" : 200,
 	"updates" : [
 		{
-			"revision" : 13,
-			"identifier" : "goonmod",
+			"revision" : 32,
+			"identifier" : "goonmod"
 		},
 		{
 			"revision" : "revision.txt",
@@ -18,13 +19,10 @@
 	"hooks" : [
 		{ "hook_id" : "lib/managers/localizationmanager", "script_path" : "goonbase.lua" },
 		{ "hook_id" : "lib/managers/menumanager", "script_path" : "goonbase.lua" },
-		{ "hook_id" : "lib/managers/enemymanager", "script_path" : "goonbase.lua" },
 		{ "hook_id" : "lib/units/weapons/grenades/quicksmokegrenade", "script_path" : "goonbase.lua" },
 		{ "hook_id" : "lib/managers/hudmanager", "script_path" : "goonbase.lua" },
 		{ "hook_id" : "lib/managers/jobmanager", "script_path" : "goonbase.lua" },
-		{ "hook_id" : "lib/managers/groupaimanager", "script_path" : "goonbase.lua" },
 		{ "hook_id" : "lib/managers/group_ai_states/groupaistatebase", "script_path" : "goonbase.lua" },
-		{ "hook_id" : "lib/managers/group_ai_states/groupaistatebesiege", "script_path" : "goonbase.lua" },
 		{ "hook_id" : "lib/units/beings/player/states/playerstandard", "script_path" : "goonbase.lua" },
 		{ "hook_id" : "lib/units/beings/player/playerdamage", "script_path" : "goonbase.lua" },
 		{ "hook_id" : "lib/managers/playermanager", "script_path" : "goonbase.lua" },
@@ -35,7 +33,6 @@
 		{ "hook_id" : "lib/setups/menusetup", "script_path" : "goonbase.lua" },
 		{ "hook_id" : "lib/managers/menu/blackmarketgui", "script_path" : "goonbase.lua" },
 		{ "hook_id" : "lib/managers/blackmarketmanager", "script_path" : "goonbase.lua" },
-		{ "hook_id" : "lib/tweak_data/groupaitweakdata", "script_path" : "goonbase.lua" },
 		{ "hook_id" : "lib/tweak_data/charactertweakdata", "script_path" : "goonbase.lua" },
 		{ "hook_id" : "lib/units/enemies/cop/copinventory", "script_path" : "goonbase.lua" },
 		{ "hook_id" : "lib/units/enemies/cop/copdamage", "script_path" : "goonbase.lua" },
@@ -70,10 +67,13 @@
 		{ "hook_id" : "lib/managers/menu/walletguiobject", "script_path" : "goonbase.lua" },
 		{ "hook_id" : "lib/managers/experiencemanager", "script_path" : "goonbase.lua" },
 		{ "hook_id" : "lib/managers/skilltreemanager", "script_path" : "goonbase.lua" },
-		{ "hook_id" : "lib/managers/menu/skilltreegui", "script_path" : "goonbase.lua" },
+		{ "hook_id" : "lib/managers/menu/skilltreeguinew", "script_path" : "goonbase.lua" },
 		{ "hook_id" : "lib/network/networkgame", "script_path" : "goonbase.lua" },
 		{ "hook_id" : "lib/tweak_data/upgradestweakdata", "script_path" : "goonbase.lua" },
 		{ "hook_id" : "lib/network/base/networkmanager", "script_path" : "goonbase.lua" },
-		{ "hook_id" : "lib/units/weapons/sentrygunweapon", "script_path" : "goonbase.lua" }
+		{ "hook_id" : "lib/units/weapons/sentrygunweapon", "script_path" : "goonbase.lua" },
+		{ "hook_id" : "lib/managers/savefilemanager", "script_path" : "goonbase.lua" },
+		{ "hook_id" : "lib/managers/menu/playerinventorygui", "script_path" : "goonbase.lua" },
+		{ "hook_id" : "lib/tweak_data/blackmarket/weaponskinstweakdata", "script_path" : "goonbase.lua" }
 	]
 }

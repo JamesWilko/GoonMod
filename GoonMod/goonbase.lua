@@ -3,8 +3,8 @@ if not _G.GoonBase then
 
 	_G.GoonBase = {}
 
-	GoonBase.Version = 14
-	GoonBase.GameVersion = "1.30.0"
+	GoonBase.Version = 32
+	GoonBase.GameVersion = "1.57.0"
 	GoonBase.SupportedVersion = true
 
 	GoonBase.Path = ""
@@ -21,6 +21,7 @@ if not _G.GoonBase then
 	GoonBase.SavePath = SavePath .. "goonmod_options.txt"
 
 	GoonBase.LogTag = "[GoonMod]"
+	GoonBase.LoggingEnabled = false
 
 end
 
@@ -32,13 +33,10 @@ GoonBase.RequireHookFiles = {
 GoonBase.HookFiles = {
 
 	["lib/managers/menumanager"] = "MenuManager.lua",
-	["lib/managers/enemymanager"] = "EnemyManager.lua",
 	["lib/units/weapons/grenades/quicksmokegrenade"] = "QuickSmokeGrenade.lua",
 	["lib/managers/hudmanager"] = "HUDManager.lua",
 	["lib/managers/jobmanager"] = "JobManager.lua",
-	["lib/managers/groupaimanager"] = "GroupAIManager.lua",
 	["lib/managers/group_ai_states/groupaistatebase"] = "GroupAIStateBase.lua",
-	["lib/managers/group_ai_states/groupaistatebesiege"] = "GroupAIStateBesiege.lua",
 	["lib/units/beings/player/states/playerstandard"] = "PlayerStandard.lua",
 	["lib/units/beings/player/playerdamage"] = "PlayerDamage.lua",
 	["lib/managers/playermanager"] = "PlayerManager.lua",
@@ -49,7 +47,6 @@ GoonBase.HookFiles = {
 	["lib/setups/menusetup"] = "MenuSetup.lua",
 	["lib/managers/menu/blackmarketgui"] = "BlackMarketGUI.lua",
 	["lib/managers/blackmarketmanager"] = "BlackMarketManager.lua",
-	["lib/tweak_data/groupaitweakdata"] = "GroupAITweakData.lua",
 	["lib/tweak_data/charactertweakdata"] = "CharacterTweakData.lua",
 	["lib/units/enemies/cop/copinventory"] = "CopInventory.lua",
 	["lib/units/enemies/cop/copdamage"] = "CopDamage.lua",
@@ -82,11 +79,14 @@ GoonBase.HookFiles = {
 	["lib/managers/menu/walletguiobject"] = "WalletGUIObject.lua",
 	["lib/managers/experiencemanager"] = "ExperienceManager.lua",
 	["lib/managers/skilltreemanager"] = "SkillTreeManager.lua",
-	["lib/managers/menu/skilltreegui"] = "SkillTreeGUI.lua",
+	["lib/managers/menu/skilltreeguinew"] = "SkillTreeGUINew.lua",
 	["lib/network/networkgame"] = "NetworkGame.lua",
 	["lib/tweak_data/upgradestweakdata"] = "UpgradesTweakData.lua",
 	["lib/network/base/networkmanager"] = "NetworkManager.lua",
 	["lib/units/weapons/sentrygunweapon"] = "SentryGunWeapon.lua",
+	["lib/managers/savefilemanager"] = "SaveFileManager.lua",
+	["lib/managers/menu/playerinventorygui"] = "PlayerInventoryGUI.lua",
+	["lib/tweak_data/blackmarket/weaponskinstweakdata"] = "WeaponSkinsTweakData.lua",
 
 }
 
@@ -102,29 +102,33 @@ function _G.Print( ... )
 	log( str )
 
 	-- Write to log file
-	str = str .. "\n"
-	local file = io.open( GoonBase.LogFile, "a+" )
-	if file ~= nil then
+	if GoonBase.LoggingEnabled then
 
-		io.output( file )
+		str = str .. "\n"
+		local file = io.open( GoonBase.LogFile, "a+" )
+		if file ~= nil then
 
-		if GoonBase._print_cache ~= nil then
-			for k, v in ipairs(GoonBase._print_cache) do
-				io.write( v )
+			io.output( file )
+
+			if GoonBase._print_cache ~= nil then
+				for k, v in ipairs(GoonBase._print_cache) do
+					io.write( v )
+				end
+				GoonBase._print_cache = {}
 			end
-			GoonBase._print_cache = {}
+			io.write( str )
+
+			io.close( file )
+
+		else
+
+			log( "[Error] Could not write to file, caching print string: '" .. str .. "'" )
+			if GoonBase._print_cache == nil then
+				GoonBase._print_cache = {}
+			end
+			table.insert( GoonBase._print_cache, str )
+
 		end
-		io.write( str )
-
-		io.close( file )
-
-	else
-
-		log( "[Error] Could not write to file, caching print string: '" .. str .. "'" )
-		if GoonBase._print_cache == nil then
-			GoonBase._print_cache = {}
-		end
-		table.insert( GoonBase._print_cache, str )
 
 	end
 

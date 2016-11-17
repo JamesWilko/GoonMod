@@ -88,3 +88,23 @@ function MenuCallbackHandler.choice_crimenet_lobby_permission(self, item)
 	end
 	self.orig.choice_crimenet_lobby_permission(self, item)
 end
+
+-- Nodes
+Hooks:RegisterHook( "MenuManagerOnOpenNode" )
+Hooks:RegisterHook( "MenuManagerOnBack" )
+function MenuManager.open_node( self, node_name, parameter_list )
+
+	-- Hook menu:back()
+	if not self.__back_func then
+		self.__back_func = self.back
+		managers.menu.back = function(queue, skip_nodes)
+			self.__back_func(queue, skip_nodes)
+			Hooks:Call( "MenuManagerOnBack", self, queue, skip_nodes )
+		end
+	end
+
+	-- Hook menu:open_node()
+	self.orig.open_node( self, node_name, parameter_list )
+	Hooks:Call( "MenuManagerOnOpenNode", self, node_name, parameter_list )
+
+end

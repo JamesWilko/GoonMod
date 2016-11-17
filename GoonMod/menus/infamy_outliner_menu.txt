@@ -14,11 +14,11 @@
 			"description" : "gm_options_infamy_outliner_enabled_desc",
 			"callback" : "InfamyOutlinerToggleEnabled",
 			"value" : "Enabled",
-			"default_value" : true,
+			"default_value" : true
 		},
 		{
 			"type" : "divider",
-			"size" : 8,
+			"size" : 8
 		},
 
 		{
@@ -28,7 +28,7 @@
 			"description" : "gm_options_custom_use_hue_desc",
 			"callback" : "InfamyOutlinerSetUseHSV",
 			"value" : "UseHSV",
-			"default_value" : true,
+			"default_value" : true
 		},
 		{
 			"type" : "slider",
@@ -40,7 +40,7 @@
 			"default_value" : 0.6,
 			"min" : 0,
 			"max" : 1,
-			"step" : 0.01,
+			"step" : 0.01
 		},
 		{
 			"type" : "slider",
@@ -52,7 +52,7 @@
 			"default_value" : 1,
 			"min" : 0,
 			"max" : 1,
-			"step" : 0.01,
+			"step" : 0.01
 		},
 		{
 			"type" : "slider",
@@ -64,11 +64,11 @@
 			"default_value" : 0.2,
 			"min" : 0,
 			"max" : 1,
-			"step" : 0.01,
+			"step" : 0.01
 		},
 		{
 			"type" : "divider",
-			"size" : 64,
+			"size" : 64
 		},
 
 		{
@@ -76,7 +76,7 @@
 			"id" : "gm_io_toggle_rainbow",
 			"title" : "gm_options_infamy_outliner_clear_data_title",
 			"description" : "gm_options_infamy_outliner_clear_data_desc",
-			"callback" : "InfamyOutlinerClearInfamyData",
+			"callback" : "InfamyOutlinerClearInfamyData"
 		}
 
 	]

@@ -11,11 +11,11 @@
 			"id" : "gm_wc_clear_customization",
 			"title" : "gm_options_wc_clear_all_data_title",
 			"description" : "gm_options_wc_clear_all_data_desc",
-			"callback" : "WeaponCustomizationClearDataAll",
+			"callback" : "WeaponCustomizationClearDataAll"
 		},
 		{
 			"type" : "divider",
-			"size" : 16,
+			"size" : 16
 		},
 
 		{
@@ -23,21 +23,21 @@
 			"id" : "gm_wc_clear_customization_primary",
 			"title" : "gm_options_wc_clear_primary_data_title",
 			"description" : "gm_options_wc_clear_primary_data_desc",
-			"callback" : "WeaponCustomizationClearDataPrimaries",
+			"callback" : "WeaponCustomizationClearDataPrimaries"
 		},
 		{
 			"type" : "button",
 			"id" : "gm_wc_clear_customization_secondary",
 			"title" : "gm_options_wc_clear_secondary_data_title",
 			"description" : "gm_options_wc_clear_secondary_data_desc",
-			"callback" : "WeaponCustomizationClearDataSecondaries",
+			"callback" : "WeaponCustomizationClearDataSecondaries"
 		},
 		{
 			"type" : "button",
 			"id" : "gm_wc_clear_customization_melee",
 			"title" : "gm_options_wc_clear_melee_data_title",
 			"description" : "gm_options_wc_clear_melee_data_desc",
-			"callback" : "WeaponCustomizationClearDataMelee",
+			"callback" : "WeaponCustomizationClearDataMelee"
 		}
 
 	]

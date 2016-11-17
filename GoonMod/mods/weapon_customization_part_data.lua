@@ -412,6 +412,8 @@ WeaponCustomization.MissingPartLocalizations = {
 	["bm_wp_rpg7_barrel"] = standard_barrel,
 	["bm_wp_rpg7_sight"] = standard_sights,
 
+	["bm_wp_china_receiver"] = "Receiver",
+
 	["bm_wp_upg_vg_ass_smg_afg"] = "AFG",
 	["bm_wp_upg_vg_ass_smg_stubby"] = "Stubby",
 	["wpn_fps_upg_fl_ass_peq15_flashlight"] = "Flashlight",
